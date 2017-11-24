@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>本地代理 StackOverflow 静态文件 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>本地代理 StackOverflow 静态文件</h1>
+<p style="text-align: right;">黄杰, 2016-07-01<br />root[a]linuxsand.info</p><p>写代码会用到 StackOverflow.com，奈何公司网络不给力。</p>
+<p>其实 HTML 早就下载了，分析网络请求是 js 文件无法下载——站方用了 google ajax 的文件。</p>
+<p>设法使用本地文件替换吧，使用到的工具：</p>
+<ul>
+<li>浏览器和代理软件：我用的是 Chrome 浏览器和它的一款管理代理的拓展 SwitchyOmega</li>
+<li>本地代理服务器，我用的是 <a href="http://nginx.org/en/download.html">nginx for Windows</a></li>
+<li>实际需要代理的文件：jquery.min.js 文件，我从 <a href="http://staticfile.org/">http://staticfile.org/</a> 下载的</li>
+</ul>
+<p>步骤：</p>
+<ul>
+<li>在 SwitchyOmega 新建情景模式<ul>
+<li>情景模式的类型是「代理服务器」，local proxy -&gt; http://127.0.0.1:8080</li>
+</ul>
+</li>
+<li>如果没有「自动切换」类型的情景模式，则新建一个<ul>
+<li>在「自动切换」情景模式下，添加条件：网址通配符 *ajax.googleapi.com/*，情景模式：local proxy</li>
+</ul>
+</li>
+<li>
+<p>将 jquery.min.js 放置本地某目录（例如，html/jquery/1.7.1/jquery.min.js），编写 nginx 配置文件</p>
+<pre><code>server {
+    listen 8080;
+
+    # http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
+    # ----&gt; proxy at 8080
+    # ----&gt; local file: html/jquery/1.7.1/jquery.min.js
+    location /ajax/libs/jquery/ {
+        alias html/jquery/;
+    }
+
+    location / {
+        return 404;
+    }
+</code></pre>
+</li>
+<li>
+<p>启动 nginx.exe</p>
+</li>
+<li>打开 StackOverflow.com，强制浏览器刷新测试效果</li>
+</ul>
+<p>同时，StackOverflow.com 的 css 文件在我的网络条件下也不大正常，分析它是托管在 cdn.sstatic.net 上的，解决方法同上。</p>
+<p>OK，终于能顺畅地进行 StackOverflow-Oriented programming 啦！</p>
+<hr />
+<p>使用微信打赏：</p>
+<p><img alt="weixin donation" src="http://77g3ho.com1.z0.glb.clouddn.com/weixin_barcode5.png" /></p></body>
+</html>

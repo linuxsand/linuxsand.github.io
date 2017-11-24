@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>自动备份 Servo-Robot 激光检测系统中的数据库文件 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>自动备份 Servo-Robot 激光检测系统中的数据库文件</h1>
+<p style="text-align: right;">黄杰, 2015-07-22<br />root[a]linuxsand.info</p>
+<p>Servo-Robot 激光检测系统有一块 innodisk 的 CF 卡，数据保存在这里。随机软件中，除了常规的 WeldCom，还有 NetSight。</p>
+<p>我们在 WeldCom 中配置完检测任务并且运行后，可以打开 NetSight 软件查看结果。同时也可以将 CF 卡内的文件导出。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/sr-db-1.jpg" /></p>
+<p>这个操作是手动的，官方也没有提供自动化的方法。目前我在做的一个项目却有这个需求。最终我搞定了这个问题，并写了一个小程序来自动化这个过程。</p>
+<hr />
+<p>简述下。官方的数据库是 MySQL，NetSight 中的手动导出功能实际上用了 mysqldump.exe 实现的。</p>
+<p>但是我的问题是，我并不知道数据库的用户、口令。</p>
+<p>开始走了一次弯路。我通过 WireShark 来抓包，以为拿到了口令（我这台是 21c56de29f07b06ad2d8dc7e8d753eccee1e045e），尝试 decode 发现并不是有效的口令。Google 之后了解到这是通过某种方式 hash 过的字串。（<a href="https://www.portcullis-security.com/cracking-mysql-network-authentication-hashes-with-john-the-ripper/">拓展阅读</a>）</p>
+<p>难道真要用暴力破解吗？我没这么做。</p>
+<p>（略）</p>
+<p>我最终设法得到了数据库的 root 口令。由于公开可能有麻烦上身，这里不谈。依葫芦画瓢，我的 backupSrDb.exe 也使用了 mysqldump。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/auto-backup-sr-db.gif" /></p>
+<p>更新：后来需要在备份前清除已有数据，于是加上了清除功能，改写后命名程序未 srdb.exe，这么用：</p>
+<ul>
+<li><code>srdb.exe clear</code> 清空数据</li>
+<li><code>srdb.exe backup</code> 备份数据</li>
+</ul>
+<p>当然为了调用简单，可以写 2 个批处理脚本解决。</p>
+<br /><br />
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>﻿Visual Studio 模板 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>﻿Visual Studio 模板</h1>
+<p style="text-align: right;">黄杰, 2016-05-21<br />root[a]linuxsand.info</p><p><a href="https://msdn.microsoft.com/en-us/library/ms247072(v=vs.100).aspx">Differences Between Project and Item Templates</a> 介绍了「项目模板」和「项模板」，通过前者在新建项目时弹出，后者在项目中添加新项时弹出。</p>
+<p>安装好的模板是以 .zip 的形式存放于特定目录下，具体见 <a href="https://msdn.microsoft.com/en-us/library/y3kkate1(v=vs.100).aspx">How to: Locate and Organize Project and Item Templates</a>。</p>
+<ul>
+<li>VS安装目录\Common7\IDE\ItemTemplates\Language\</li>
+<li>VS安装目录\Common7\IDE\ProjectTemplates\Language\</li>
+</ul>
+<p>组成项目模板的内容：</p>
+<ul>
+<li>.vstemplate 文件，包含了该模板的元数据</li>
+<li>项目文件，例如 .csproj</li>
+<li>代码文件、资源文件</li>
+<li>可选的图标</li>
+</ul>
+<p>组成项模板的内容：</p>
+<ul>
+<li>.vstemplate 文件，包含了该模板的元数据</li>
+<li>特定的要添加的文件</li>
+<li>可选的图标</li>
+</ul>
+<p>目前我有个需求，某 SDK 提供了一套在 Visual Studio 2010 下的模板安装包，但是无法在更高版本的 Visual Studio 下安装；掌握上面的内容后，就可以手工完成：</p>
+<ul>
+<li>把低版本 VS 下的相应的模板文件 .zip 拷贝到高版本的 VS 对应的目录下</li>
+<li>关闭所有 Visual Studio 实例</li>
+<li>然后在开始菜单内，找到高版本的 VS Developer Command Prompt，运行：<code>devenv /installvstemplates</code></li>
+<li>最后，打开高版本 VS 验证</li>
+</ul>
+<hr />
+<p>使用微信打赏：</p>
+<p><img alt="weixin donation" src="http://77g3ho.com1.z0.glb.clouddn.com/weixin_barcode5.png" /></p></body>
+</html>

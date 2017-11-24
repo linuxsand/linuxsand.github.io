@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>ABB PC SDK and FlexPendant SDK 乱弹 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>ABB PC SDK and FlexPendant SDK 乱弹</h1>
+<p style="text-align: right;">黄杰, 2014-12-18<br />root[a]linuxsand.info</p>
+<p>断断续续使用 ABB 的这两种 SDK 也有一段时间了，还是打算记录下来，一是记忆存档，二是以后遇到新人询问时，扔这个超链接就可以。</p>
+<p>经历有限，有错欢迎指出（给我发邮件）。</p>
+<p>注：PC SDK 更新到 5.61 后，从 5 个 DLL 合并为 1 个：ABB.Robotics.Controllers.PC.dll，基于 .NET framework 4.5，请升级你的 Visual Studio 吧。而基于旧版本的解决方案替换 DLL 引用后，重新构建即可适配。</p>
+<hr />
+<p>安装 RobotStudio 时，勾选对应的 SDK，文档位于：<code>C:\Program Files\ABB Industrial IT\Robotics IT\SDK\</code>。SDK 有很多 domain，对应到控制器的方方面面，详见 SDK 的参考手册。</p>
+<p>建议学习步骤：先看应用手册，写程序，看参考手册，测试程序，看参考手册。</p>
+<h2>PC SDK</h2>
+<p><img alt="PC SDK DEMO" src="http://77g3ho.com1.z0.glb.clouddn.com/pc-sdk-sample.jpg" /></p>
+<p>需要控制器解锁 PC Interface 这个软件选项。</p>
+<p>PC SDK App 是运行在 PC 上的应用，使用 .NET 平台上的 C# or VB 编写自定义代码，调用 PC SDK 来实现功能。可以用一台 PC 控制若干台控制器，这是它相比 FlexPendant SDK 的长处；物理连接是以太网，软件协议是 RPC。</p>
+<p>一般这么做：</p>
+<ul>
+<li>先 scan 网络中的控制器，找到一台或若干台</li>
+<li>对特定控制器操作，读写变量、信号，调用例行程序……</li>
+<li>同时更新 GUI 等（用 this.Invoke）</li>
+</ul>
+<p>更多：<a href="http://blog.linuxsand.info/abb-pc-sdk.html">http://blog.linuxsand.info/abb-pc-sdk.html</a></p>
+<h2>FlexPendant SDK</h2>
+<p><img alt="" src="http://ww1.sinaimg.cn/bmiddle/62fab8e6jw1emf75s64edj20sg0lc40b.jpg" /></p>
+<p>上图是我做的 DEMO 效果图，来自 <a href="http://weibo.com/1660598502/BwQyhzksZ">http://weibo.com/1660598502/BwQyhzksZ</a>，涉及到的：调用例行程序，读取数据。</p>
+<p>需要控制器解锁 FlexPendant Interface 这个软件选项。</p>
+<p>FlexPendant SDK App 运行在示教器上，因为示教器是 Windows CE，支持 .NET compact framework，所以我们在 PC 上用 .NET 平台的语言（C# / VB）编写、编译的程序也可以在其上运行。</p>
+<p>ABB 官方目前推荐用 Screen maker，是 RobotStudio 自带的，我之前大概看了一下（为啥看它呢，因为我之前配置不好 FlexPendant SDK 的开发环境），是“绕了一个圈子”，实质还是生成了能运行在 .Net 上的代码。本段相当不严谨，也许之后会移除。</p>
+<p>可用的最高版本的 Visual Studio 是 2008（http://forums.robotstudio.com/discussion/8080/information-to-all-users-of-flexpendant-sdk）。</p>
+<p>使用方面，不需要像 PC SDK 那样扫描网络，只需 <code>new Controller()</code> 即可，可用的 domain 和 PC SDK 大同小异；当然 FP SDK 的权限更大。</p>
+<h3>关于 FlexPendant SDK App 的部署</h3>
+<p>最简单的办法，把生成的 dll 文件拷贝到控制器的 HOME 目录，重启 FlexPendant 即可（手动模式下，摇杆：右右右左下，Reset FlexPendant）。</p>
+<br /><br />
+</body>
+</html>

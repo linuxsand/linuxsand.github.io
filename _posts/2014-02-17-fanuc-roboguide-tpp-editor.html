@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>FANUC Roboguide 的程序编辑器 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>FANUC Roboguide 的程序编辑器</h1>
+<p style="text-align: right;">黄杰, 2014-02-17<br />root[a]linuxsand.info</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/tpp-editor.jpg" /></p>
+<p>Roboguide 内建的编辑器有语法高亮，还不错。我改了 2 个地方：</p>
+<ol>
+<li>改成宋体（原因：冒号、分号能区分得较清楚；可选的字体太少）</li>
+<li>把字号改大到 11</li>
+</ol>
+<p>有几个注意点：</p>
+<ol>
+<li><del>不要手动加行号，</del>不需要手动加行号</li>
+<li>在 /MN 区域中，即具体的程序语句中，每行必须以 : 开头，以 ; 结尾，即便是空行也是如此</li>
+<li>对于 7.x 的虚拟控制器，被 remark（//）掉的程序语句编译时会报错，可以用 comment（!）来代替</li>
+<li>对于 8.x 的虚拟控制器，没有上述问题</li>
+</ol>
+<hr />
+<p>用 PC 编程自然比用机器人示教器便捷多了：示教点，添加注释，编译完毕，然后用 FTP 把生成的 TP 文件传输到机器人控制器。当然，对于不涉及动作的程序更是方便。</p>
+<br /><br />
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>博客完全静态化 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>博客完全静态化</h1>
+<p style="text-align: right;">黄杰, 2012-12-18<br />root[a]linuxsand.info</p>
+<p>update：我又切换回去了：用自己的脚本去生成。</p>
+<p>使用 <a href="https://github.com/getpelican/pelican">pelican</a> 来把 blog 完全静态化，不再使用自己<a href="/from-calepin-to-gae.html">山寨的</a>了。</p>
+<p>文档在此 <a href="http://pelican.readthedocs.org/en/3.1.1/">http://pelican.readthedocs.org/en/3.1.1/</a></p>
+<h2>修改 settings.py</h2>
+<p><code>cd C:\Python27\Lib\site-packages\pelican-3.1.1-py2.7.egg\pelican</code></p>
+<ul>
+<li><code>DEFAULT_THEME</code> 改为 basic，下详。</li>
+<li><code>_DEFAULT_CONFIG</code>：<ul>
+<li>注释掉 feed 相关的字段，我不要生成 feed</li>
+</ul>
+</li>
+</ul>
+<p>并改动相关字段为：</p>
+<pre>
+'DEFAULT_LANG': 'zh-CN',
+'TIMEZONE': 'Asia/Shanghai',
+'DEFAULT_DATE_FORMAT': '%Y-%m-%d',
+'DIRECT_TEMPLATES': ('archives',),
+'SITENAME': "linuxsand's blog",
+'SITEURL': 'http://blog.linuxsand.info',
+'OUTPUT_PATH': 'C:\\Users\\Administrator\\Dropbox\\Public\\output\\',
+'CATEGORY_URL': '',
+'CATEGORY_SAVE_AS': '',
+</pre>
+
+<h2>修改 basic 主题</h2>
+<p>点<a href="http://pelican.readthedocs.org/en/3.1.1/_downloads/theme-basic.zip">这里</a>下载 basic 主题。basic 主题继承自 pelican 自带的 simple 主题。</p>
+<p><code>cd C:\Python27\Lib\site-packages\pelican-3.1.1-py2.7.egg\pelican\themes\simple\templates</code> 更改相关模板。</p>
+<p>我更改了 3 处：</p>
+<ul>
+<li>archives.html，给 dl 加 id，好在 CSS 中定义样式</li>
+<li>article.html，给文章内容加上 typo 类，添加文章元信息样式（date, author）</li>
+<li>base.html，更改底部鸣谢链接</li>
+</ul>
+<p>修改 <code>C:\Python27\Lib\site-packages\pelican-3.1.1-py2.7.egg\pelican\themes\basic\static\css\style.css</code>，可以使用 sofish 的 TYPO.CSS，见本文底部链接。</p>
+<h2>生成静态 HTML</h2>
+<p><code>pelican path/where/md/files/locate</code>，具体可以 <code>pelican --help</code></p>
+<h2>配置 nginx</h2>
+<p>OK，现在静态内容已成生成到 dropbox 的公共目录，并同步到 VPS。接下来需要配置 nginx 来 serve 这个 blog。</p>
+<p>增加一条：</p>
+<pre><code>server {
+    listen 80;
+    server_name blog.linuxsand.info;
+    root /xx/xx/xx/xx;
+
+    location / {
+        index archieves.html;
+    }
+
+    location ~* \.(jpg|jpeg|png|gif|js|css) {
+        expires max;
+    }
+}
+</code></pre>
+<p>重启 nginx，ta~da~</p>
+<br /><br />
+</body>
+</html>

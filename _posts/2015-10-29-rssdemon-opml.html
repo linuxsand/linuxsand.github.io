@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>RssDemon 的 OPML 导入导出 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>RssDemon 的 OPML 导入导出</h1>
+<p style="text-align: right;">黄杰, 2015-10-29<br />root[a]linuxsand.info</p>
+<p><em>2016-08-29 更新：RssDemon 做了一次大更新（4.x.x），虽然变好看了，但是我看中的功能基本废了。已弃用……</em></p>
+<p>换了新手机，正在手动恢复部分程序、数据。</p>
+<p><em>原本在用 Feed+ 看订阅，现在打算用 RssDemon，这两个软件几乎是一样的，经过判断后者才是「真·美猴王」。但是本文针对的是 Feed+。</em></p>
+<p>问题是这样的，软件设置中可以导出订阅，但我实在找不到导出文件的路径。没办法，进到 /data/data/com.appyet.feedplus/databases，用数据库查看器打开 data.db 查看表结构，其中有个 Feed 表，进入就看到了我想要的内容。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/database-data-feed.png" /></p>
+<p>把 data.db 拷贝出来，再根据 <a href="http://www.sqlite.org/cli.html">http://www.sqlite.org/cli.html</a> 页面「Writing results to a file」的样例，把我要的信息提取出来：</p>
+<pre><code>sqlite&gt; .open data.db
+sqlite&gt; .mode tab
+sqlite&gt; .output result.txt
+sqlite&gt; select FeedType, Link, Title from Feed;
+sqlite&gt; .exit
+</code></pre>
+<p>得到中间结果 result.txt:</p>
+<pre><code>...
+ATOM    http://v2ex.com/feed/tab/qna.xml    V2EX - 问与答
+RSS http://www.dgtle.com/rss/dgtle.xml  数字尾巴
+...
+</code></pre>
+<p>再根据 OPML 的格式要求（我偷懒用 Foxmail 导出了一个），拼接成最终的 OPML 文件出来。「一次性」Python 脚本：</p>
+<pre><code># coding: utf-8
+outline = '&lt;outline htmlUrl="%s" xmlUrl="%s" version="%s" type="%s" title="%s" text="%s"/&gt;'
+
+lines = []
+for line in open('result.txt'):
+    parts = line.rstrip().split('\t')
+    assert len(parts) == 3
+    _type, _url, _title = tuple(parts)
+    lines.append(outline % (_url, _url, _type.upper(), _type, _title, _title))
+
+opml = '''&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;opml version="1.0"&gt;
+    &lt;head&gt;
+        &lt;title/&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;outline title="Others" text="Others"&gt;
+            %s
+        &lt;/outline&gt;
+    &lt;/body&gt;
+&lt;/opml&gt;'''
+
+with open('opml.txt', 'w') as f:
+    f.write(opml % '\n'.join(lines))
+</code></pre>
+<p>将拼接好的 opml.txt 复制到手机上，然后打开 RssDemon，从 OPML 添加订阅，手动输入 opml.txt 的路径（……），完成。</p>
+<hr />
+<p>在软件的设置上，建议仅在 WiFi 环境下载图片。</p>
+<br /><br />
+</body>
+</html>

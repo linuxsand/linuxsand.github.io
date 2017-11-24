@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>机器人学导论阅读笔记 3 -- 操作臂运动学 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>机器人学导论阅读笔记 3 -- 操作臂运动学</h1>
+<p style="text-align: right;">黄杰, 2013-06-07<br />root[a]linuxsand.info</p>
+<p>tags: robotics</p>
+<p>原书目录：</p>
+<ul>
+<li>概述</li>
+<li>连杆描述</li>
+<li>关于连杆连接的描述</li>
+<li>对连杆附件坐标系的规定</li>
+<li>操作臂运动学</li>
+<li>驱动器空间、关节空间和笛卡尔空间</li>
+<li>举例：两种典型机器人的运动学问题</li>
+<li>坐标系的标准命名</li>
+<li>工具的定位</li>
+<li>计算问题</li>
+</ul>
+<p>操作臂运动学涉及所有与运动有关的几何参数和时间参数。本章重点：将操作臂关节变量作为自变量，描述操作臂末端执行器的位置和姿态与操作臂基座之间的函数关系。</p>
+<h2>连杆描述</h2>
+<p>设计操作臂时，通常优先选择仅具有一个自由度的关节作为连杆的连接方式。典型的操作臂具有 5 或 6 个关节。</p>
+<p>一个连杆的运动参数，可以用两个参数来描述：</p>
+<ul>
+<li>连杆长度 a<sub>i</sub></li>
+<li>连杆转角 α<sub>i</sub>，定义见 P50</li>
+</ul>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-1.jpg" /></p>
+<h2>关于连杆连接的描述</h2>
+<ul>
+<li>连杆偏距：沿两个相邻连杆公共轴线方向的距离 d<sub>i</sub></li>
+<li>关节角：两相邻连杆绕公共轴线旋转的夹角 θ<sub>i</sub></li>
+</ul>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-2.jpg" /></p>
+<p>注意：</p>
+<ul>
+<li>当关节 i 为移动关节时，连杆偏距 d<sub>i</sub> 是一个变量</li>
+<li>当关节 i 为转动关节时，关节角 θ<sub>i</sub> 是一个变量</li>
+</ul>
+<h3>连杆参数</h3>
+<p>每个连杆都可以用 4 个运动学参数来描述。两个用来描述连杆本身，另外两个用来描述连杆之间的连接关系。</p>
+<p>那么，对于转动关节，是一个变量（关节角）三个常量；对于移动关节，也是一个变量（连杆偏距）三个常量。这叫做「Denavit-Hartenberg 参数」。</p>
+<h2>对连杆附加坐标系的规定</h2>
+<p>在每个连杆上定义一个固连坐标系（{i}），用来描述相邻连杆之间的相对位置关系。</p>
+<p>如何建立连杆坐标系？P53 ~ 54</p>
+<p>例题：</p>
+<p>RPR 型</p>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-3.jpg" /></p>
+<p>3R 型</p>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-4.jpg" /></p>
+<h3>操作臂运动学</h3>
+<p>推导出相邻连杆间坐标系变换的一般形式，然后求出连杆 n 相对于连杆 0 的位置和姿态。</p>
+<p>公式：</p>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-5.jpg" /></p>
+<p>连续的连杆变化：</p>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-6.jpg" /></p>
+<h2>驱动器空间、关节空间和笛卡尔空间</h2>
+<p>对工业机器人来说，并非每个运动关节都是直接由某种驱动器来驱动（有时是两个驱动器以差动方式驱动一个关节，有时用直线驱动器通过四连杆机构来驱动）。</p>
+<p>由于测量操作臂位置的传感器常常安装在驱动器上，因此进行某些计算时必须把关节矢量表示成一组驱动器矢量，即驱动器矢量。</p>
+<p>一个操作臂的位置、姿态描述有 3 种表示方法：</p>
+<ol>
+<li>驱动器空间描述</li>
+<li>关节空间描述</li>
+<li>笛卡尔空间描述</li>
+</ol>
+<p>在进行机器人设计或分析时，都必须确定驱动器位置和关节位置的对应关系。</p>
+<h2>举例</h2>
+<ul>
+<li>Unimation PUMA 560 -- 6R</li>
+<li>Yasukawa Motoman L-3 -- 5R</li>
+</ul>
+<h2>坐标系的标准命名</h2>
+<ul>
+<li>基坐标系{B}</li>
+<li>工作台坐标系{S}</li>
+<li>腕部坐标系{W}</li>
+<li>工具坐标系{T}</li>
+<li>目标坐标系{G}</li>
+</ul>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-7.jpg" /></p>
+<p><img alt="" src="http://media.linuxsand.info/image/robot3-8.jpg" /></p>
+<h2>工具的定位</h2>
+<p>机器人首要功能之一是计算出工具坐标系{T}相对于工作台坐标系{S}的变换矩阵，这便是某些机器人系统中的 WHERE 函数，用来计算手臂的位置。</p>
+<h2>计算问题</h2>
+<p>在实际应用中，求解运动学方程所需的时间是必须考虑的。主要耗时的是计算超越函数（正弦、余弦）。与其利用标准库中的函数来计算，不如把结果以表的形式放在内存中。</p>
+<br /><br />
+</body>
+</html>

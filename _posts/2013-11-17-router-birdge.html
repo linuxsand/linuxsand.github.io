@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>路由器桥接设置备忘 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>路由器桥接设置备忘</h1>
+<p style="text-align: right;">黄杰, 2013-11-17<br />root[a]linuxsand.info</p>
+<p>租处使用的是有线宽带路由器，我自己接了一个无线路由器，方便自己使用。由于一次配置不当，导致其它租户无法上网，记录一下正确设置。</p>
+<p>正确的配置后，我自己连接无线路由，网络映射是这样的。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/wireless.png" /></p>
+<p>断开无线路由，网线直连房东的宽带路由，网络映射是这样的。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/local.png" /></p>
+<p>一般来说，主路由器（即这里的宽带路由器）的 IP 是 192.168.1.1，我的无线路由设置是：</p>
+<ul>
+<li>主路由器引出的网线插在 LAN 口，工作模式选「桥接」</li>
+<li>LAN 口的 IP 落在主路由的 DHCP 地址池中，如 192.168.1.111</li>
+<li>关闭本机的 DHCP 服务</li>
+<li>无线网络模式用默认的「Access Point（接入点）」就行</li>
+</ul>
+<hr />
+<p>更新：按照上述配置后的一天，刚下班，房东告诉我，他上网时安全软件提示「什么什么攻击」，最后他拔掉了我的网线。</p>
+<p>解决措施：从「桥接模式」改为「双重 NAT 模式」。</p>
+<ul>
+<li>接 WAN 口</li>
+<li>更改网段为 192.168.2.0/24</li>
+<li>开启 DHCP</li>
+</ul>
+<br /><br />
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>快速添加 FANUC 机器人 IO 注释 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>快速添加 FANUC 机器人 IO 注释</h1>
+<p style="text-align: right;">黄杰, 2014-01-07<br />root[a]linuxsand.info</p>
+<p>目录：</p>
+<ul>
+<li><a href="#1">1 如何在电脑上访问机器人 web 页面</a><ul>
+<li><a href="#1.1">机器人端</a></li>
+<li><a href="#1.2">电脑端</a></li>
+</ul>
+</li>
+<li><a href="#2">2 如何快速添加注释：官方的网页版工具</a></li>
+<li><a href="#3">3 高级用法：通过程序自动化更新</a></li>
+<li><a href="#4">4 信号实例</a></li>
+<li><a href="#5">5 更新</a></li>
+</ul>
+<p>FANUC 控制器内建了一个 web server，它暴露了部分控制器的内部细节，不仅限于标题所说的「快速添加 IO 注释」。</p>
+<p><a name="1"></a></p>
+<h2>1 如何在电脑上访问机器人控制器的 web server</h2>
+<p>需要做一些设置，分为两方面，一是机器人控制器端的配置，二是电脑端的配置。</p>
+<p><a name="1.1"></a></p>
+<h3>机器人控制器端</h3>
+<ul>
+<li>先配置机器人控制器 IP：Menu - Setup - Host Comm - TCP/IP，给 port 1 分配一个 IP（我这里是 192.168.20.201，下面以此为例）</li>
+<li>再设置 HTTP 服务的用户名、口令：Menu - Setup - Host Comm - HTTP，设置第二行 KAREL:* 的 Name / Pwd 字段（当然，你也可以不配置，只需 unlock 这一行，默认是 auth，即需要校验口令）</li>
+<li>将网线的一头插在 port 1，注意是 port 1</li>
+</ul>
+<p><a name="1.2"></a></p>
+<h3>电脑端</h3>
+<p>只需设置一个同网段的 IP 即可，我这里设置了 192.168.20.202。插上网线。</p>
+<p>用浏览器打开 http://192.168.20.201（机器人 IP），在弹出的对话框里输入用户名、口令，就可以看到如下页面。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/fanuc-web-index.jpg" /></p>
+<p><strong>这里可以看到机器人内部的很多东西，善加利用可以提高调试效率。</strong></p>
+<p><a name="2"></a></p>
+<h2>2 如何快速添加注释：官方的网页版工具</h2>
+<p>页面最底部有一个 Comment Tool，点击即可进入。（http://192.168.20.201/KAREL/COMMAIN）</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/fanuc-web-comment.jpg" /></p>
+<p>点击右侧的 Digital I/O，即可给数字输入输出添加注释。一个很贴心的地方是，当你在文本框中输入注释、光标移动到下一个文本框时（unfocus），这个注释就被储存到机器人控制器内部了。</p>
+<p><a name="3"></a></p>
+<h2>3 高级用法：通过程序自动化更新</h2>
+<p>本段已删除。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/fanuc-web-pendant.jpg" /></p>
+<p><a name="4"></a></p>
+<h2>4 信号实例</h2>
+<p>本段已删除。删除原因：与主题无关。</p>
+<p><a name="5"></a></p>
+<h1>5 更新</h1>
+<p>2014-02-13：手上在做的一个项目，输入输出各划分了 512 个 bit(s) 作为机器人与 PLC 通讯的容量。这个自动化脚本大大节约了我的时间，不错。</p>
+<p>2015-07-31：响应调试同事的需求，我制作了一个图形界面程序，如果你需要可到<a href="http://www.linuxsand.info/fanuc_tools/fanuc_comment_tool.html"> 这里 </a>免费下载。</p>
+<p>2016-09-20：8.3 版本的 Fanuc 控制器支持多国语言注释，我的小程序也进行了支持。同时，8.3 版本的控制器还可以改写数字寄存器的值，我也设法把这个过程自动化了，见<a href="http://www.linuxsand.info/fanuc_tools/fcc83_faq.html"> FCC83 </a>这个类库（收费）。</p>
+<p><img src="http://media.linuxsand.info/image/comment-tool-csharp.jpg"></p>
+<br /><br />
+</body>
+</html>

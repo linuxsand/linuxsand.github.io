@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>FANUC DCS | 黄杰的记事本</title>
+</head>
+<body>
+<h1>FANUC DCS</h1>
+<p style="text-align: right;">黄杰, 2014-03-19<br />root[a]linuxsand.info</p>
+<p>本文简述一下 FANUC 机器人的 DCS 功能（Dual Check Safety Function），也是备忘。</p>
+<h2>DCS 的若干组件</h2>
+<ul>
+<li>急停功能，标配</li>
+<li>位置、速度检查功能，选配<ul>
+<li>关节坐标系位置检查功能</li>
+<li>关节坐标系速度检查功能</li>
+<li>直角坐标系位置检查功能</li>
+<li>直角坐标系速度检查功能</li>
+<li>T1 模式速度检查功能</li>
+</ul>
+</li>
+<li>安全 IO 连接功能，选配</li>
+<li>外部模式选择功能，选配</li>
+<li>DeviceNet 安全功能，选配</li>
+<li>以太网安全功能，选配</li>
+<li>PROFINET 安全功能，选配</li>
+</ul>
+<h2>DCS 的以太网安全配置</h2>
+<p>需要两个软件选项：</p>
+<ul>
+<li>EtherNet/IP Adapter</li>
+<li>EtherNet/IP Safety</li>
+</ul>
+<p>机器人端的配置：</p>
+<ul>
+<li>配置好控制柜的 IP</li>
+<li>IO -&gt; EtherNet/IP -&gt; Safety，选择对应端口（port 1 / port 2）</li>
+<li>进入 System -&gt; DCS<ul>
+<li>CIP Safety，配置输入输出的字节数</li>
+</ul>
+</li>
+<li>回退到 DCS 主菜单，应用这些更改，会提示你输入密码（code number），默认是「1111」</li>
+<li>应用完毕，会出现更改前后的变化内容的对比，「OK」然后重启</li>
+</ul>
+<p>为了简洁，我没有配置 Signature Number，（没记错的话）这样就无需校验配置文件是否变化。</p>
+<p>PLC 端的配置不提，文档中也有涉及到。</p>
+<h2>关于网络安全号码（SNN）</h2>
+<p>SNN 可以在 IO -&gt; EtherNet/IP - Safety 中看到，如果 SNN 显示为「FFFF_FFFF_FFFF」则意味着 PLC 没有配置好它；如果显示为「???」则意味着需要在 PLC 软件中执行「Reset Ownership」。</p>
+<p>如果执行镜像还原（Image restore），在操作过程会提示是否初始化 DCS 参数，如果备份文件中的 DCS 配置是你要的，请选择「NO」。否则诸如 SNN 这样的由 PLC 设置的参数会被清除。</p>
+<h2>Safe IO</h2>
+<p>有很多种信号类型：</p>
+<ul>
+<li>SPI / SPO：安全外围设备的 IO</li>
+<li>SSI / SSO：安全系统的 IO</li>
+<li>SIR：安全内部继电器</li>
+<li>CPC：直角坐标系位置检查</li>
+<li>CSC：直角坐标系速度检查</li>
+<li>JPC：关节坐标位置检查</li>
+<li>JSC：关节坐标速度检查</li>
+<li>CSI / CSO：CIP 安全的 IO</li>
+<li>CCL：显示配置是否变化</li>
+<li>CCR：配置变化重置</li>
+<li>NSI：非安全输入</li>
+</ul>
+<p>关于 SSI / SSO 的解释，ON = CLOSED，OFF = OPEN：</p>
+<p>SSI：</p>
+<ul>
+<li>SSI[1] -&gt; SVOFF -&gt; EGS</li>
+<li>SSI[2] -&gt; FENCE -&gt; EAS</li>
+<li>SSI[3] -&gt; EXEMG -&gt; EES</li>
+<li>SSI[4] -&gt; </li>
+<li>SSI[5] -&gt; NTED</li>
+<li>SSI[6] -&gt; OPEMG -&gt; 示教器、控制器上的急停按钮</li>
+<li>SSI[7] -&gt; AUTO</li>
+<li>SSI[8] -&gt; T1</li>
+<li>SSI[9] -&gt; T2</li>
+<li>SSI[10] -&gt; MCC -&gt; Servo Power Supply</li>
+<li>SSI[11] -&gt; CSBP -&gt; ON = BYPASS; OFF = ENABLE</li>
+</ul>
+<p>SSO：</p>
+<ul>
+<li>SSO[1] -&gt; C_SVOFF</li>
+<li>SSO[2] -&gt; C_FENCE</li>
+<li>SSO[3] -&gt; C_EXEMG</li>
+<li>SSO[4] -&gt; C_SVDISC -&gt; Servo Power Supply</li>
+<li>SSO[5] -&gt; C_NTED</li>
+<li>SSO[6] -&gt; C_T1</li>
+<li>SSO[7] -&gt; C_T2</li>
+</ul>
+<h2>从文件中恢复设置</h2>
+<p>在控制启动模式下，可以把 DCS 配置文件加载到控制器，从而达到修改参数的目的。</p>
+<ul>
+<li>SYSCIPS.SV 对应 EtherNet/IP Safety</li>
+<li>DCSIOC.SV 对应 Safe I/O Connect</li>
+</ul>
+<h2>Zone Check Function</h2>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/zone-check-func.jpg" /></p>
+<p>相比标配的 Space Function，它可以通过 safe I/O 来开关每个 zone，（ON: Disable; OFF: Enable）。更好用的是，它可以针对机械臂、末端执行器来「画出」安全区域。</p>
+<h3>Shape model</h3>
+<p>有 2 种可定义的形状模型，一是 User model，二是 Robot model。后者是固定的。</p>
+<p>有 4 种形状元素：</p>
+<ul>
+<li>Point</li>
+<li>2 sheres</li>
+<li>Line-seg</li>
+<li>Box</li>
+</ul>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/shape-elements.jpg" /></p>
+<h3>Safe zone</h3>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/safe-zone.jpg" /></p>
+<p>有 2 种方法来定义，一是 Diagonal，二是 Lines。</p>
+<hr />
+<p>关于 Zone check function 以后再根据阅读文档的进程更新。</p>
+<p>（未完待续）</p>
+<hr />
+<p>Links: <a href="http://motioncontrolsrobotics.com/dual-check-safety-dcs-explained/">http://motioncontrolsrobotics.com/dual-check-safety-dcs-explained/</a></p>
+<br /><br />
+</body>
+</html>

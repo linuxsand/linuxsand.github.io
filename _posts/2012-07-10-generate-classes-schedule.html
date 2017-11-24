@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>用 web.py + mechanize + BeautifulSoup 采集学校课表 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>用 web.py + mechanize + BeautifulSoup 采集学校课表</h1>
+<p style="text-align: right;">黄杰, 2012-07-10<br />root[a]linuxsand.info</p>
+<p>在校期间就想做个类似的东西，结果拖到了假期才做。尽管这货几乎没什么用，不过从中好歹可以学点东西，所以我做了。</p>
+<p>分解成这么几块：</p>
+<ol>
+<li>整理需求，分步做出每个功能</li>
+<li>整合，本地调试</li>
+<li>上线部署（有情况）</li>
+</ol>
+<h2>第一步</h2>
+<p>第一步是工作量最大的，不过事后发现后两步花费时间也不少。第一步中，我需要：</p>
+<ol>
+<li>模拟登录学校网站，抓取相关页面 —— mechanize</li>
+<li>分析抓取的数据，抽取出有用的 —— BeautifulSoup</li>
+</ol>
+<h3>mechanize</h3>
+<p>这 2 个库我都是初次使用（新手上路）。学校的网站是很恶心的，不知道是什么时候做的。我要的数据是套在 iframe 里的。不过 mechanize 可以对付这个，尝试了几次后成功了：只需把它当成是浏览器，自己按浏览顺序拿到 URL 即可。示例代码：</p>
+<pre><code>def get_page_data(user, pwd, type='class_table'):
+    '''
+    type='class_table': get webpage including class table
+    type='show_grade': get webpage including grade
+    type='name': get webpage including your name
+    '''
+    login_url = 'http://info.just.edu.cn:81'
+    username, password = user, pwd
+
+    br = Browser()
+    br.open(login_url)
+    br.select_form(name='loginForm')
+    br['userName'], br['userPass'] = username, password
+    br.submit()
+
+    if type == 'class_table':
+        br.open('http://info.just.edu.cn:81/roamingAction.do?appId=BKS_XK')
+        br.open('http://jwxx.just.edu.cn:7777/pls/wwwbks/xk.CourseView')
+        class_page = br.response().get_data()
+        return class_page
+    elif type == 'show_grade':
+        br.open('http://info.just.edu.cn:81/roamingAction.do?appId=BKS_CJCX')
+        br.open('http://jwxx.just.edu.cn:7777/pls/wwwbks/bkscjcx.curscopre')
+        grade_page = br.response().get_data()
+        return grade_page
+    elif type  == 'name':
+        br.open('http://info.just.edu.cn:81/roamingAction.do?appId=BKS_XJXX')
+        br.open('http://jwxx.just.edu.cn:7777/pls/wwwbks/bks_xj.xjcx')
+        name_page = br.response().get_data()
+        return name_page
+</code></pre>
+<h3>BeatifulSoup</h3>
+<p>当然，我从不同页面获取了多组数据。下面是分析提取课程表的函数，用到了BeatifulSoup。传入包含课表数据的页面，返回一个嵌套列表（二维数组）。</p>
+<pre><code># coding: utf-8
+def get_class(class_page):
+    '''
+    get class info from get_page_data(type='class_table')
+    data stored in a list.
+    '''
+    tables = BeautifulSoup(class_page)('table')
+    table = BeautifulSoup(str(tables[10]))
+    table_item = table('p', align="center")
+    item = [re.sub(r'&lt;p align="center"&gt;|&lt;/p&gt;|\n', '', str(i), 8)
+             for i in table_item]
+
+    whole_list = []
+    for j in range(0, len(item), 9):
+        try:
+            when_to_class = item[j+8].replace(u'\u00A0'.encode('utf8'), '')
+            if when_to_class == '' or ord(when_to_class[-1]) &gt; 128:
+                continue
+            else:
+                class_name = item[j].replace(u'\u00A0'.encode('utf8'), '')
+                where = item[j+6].replace(u'\u00A0'.encode('utf8'), '') \
+                                 .replace(u'\uff13'.encode('utf8'), '3')
+                where_to_class = where[:-3] + '-' + where[-3:]
+                which_class = item[j+7].replace(u'\u00A0'.encode('utf8'), '')
+
+                tmp = [i + 1 for i, k in enumerate(when_to_class) if k == '1']
+                Min, Max = min(tmp), max(tmp)
+                time_to_class = '%02d-%02d' % (Min, Max)
+
+                # which_class = '3-2' -&gt; wednesday 2nd class
+                # -&gt; day = 3, class_ = 2
+                day = int(which_class.split('-')[0])
+                class_ = int(which_class.split('-')[1])
+                part_list = [day, class_,
+                            '&lt;br /&gt;%s&lt;br /&gt;第%s周&lt;br /&gt;%s&lt;br /&gt;&lt;br /&gt;' %
+                            (class_name, time_to_class, where_to_class)]
+                whole_list.append(part_list)
+        except IndexError:
+            break
+
+    whole_list.sort()
+
+    class_list = ['&amp;nbsp; 周一 周二 周三 周四 周五'.split(),
+                 '第一大节 &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;'.split(),
+                 '第二大节 &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;'.split(),
+                 '第三大节 &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;'.split(),
+                 '第四大节 &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;'.split(),
+                 '第五大节 &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;'.split(),
+                ]
+    for line in whole_list:
+        class_list[line[1]][line[0]] += line[2]
+    return class_list
+</code></pre>
+<p>到这里，已经可以从控制台打印出需要的结果了。不过它还是一个嵌套的列表，我最终需要输出 HTML 表格，所以再转换下。</p>
+<pre><code>def gen_class_table(class_data, name):
+    '''
+    generate class table from get_class()
+    return value is a big string.
+    '''
+    table_list = []
+    for line in class_data:
+        line_list = []
+        for item in line:
+            line_list.append('    &lt;td&gt;' + item + '&lt;/td&gt;\n')
+        _line = '  &lt;tr&gt;\n' + ''.join(line_list) + '  &lt;/tr&gt;\n'
+        table_list.append(_line)
+    table = '''&lt;table border="1" cellpadding="10" cellspacing="0" \
+            style="text-align: center;"&gt;\n
+            &lt;caption style="font-size: 2em; font-weight: bold;"&gt;
+            %s的课程表&lt;/caption&gt;\n''' % name + \
+            ''.join(table_list) + '&lt;/table&gt;'
+    return table
+</code></pre>
+<p>现在，我得到了 HTML 表格了（string）。        </p>
+<h2>第二步</h2>
+<p>差不多可以整合到一起了。我用 <code>GetClassTable</code> 这个类来处理根目录，定义 GET / POST，渲染、提交表单以返回结果，以及发送邮件。</p>
+<pre><code>class GetClassTable:
+    def GET(self):
+        f = login_form()
+        return render.form(f)
+
+    def POST(self):
+        f = login_form()
+        if not f.validates():
+            return render.form(f)
+        else:
+            user, password = f.d.number, f.d.password
+
+            name_page = get_page_data(user, password, type='name')
+            name = get_name(name_page)
+
+            class_page = get_page_data(user, password, type='class_table')
+            class_data = get_class(class_page)
+            class_table = gen_class_table(class_data, name) or ''
+
+            try:
+                from google.appengine.api import mail
+                mail.send_mail(
+                    sender="linuxsand@gmail.com",
+                    to=f.d.email,
+                    subject='%s你的课程表' % name,
+                    body='',
+                    html='''由 \
+                    &lt;a href="http://www.linuxsand.info/just/"&gt;
+                    查课表&lt;/a&gt; 自动发送，不要回复。\
+                    &lt;br /&gt;%s''' % class_table)
+            except ImportError:
+                pass
+            return render.class_table(table=class_table)
+</code></pre>
+<p>上面有发送邮件的代码。我本来是用 web.py 内置的功能完成的（<a href="http://webpy.org/cookbook/sendmail_using_gmail">Sending mail using gmail</a>），甚至特意为此建立了新邮箱 just-notification@linuxsand.info，本地测试正常（部署到线上无法使用）。下面是表单，用内置的 form.py 来做，方便。</p>
+<pre><code>login_form = web.form.Form(
+web.form.Textbox('number', web.form.notnull,
+                 web.form.regexp('\d+', '- -|||'),
+                 web.form.Validator('- -|||', lambda x:int(x)!=10),
+                 description=u'学号'
+                 ),
+web.form.Password('password', web.form.notnull, description=u'口令'),
+web.form.Textbox('email',
+                 web.form.regexp(r".*@.*", '- -|||'),
+                 description=u'邮箱')
+)
+</code></pre>
+<p>提交按钮我放到模板里了。试运行，调试等。</p>
+<h2>第三步</h2>
+<p>线上部署调试。mechanize 和 BeautifulSoup 在本机正常工作，但是部署到 GAE 就出错。</p>
+<ul>
+<li>我使用的 BeautifulSoup 版本需要 python 2.7以上，因此在 app.yaml 里需要写成 runtime: python27；我把 threadsafe 设为 false，这样就可以 script 为 *.py 而不是 *.app</li>
+<li>而 mechanize 似乎难以在 GAE 上工作，我找到了<a href="https://code.google.com/p/gaemechanize2/">gaemechanize</a>，谢天谢地谢作者，可以用</li>
+<li>第二步说到内置的邮件发送功能无法使用。在 app 后台发现导入某些模块失败，我之前看到 GAE 有 <a href="https://developers.google.com/appengine/docs/python/mail/">mail API</a>，所以我也不那么执着于要用内置功能来实现（况且还是保存明文密码在代码中）。最后使用注册 GAE 的主邮箱来发送，而不是按照<a href="https://developers.google.com/appengine/docs/python/mail/emailmessagefields">这里</a>的 sender 部分来折腾使用其它邮箱。</li>
+</ul>
+<p>最后测试发现，从登录到返回结果页面很慢，大概有 15 秒。本地只要 2~3 秒，这我就没办法了。</p>
+<h2>其它</h2>
+<p>本着节省一个 GAE app 的目的，我把这个 app 合并到原有的一个 app 内。web.py <a href="http://webpy.org/cookbook/subapp.zh-cn">支持子应用</a> 。整理如下，备忘。</p>
+<p>子应用 just.py</p>
+<pre><code>urls = (
+'', 'redirect',       # Make sure `DOMAIN/just` -&gt; `DOMAIN/just/`
+'/', 'login',         # `DOMAIN/just/`
+'/grade', 'grade')    # `DOMAIN/just/grade`, without / at the end
+
+app = web.application(urls, locals())    # locals(), not globals()
+</code></pre>
+<p>主应用 code.py</p>
+<pre><code>import just
+
+urls = (
+'/', 'index',
+'/just', just.app,
+'/(\S+)', 'show')
+
+app = web.application(urls, locals())    # locals(), not globals()
+</code></pre>
+<br /><br />
+</body>
+</html>

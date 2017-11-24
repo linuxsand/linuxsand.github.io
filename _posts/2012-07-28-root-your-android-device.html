@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>给朋友的简易 ROOT 教程 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>给朋友的简易 ROOT 教程</h1>
+<p style="text-align: right;">黄杰, 2012-07-28<br />root[a]linuxsand.info</p>
+<p><em>更新：该同学的手机无法一键ROOT，这和 <a href="/root-huawei-android-phones.html">华为C8650</a>一样：只能通过刷 boot.img 来获取ROOT权限。<strong>但是很多机型是可以用下列方法的。</strong></em></p>
+<p>本文写给某同学，指引其ROOT安卓手机，以删除预装软件。我用尽可能明白，通用的办法。</p>
+<h2>连接电脑，安装手机驱动</h2>
+<p>这一步用豌豆荚这个软件。</p>
+<ul>
+<li>下载稳定版就好：<a href="http://www.wandoujia.com/windows">http://www.wandoujia.com/windows</a></li>
+<li>安装并运行它，不提</li>
+<li>数据线呢？连接手机和电脑</li>
+</ul>
+<p>按照豌豆荚提示来做，它会：1. 自动下载匹配你手机的驱动并安装 2. 可能会提示你打开手机的「USB调试」等等，按照它提示的来就好。<strong>这个过程可能比较耗时。耐心等待。</strong></p>
+<h2>ROOT之</h2>
+<p>装好驱动之后，就不用管豌豆荚了。我们用 super one click (翻译成「点一下就好」怎么样？)来 ROOT。</p>
+<ul>
+<li>下载 super one click <a href="http://download.cnet.com/SuperOneClick/3000-2094_4-75447027.html">http://download.cnet.com/SuperOneClick/3000-2094_4-75447027.html</a></li>
+<li>解压到任意位置，运行它（SuperOneClick.exe）</li>
+<li>这里有教程 <a href="http://www.superoneclick.net/?page_id=8">http://www.superoneclick.net/?page_id=8</a>，从加粗的<strong>破解</strong>开始看（跳过<strong>准备</strong>中的二）</li>
+<li>按照提示做，应该没什么问题</li>
+</ul>
+<h2>删除预装软件</h2>
+<p>ROOT 之后会自动安装 2 个软件，可能图标和你不一样（版本不同，没事）。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/root/20120728093225.png" /></p>
+<p>打开 RE管理器，滑动到最后，进入 <code>system/</code></p>
+<p><img alt="" src="http://media.linuxsand.info/image/root/20120728093305.png" /></p>
+<p>再进入 <code>app/</code> 目录，之后你会看到很多 apps （程序），点击右上角的「挂载读写」，然后它会变成「挂载只读」</p>
+<p><img alt="" src="http://media.linuxsand.info/image/root/20120728093312.png" /></p>
+<p>点击手机上的菜单键，弹出菜单，「多选」</p>
+<p><img alt="" src="http://media.linuxsand.info/image/root/20120728093414.png" /></p>
+<p>选择你要删除的 apps<sup>[注]</sup>，删除之。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/root/20120728093441.png" /></p>
+<h2>[注]：哪些 apps 是可以删除的</h2>
+<ul>
+<li>由图标判断（如果同时有 *.apk 和 *.odex 结尾的，都删除）</li>
+<li>由文件名判断</li>
+<li>拿「手机型号」 + 「可删除的预装软件列表」去搜索，看看结果</li>
+<li><strong>宁可少删，也不要错删</strong>：例如，把 <code>phone.apk</code> 删了就不好打电话了（图中的 <code>SFP.apk</code> 只是示范）</li>
+</ul>
+<p>如果删除若干个后，出现「XXX停止响应」且影响你操作的，拔电池，重启。（暴力，嗯嗯）</p>
+<h2>最后</h2>
+<p>ROOT 是 Android 系统最高权限，所以不要安装乱七八糟的软件哦。另外，你可以用豌豆荚安装 apps，导出你的通讯录（丢了手机不必再求群发短信了- -b）。</p>
+<br /><br />
+</body>
+</html>

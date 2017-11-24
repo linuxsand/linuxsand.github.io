@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>VPS 备忘 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>VPS 备忘</h1>
+<p style="text-align: right;">黄杰, 2012-12-09<br />root[a]linuxsand.info</p>
+<ul>
+<li>2012-12-09，512M Xen VPS，￥35 / 月</li>
+<li>2013-01-28，128M OpenVZ VPS，￥128 / 年</li>
+</ul>
+<h2>SSH</h2>
+<p>我的笔记本是 Windows，到 <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">这里</a> 下载 PuTTY。</p>
+<ul>
+<li>PuTTYgen (an RSA and DSA key generation utility)</li>
+<li>Pageant (an SSH authentication agent)</li>
+<li>PuTTY (the Telnet and SSH client itself)</li>
+<li>PSFTP (an SFTP client)</li>
+</ul>
+<p>教程见 <a href="http://www.ualberta.ca/CNS/RESEARCH/LinuxClusters/pka-putty.html">http://www.ualberta.ca/CNS/RESEARCH/LinuxClusters/pka-putty.html</a></p>
+<p>服务端修改 SSH 的配置文件：</p>
+<pre><code>nano /etc/ssh/sshd_config
+
+PubkeyAuthentication yes
+PasswordAuthentication no
+</code></pre>
+<hr />
+<p>（从我的印象笔记复制而来）</p>
+<p>使得 putty 正常显示中文：</p>
+<p>vps config:</p>
+<ul>
+<li>apt-get install locales</li>
+<li>nano /etc/locale.gen</li>
+<li>locale-gen</li>
+<li>nano ~/.bashrc<ul>
+<li>add <code>export LANG=zh-CN.UTF-8</code></li>
+</ul>
+</li>
+</ul>
+<p>putty config:</p>
+<ul>
+<li>window - translation - remote character set: utf-8</li>
+</ul>
+<h2>nginx 安装配置</h2>
+<p><a href="http://nginx.org/en/download.html">http://nginx.org/en/download.html</a></p>
+<p>我的 VPS 系统是 Debian。添加 key：</p>
+<pre><code>wget http://nginx.org/keys/nginx_signing.key
+sudo apt-key add nginx_signing.key
+</code></pre>
+<p>编辑 sources.list 文件：</p>
+<pre><code>nano /etc/apt/sources.list
+
+deb http://nginx.org/packages/debian/ squeeze nginx
+deb-src http://nginx.org/packages/debian/ squeeze nginx
+</code></pre>
+<p>安装：</p>
+<pre><code>apt-get update
+apt-get install nginx
+</code></pre>
+<p>配置文件是 /etc/nginx/nginx_config</p>
+<p>需要记录的是配置 /subapp 用 alias 指令而不是 root 指令。更多指令在 <a href="http://www.howtocn.org/nginx:directiveindex">http://www.howtocn.org/nginx:directiveindex</a></p>
+<h2>dropbox 安装配置</h2>
+<p>见 <a href="http://buildcontext.com/blog/2012/dropbox-linux-ubuntu-ec2-linode-selective-sync">http://buildcontext.com/blog/2012/dropbox-linux-ubuntu-ec2-linode-selective-sync</a></p>
+<p>安装 dropbox：</p>
+<pre><code>wget -O - "http://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
+</code></pre>
+<p>运行于后台，并验证账户（略）：</p>
+<pre><code>./.dropbox-dist/dropboxd
+</code></pre>
+<p>安装官方的 dropbox.py 来管理：</p>
+<pre><code>wget -O dropbox.py "http://www.dropbox.com/download?dl=packages/dropbox.py"
+chmod 755 ./dropbox.py
+</code></pre>
+<p>具体可 <code>./dropbox.py help</code> </p>
+</body>
+</html>

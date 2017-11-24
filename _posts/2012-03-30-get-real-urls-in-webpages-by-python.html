@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>从 123 诗社下载小王子录音 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>从 123 诗社下载小王子录音</h1>
+<p style="text-align: right;">黄杰, 2012-03-30<br />root[a]linuxsand.info</p>
+<p>我很喜欢小王子, 想下载<a href="http://poet.blog.paowang.net/tag/小王子/">123诗社</a>中的音频文件, 但发现地址是加密的. 尽管也许可以用浏览器缓存或是借助嗅探工具, 我还是想自己动手试一试.</p>
+<p>保存该网页为文本文件: webpage.txt, 提取出所有加密地址, 去重, 得到加密后的地址, 写入encrypted_urls.txt.</p>
+<p>代码:</p>
+<pre>
+# coding: utf-8
+import re
+
+content = open('webpage.txt').read()
+
+url_list = re.findall('soundFile:\S+', content)
+urls = list(set(url_list))
+
+real_urls = [i[11:-17] + '\n' for i in urls]
+
+with open('encrypted_urls.txt', 'w') as f:
+    f.writelines(real_urls)
+</pre>
+
+<p>内容:</p>
+<pre>
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIwODAyeGlhb3dhbmd6aTE0Lm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIwODAyeGlhb3dhbmd6aTEzLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDcxMXhpYW93YW5nemkyNjMubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIwODAxeGlhb3dhbmd6aWRhb2R1MC0yLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDEyNzAxeGlhb3dhbmd6aTkubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDEyMTAzeGlhb3dhbmd6aTcubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDExMzAyLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDExNTAxeGlhb3dhbmd6aTQubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDcxMXhpYW93YW5nemkyNjEubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDMwNHhpYW93YW5nemkxOC5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIyMzAxeGlhb3dhbmd6aTE1Lm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDYyMHhpYW93YW5nemkyMy5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDcxMXhpYW93YW5nemkyNy5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIwMzAxeGlhb3dhbmd6aTExLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDEyMTAyeGlhb3dhbmd6aTYubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDExNTAxeGlhb3dhbmd6aTMubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDQxNHhpYW93YW5nemkyMS0xLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDQxNHhpYW93YW5nemkyMS0yLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDcxMXhpYW93YW5nemkyNjIubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDQxNHhpYW93YW5nemkyMS0zLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDcxMXhpYW93YW5nemkyNC5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDMwNHhpYW93YW5nemkxNy5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDMwNHhpYW93YW5nemkxOS5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDEyMzAxeGlhb3dhbmd6aTgubXAzA
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDYyMHhpYW93YW5nemkyMi5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDEyNzAyeGlhb3dhbmd6aTEwLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDcxMXhpYW93YW5nemkyNS5tcDM
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIwMzAyeGlhb3dhbmd6aTEyLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDIyMzAyeGlhb3dhbmd6aTE2Lm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDQxNHhpYW93YW5nemkyMC00Lm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDExMzAxLm1wMw
+aHR0cDovL3AucGFvd2FuZy5uZXQvZmlsZS9wb2VtL3hpbnJhbjEwMDEyMTAxeGlhb3dhbmd6aTUubXAzA
+</pre>
+
+<p>播放这些音频文件用的是wp audio player, 在audio-player.php末尾找到了加密代码.</p>
+<pre>
+function encodeSource($string) {
+    $source = utf8_decode($string);
+    $ntexto = "";
+    $codekey = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+    for ($i = 0; $i < strlen($string); $i++) {
+        $ntexto .= substr("0000".base_convert(ord($string{$i}), 10, 2), -8);
+    }
+    $ntexto .= substr("00000", 0, 6-strlen($ntexto)%6);
+    $string = "";
+    for ($i = 0; $i < strlen($ntexto)-1; $i = $i + 6) {
+        $string .= $codekey{intval(substr($ntexto, $i, 6), 2)};
+    }
+
+    return $string;
+}
+</pre>
+
+<p>看了半天(几乎完全不懂 PHP 语法), 查了在线手册, 差不多明白了:</p>
+<ol>
+<li>将真实地址用utf-8解码, 得到一字串</li>
+<li>将字串的每个字符用对应的ascii码表示</li>
+<li>将ascii码转为8位二进制数</li>
+<li>拼接, 得到一（长度能被8整除的）字串</li>
+<li>通过取模等运算, 在字串末尾加上若干0(有意义)</li>
+<li>循环, 从字串中每次取6位二进制数, 转为十进制</li>
+<li>通过codekey中字符索引与字符自身的映射关系, 得到加密字串</li>
+</ol>
+<p>其中, 试分析第5步的意义. 假设第4步得到的字串有488位, 如果没有第5步而直接做取6位运算: 488不能被6除尽, 取6运算循环进行81次(488 // 6 = 81), 488的最后2位没有被加密(488 - 81 * 6 = 2), 造成原字串损失, 那么解密运算无法还原出正确URL, 导致播放器无法播放指定音频.</p>
+<p>第5步是在488后添加4个0(不同长度字串可能得到不同个数的0), 在取6循环中不损失.</p>
+<p>那么, 解密操作就是:</p>
+<ol>
+<li>通过codekey, 得到加密字串字符对应的十进制索引数字</li>
+<li>转为6位二进制, 并拼接, 得到长度能被6整除的字串, 如492</li>
+<li>通过取模等运算, 去掉末尾不相干的0, 如492 // 8 * 8 = 488</li>
+<li>每8位二进制数转为十进制</li>
+<li>十进制数转为ascii码, 拼接, 完成</li>
+</ol>
+<pre>
+# coding: utf-8
+def decrypt(encrypted_url):
+    url_part = []
+    codekey = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'
+
+    for i in encrypted_url[:-1]:
+        index_num = codekey.index(i) # 加密后字串在codekey中的索引, 如 a -> 26
+        bin_str = index2bin(index_num) # 将传入的索引值（int）转换为6位二进制（string）
+        url_part.append(bin_str)
+
+    url = ''.join(url_part)
+
+    # 将所有形如 011010 的6位二进制数拼接为字串; 假设字串长度为492
+    # 舍去492位字串的后4位, 因为不能被8整除, 得488
+    url = url[:(len(url) // 8 * 8)]
+
+    url_part2 = []
+    k = 0
+    # 把488长度的字串分割为8位长度的字串若干
+    # 将传入的8位二进制（string）转换为ascii
+    for j in range(len(url) // 8):
+        bin = url[k:k + 8]
+        url_part2.append(bin2ascii(bin))
+        k += 8
+
+    return ''.join(url_part2)
+
+def index2bin(num):
+    '''将传入的索引值（int）转换为6位二进制（string）'''
+    x = bin(num)[2:] # 转为二进制数, 27 -> 0b11010 -> 11010
+    y = ['0'] * 6 
+    y[(6 - len(x)):] = x # 转为6位二进制数, 如 11010 -> 011010
+    bin_str = ''.join(y)
+    return bin_str
+
+def bin2ascii(bin):
+    '''将传入的8位二进制（string）转换为ascii'''
+    ten = int(bin, 2)
+    ascii_str = chr(ten)
+    return ascii_str
+
+urls = []
+for i in open('encrypted_urls.txt').readlines():
+    url = decrypt(i)
+    urls.append(url+'\n')
+
+with open('urls.txt', 'w') as f:
+    f.writelines(urls)
+</pre>
+
+<p>内容:</p>
+<pre>
+http://p.paowang.net/file/poem/xinran10020802xiaowangzi14.mp3
+http://p.paowang.net/file/poem/xinran10020802xiaowangzi13.mp3
+http://p.paowang.net/file/poem/xinran100711xiaowangzi263.mp3
+http://p.paowang.net/file/poem/xinran10020801xiaowangzidaodu0-2.mp3
+http://p.paowang.net/file/poem/xinran10012701xiaowangzi9.mp3
+http://p.paowang.net/file/poem/xinran10012103xiaowangzi7.mp3
+http://p.paowang.net/file/poem/xinran10011302.mp3
+http://p.paowang.net/file/poem/xinran10011501xiaowangzi4.mp3
+http://p.paowang.net/file/poem/xinran100711xiaowangzi261.mp3
+http://p.paowang.net/file/poem/xinran100304xiaowangzi18.mp3
+http://p.paowang.net/file/poem/xinran10022301xiaowangzi15.mp3
+http://p.paowang.net/file/poem/xinran100620xiaowangzi23.mp3
+http://p.paowang.net/file/poem/xinran100711xiaowangzi27.mp3
+http://p.paowang.net/file/poem/xinran10020301xiaowangzi11.mp3
+http://p.paowang.net/file/poem/xinran10012102xiaowangzi6.mp3
+http://p.paowang.net/file/poem/xinran10011501xiaowangzi3.mp3
+http://p.paowang.net/file/poem/xinran100414xiaowangzi21-1.mp3
+http://p.paowang.net/file/poem/xinran100414xiaowangzi21-2.mp3
+http://p.paowang.net/file/poem/xinran100711xiaowangzi262.mp3
+http://p.paowang.net/file/poem/xinran100414xiaowangzi21-3.mp3
+http://p.paowang.net/file/poem/xinran100711xiaowangzi24.mp3
+http://p.paowang.net/file/poem/xinran100304xiaowangzi17.mp3
+http://p.paowang.net/file/poem/xinran100304xiaowangzi19.mp3
+http://p.paowang.net/file/poem/xinran10012301xiaowangzi8.mp3
+http://p.paowang.net/file/poem/xinran100620xiaowangzi22.mp3
+http://p.paowang.net/file/poem/xinran10012702xiaowangzi10.mp3
+http://p.paowang.net/file/poem/xinran100711xiaowangzi25.mp3
+http://p.paowang.net/file/poem/xinran10020302xiaowangzi12.mp3
+http://p.paowang.net/file/poem/xinran10022302xiaowangzi16.mp3
+http://p.paowang.net/file/poem/xinran100414xiaowangzi20-4.mp3
+http://p.paowang.net/file/poem/xinran10011301.mp3
+http://p.paowang.net/file/poem/xinran10012101xiaowangzi5.mp3
+</pre>
+
+<p>之后就可以用 <code>wget -i urls.txt</code> 下载了.</p>
+<br /><br />
+</body>
+</html>

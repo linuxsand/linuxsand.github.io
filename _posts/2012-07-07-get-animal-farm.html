@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>动物庄园 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>动物庄园</h1>
+<p style="text-align: right;">黄杰, 2012-07-07<br />root[a]linuxsand.info</p>
+<p><em>更新：某个下午午睡醒来，一口气看完了。不说朝鲜半岛北部地区了，就看看我朝吧。有时候，我也挺讨厌愚民的。而暴力或者非暴力革命，现今几乎是不可能的。我觉得吧： 1. 别怕事；2. 不妨惹点事；3. 别嘴上骂，但心里却想跻身那个圈子。</em></p>
+<p><a href="http://share.linuxsand.info/Animal_Farm.html">动物庄园 HTML 格式下载</a>（utf-8）</p>
+<p>不是书评。</p>
+<p>浏览器里保存了一个<a href="http://haohailong.net/archives/2508">书签</a>，这是李笑来老师推荐的中文译本。到昨天为止都没有开始看，早上尝试用 Readability 来保存到 reading list 里，但是……（方校长）。PC上走代理访问 amazonaws.com 才得以进入 Readability 网站，移动设备就没辙了。</p>
+<pre><code># coding: utf-8
+
+from urllib2 import urlopen
+from os import chdir
+from time import sleep
+
+def address():
+    addr = '2435 2447 2454 2458 2470 2482 2487 2497 2500 2503'.split()
+    prefix = 'http://haohailong.net/archives/'
+    full_addr = [prefix + i for i in addr]
+    return full_addr
+
+def get_content(addr):
+    whole_content = []
+    for i in addr:
+        lines = urlopen(i).readlines()
+        for j in lines:
+            if '&lt;div class="entry"&gt;' in j:
+                start = lines.index(j) + 3
+            elif '&lt;div class="tags"&gt;' in j:
+                end = lines.index(j)
+
+        c = ''.join(lines[start:end])
+        whole_content.append(c)
+        print u'第 %d 章下载完毕' % (addr.index(i) + 1)
+        sleep(2)
+    return whole_content
+
+# main
+content = get_content(address())
+chdir('c:')
+open('Animal_Farm.html', 'w').writelines(content)
+</code></pre>
+<p>老大哥在后面看着你啊 —— 所以，别弄下来后不看啊，骚年！</p>
+<br /><br />
+</body>
+</html>

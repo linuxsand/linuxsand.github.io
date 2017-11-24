@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>不要访问某些网站的办法 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>不要访问某些网站的办法</h1>
+<p style="text-align: right;">黄杰, 2012-07-25<br />root[a]linuxsand.info</p>
+<p>蛋疼，强迫症。</p>
+<p>某些网站真是没有常去的必要。在那里，我既不生产内容，也不消费内容，浪费时间和感情。</p>
+<p>那么，在 hosts 文件中将这些网址映射到 localhost，block 之：block_url.py</p>
+<pre><code>url = raw_input('url that you want to block: ')
+hosts = r'C:\Windows\System32\drivers\etc\hosts'
+
+def write_hosts(url):
+    with open(hosts, 'a') as f:
+        c = f.writelines(['\n127.0.0.1 %s' % url])
+
+if not url in ''.join(open(hosts, 'r').readlines()[22:]): write_hosts(url)
+
+import os
+os.system('ipconfig /flushdns')
+</code></pre>
+<p>这在功能上已经足够。</p>
+<p>但我还需要加点提示文字。那就在 localhost 80 端口跑一个 server，返回提示信息。用 bottle.py 几行代码就搞定：localhost.py</p>
+<pre><code># c:\\python27\\python.exe
+# coding: utf-8
+import ctypes
+from bottle import route, run, redirect
+
+@route('/')
+def index():
+    return u'&lt;h1 style="color: red; text-align: center;"&gt;不是说好的嘛，近期不访问该网站！&lt;/h1&gt;'
+
+@route('/&lt;:re:\S+&gt;')
+def back():
+    redirect('/')
+
+ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
+run(host='localhost', port=80, reloader=True)
+</code></pre>
+<p>其中 <code>ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)</code> 是使得 cmd (python)窗口不可见（来自 <code>proxy.py</code> from goagent loal part），否则太干扰人了。特别是我还想开机启动（把 localhost.py 丢到 <code>C:\Users\用户名\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup</code>），时刻在后台运行的。</p>
+<p>这个办法真的有效，虽然你可以手工去掉 hosts 文件中对应的行，但是即便接着 <code>ipconfig /flushdns</code> 一下，也不是马上可以访问的。如此你便失去了访问该网站的兴趣，耶，目的达到！</p>
+<br /><br />
+</body>
+</html>

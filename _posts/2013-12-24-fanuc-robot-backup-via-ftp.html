@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>网线直连 FANUC 控制柜，通过 FTP 备份文件 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>网线直连 FANUC 控制柜，通过 FTP 备份文件</h1>
+<p style="text-align: right;">黄杰, 2013-12-24<br />root[a]linuxsand.info</p>
+<p>Via <a href="http://www.robot-forum.com/robotforum/fanuc-robot-forum/how-to-connect-pc-and-r-j3ib/">http://www.robot-forum.com/robotforum/fanuc-robot-forum/how-to-connect-pc-and-r-j3ib/</a> 8 楼。</p>
+<pre><code>A single backup can be performed "manually" without need for a FTP server by using built-in windows functionality.  First you will need to follow the internet option manual to setup the robots IP Address and FTP Server:
+
+IP Address:
+    Menu : (6) Setup : Host Comm
+    (F4) Show : (1) Protocols
+    Select TCP/IP &lt;enter&gt;
+        Robot Name: robot name  (trivial)
+        Robot IP Addr:   ###.###.###.###  (some ip address unique to robot preferably with same first three octet as PC)
+        Router IP Addr:  ###.###.###.### (ip address of router if used)
+        Subnet Mask:   255.255.255.0
+
+FTP Server:
+    Menu : (6) Setup : Host Comm
+    (F4) Show : (3) Servers
+    Select first available 
+    (F3) Detail
+    (2) Protocol Name:  FTP
+    (7) State:   Start (set this to start for power up condition)
+    (F2) Action : Define &lt;Enter&gt;
+    (F2) Action : Start &lt;Enter&gt;
+
+Cycle Power for changes to take effect
+
+ To copy all files from the controller to a PC you can do the following:
+From command prompt on PC:
+    FTP ###.###.###.### &lt;Enter (use ip address of robot)
+    &lt;Enter&gt; (at prompt for user name)
+    (C: prompt should change to FTP: prompt)
+   LCD \(any local file path.  this is were files will be put on pc) &lt;Enter&gt;
+    PROMPT &lt;Enter&gt;  (turns off confirmation for each file)
+    MGET . &lt;Enter&gt;  (ftp command to get all files)
+    (files should be moving now, takes about 4 min)
+    DISCONNECT &lt;Enter&gt; (disconnects PC from Robot)
+    QUIT &lt;Enter&gt;  (Closes FTP session at PC)
+</code></pre>
+<p>那么，快速备份所有 TP 程序，只需：</p>
+<ul>
+<li>插上网线：<ul>
+<li>机器人端插在 port 1（host comm 配置不提、重启，上文有），配置 IP 例如 192.168.0.15</li>
+<li>PC 端配置好本地连接的 IP，例如 192.168.0.5</li>
+</ul>
+</li>
+<li>PC 端，进入 CMD：<ul>
+<li>ftp 192.168.0.15</li>
+<li>用户名输入 anonymous</li>
+<li><code>lcd</code> 切换到本地某目录</li>
+<li>输入 <code>prompt</code> 来关闭交互提示</li>
+<li><code>mget *.tp</code></li>
+<li><code>disconnect</code></li>
+<li><code>quit</code></li>
+</ul>
+</li>
+</ul>
+<br /><br />
+</body>
+</html>

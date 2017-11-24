@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>﻿在 Visual Studio 中执行外部工具 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>﻿在 Visual Studio 中执行外部工具</h1>
+<p style="text-align: right;">黄杰, 2016-08-29<br />root[a]linuxsand.info</p><p>使用 <a href="http://stackoverflow.com/a/5606276">http://stackoverflow.com/a/5606276</a> 提及的方法（External Tool），可以在 VS 中执行自定义脚本。</p>
+<p>假设，在某些时刻，我想把构建完成的可执行文件拷贝到特定路径，且不手工执行脚本（还不是懒么）。</p>
+<p>那么可以这样：</p>
+<ul>
+<li>编写拷贝脚本（不提），储存于 C:\copyto.bat</li>
+<li>打开 VS，打开 Tools 菜单内的 External Tools，填写如下：
+<img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/blog-vs-ext-tool-1.jpg" /></li>
+<li>再打开 Tools 菜单内的 Customize 项<ul>
+<li>选择 Commands 标签页，我希望在工具栏中使用它，选工具栏</li>
+<li>添加命令，在弹出的窗口中，选择 Tool 分类的“外部命令#”（这是我的第一个命令）
+<img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/blog-vs-ext-tool-2.jpg" /></li>
+</ul>
+</li>
+<li>关闭 Customize 窗口</li>
+</ul>
+<p>接下来，就可以点击工具栏的按钮去执行脚本了。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/blog-vs-ext-tool-3.jpg" /></p>
+<hr />
+<p>使用微信打赏。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/weixin_barcode5.png" /></p></body>
+</html>

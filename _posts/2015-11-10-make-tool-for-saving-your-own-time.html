@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>想偷懒，就给自己做工具吧 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>想偷懒，就给自己做工具吧</h1>
+<p style="text-align: right;">黄杰, 2015-11-10<br />root[a]linuxsand.info</p>
+<p>项目开发过程中，难免遇到一些手工活。如果是只需做一遍，那就老实做罢了；但如果可能需要做多遍，我肯定会设法自动化，至少半自动化。</p>
+<p>一个例子。之前写的《<a href="/pc-based-hmi.html">基于 PC 的机器人工作站控制程序</a>》这篇博客，我初始标注这些测量点，是手动的：</p>
+<ul>
+<li>用 Windows 自带的画图软件打开图片文件，将鼠标移动至测量点，读出左下角的 X Y 值</li>
+<li>记录在事先打印好的纸上，重复直到所有点记录完毕；最后用到程序中</li>
+</ul>
+<p><img alt="manual mark 1" src="http://77g3ho.com1.z0.glb.clouddn.com/manual-mspaint.jpg" /></p>
+<p><img alt="manual mark 2" src="http://77g3ho.com1.z0.glb.clouddn.com/manual-mark.jpg" /></p>
+<p>只做一遍，不是什么大事。</p>
+<p>但是后来，我了解到调试过程中，客户一定会需要加点、改点；那么，我必须简化后期这个工作量。于是，我花了一点时间做了一个小工具：</p>
+<ul>
+<li>只需拖拽图片到工具界面，鼠标点选目标点，X Y 坐标就会逐一记录到右侧文本框</li>
+<li>所有点选取完毕后，点击转换按钮，即可转换成我工作程序中正确的格式，我只需复制粘贴到源代码中</li>
+</ul>
+<p><img alt="auto mark" src="http://77g3ho.com1.z0.glb.clouddn.com/auto-tool.jpg" /></p>
+<p>第二版，我增加了功能——用绿线把起始点和初始点连接起来，更直观，避免导致最终的结果互相重叠的情况。不过后来需求变更：客户不但删除了几个测点，还把工件改了（蓝色部分），给我发的截图与之前不同（略微旋转了一点），导致不能直接用之前的结果。于是我用 PhotoShop 把工件擦掉了不需要的部分，删除部分点后，继续用之前……要善于偷懒 :)</p>
+<p><img alt="advanced auto mark" src="http://77g3ho.com1.z0.glb.clouddn.com/auto-tool2.jpg" /></p>
+<p>尽管是为了节省时间（偷懒），但做工具的时间投入要衡量一下，并且我觉得工具不必制作得精细、周到，能工作即可，否则就是浪费了。</p>
+<br /><br />
+</body>
+</html>

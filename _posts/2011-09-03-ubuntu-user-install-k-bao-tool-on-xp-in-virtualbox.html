@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>Ubuntu 安装 VirtualBox 使用农行 K 宝 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>Ubuntu 安装 VirtualBox 使用农行 K 宝</h1>
+<p style="text-align: right;">黄杰, 2011-09-03<br />root[a]linuxsand.info</p>
+<p>前两天我彻底删除了 C 盘的 Windows，把该主分区格式化成 ext4，安装了 Ubuntu Linux。改变自己操作习惯，让自己更高效，是一件非常有趣的事情。 </p>
+<p>但是，我没有办法使用网上银行给我的支付宝/财付通账户充值。这个过程需要在本地安装一个K宝管理工具，并且使用IE浏览器；既然有需求，必然要解决。我没有尝试 Wine，想着还是直接使用虚拟机软件吧。</p>
+<ul>
+<li>安装 VirtualBox，Debian/Ubuntu 用户可能需要 dkms 软件包，以正确更新内核模块</li>
+<li>下载 XP 系统镜像，在虚拟机上安装</li>
+<li>添加 USB 支持</li>
+<li>插入K宝，安装管理工具</li>
+<li>我在这过程中遇到过麻烦。在 VirtualBox 的安装上，曾安装并卸载过 vbox 4，vbox ose，vbox 4，无法完成 /etc/init.d/vboxdrv setup，因为 /etc/init.d/ 下没有 vboxdrv，只有 vboxdrv.dpkg-bak，于是我试着 sudo cp vboxdrv.dpkg-bak vboxdrv，再执行 setup。居然成功了，之后发现网络上也有人提供这个方法。好吧，总之 VirtualBox 安装成功。</li>
+</ul>
+<p>接着安装系统（用克隆版系统ISO 可能无法为 VDI虚拟硬盘分区，使用安装版ISO 更为稳妥），再按照上面连接到的文章添加 USB 支持，重启插入K宝，顺利安装管理工具。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/old/28001.jpg" /></p>
+<br /><br />
+</body>
+</html>

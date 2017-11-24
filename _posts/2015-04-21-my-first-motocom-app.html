@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>使用 MotoCom 进行 Yaskawa Motoman 机器人的二次开发 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>使用 MotoCom 进行 Yaskawa Motoman 机器人的二次开发</h1>
+<p style="text-align: right;">黄杰, 2015-04-21<br />root[a]linuxsand.info</p>
+<p><a href="http://weibo.com/1660598502/CeldcnTar">http://weibo.com/1660598502/CeldcnTar</a></p>
+<p>今年上半年，做了一个使用 Motoman 机器人进行多层多道焊接的项目。我在其中调试 Servo-Robot 激光跟踪系统以及编写焊接参数计算程序。本文简单叙述后者。</p>
+<p>焊接参数计算程序的功能分为 2 个：</p>
+<ol>
+<li>根据用户输入（工件种类，工件厚度、间隙），计算出合理的层道分布，以及每一层道的焊接参数</li>
+<li>将上述参数下载到机器人控制器内</li>
+</ol>
+<p><img alt="图片：Motocom app 运行截图" src="http://ww3.sinaimg.cn/large/62fab8e6jw1erdir8fbyzj20uh0hrmzk.jpg" /></p>
+<p>程序的实现很简单，就是读写预定义好的机器人变量；而计算参数的公式，无非就是计算熔敷量。</p>
+<hr />
+<p>2 个没在截图中体现出来的细节：</p>
+<ol>
+<li>可以任意编辑计算出来的单元格数据，（给熟悉工艺的工人师傅使用），编辑后单元格背景会变成红色</li>
+<li>增加了参数导入导出功能，支持 Excel 编辑</li>
+</ol>
+<br /><br />
+</body>
+</html>

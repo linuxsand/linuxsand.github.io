@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>华为 Android 手机获取 ROOT 权限小记 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>华为 Android 手机获取 ROOT 权限小记</h1>
+<p style="text-align: right;">黄杰, 2011-09-13<br />root[a]linuxsand.info</p>
+<p>ROOT 过 3 台华为的 Android 机型——C8500，C8500S，C8650。</p>
+<p>为什么要 ROOT？因为这样就可以删除电信定制应用，我不喜欢直接刷第三方的 ROM，其往往会集成常用软件，这是我不需要的；我总是偏爱纯净系统，安装少量第三方软件满足硬需求即可。</p>
+<p>获取 ROOT 权限是第一步，之后需要安装诸如 ROOT Explorer 这样的软件来删除定制应用。 </p>
+<h3>C8500</h3>
+<p>我自己使用的就是这一机型，最简单的方法是使用 z4root。提权后安装 ROOT Explorer 删除定制应用，位置：/cust/chinatelcom/cn/app &amp; /system/app</p>
+<h3>C8500S</h3>
+<p>无法使用 z4root，可行的办法是在 PC 上使用 SuperOneClick.exe 来获取 ROOT 权限。</p>
+<p>前提是：</p>
+<ul>
+<li>在手机端：设置 - 应用程序 - 开发 - 勾选 USB 调试</li>
+<li>在 PC 上安装手机驱动程序</li>
+<li>运行 SuperOneClick.exe，点击 root 按钮，若期间弹出对话框，确认即可。提权后安装 ROOT Explorer</li>
+<li>删除定制应用，位置：/cust/chinatelcom/cn/app &amp; /system/app</li>
+</ul>
+<h3>C8650</h3>
+<p>目前无法使用 z4root 以及 SuperOneClick，必须在刷过 Recovery 后刷入 ROOT 包。</p>
+<ol>
+<li>刷 Recovery 包<ul>
+<li>在手机端：设置 - 应用程序 - 开发 - 勾选 USB 调试</li>
+<li>在 PC 上安装手机驱动程序</li>
+<li>关机，按住 音量上键 + 电源键 10秒以上进入刷机模式</li>
+<li>用数据线连接 PC，开始刷 Recovery</li>
+</ul>
+</li>
+<li>刷 ROOT 包<ul>
+<li>拷贝 root.zip 至 SD 卡，关机</li>
+<li>按住 音量上键 + 电源键进入 Recovery 模式</li>
+<li>选择 install zip from sdcard，选择 root.zip 包 ，完成</li>
+<li>之后可以使用 ROOT Explorer 删除定制应用。位置：/cust/chinatelcom/cn/app &amp; /data/datapp &amp; /system/app</li>
+</ul>
+</li>
+</ol>
+<br /><br />
+</body>
+</html>

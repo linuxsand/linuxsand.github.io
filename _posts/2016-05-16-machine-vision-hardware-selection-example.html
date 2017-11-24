@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>﻿机器视觉硬件选型 案例一则 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>﻿机器视觉硬件选型 案例一则</h1>
+<p style="text-align: right;">黄杰, 2016-05-16<br />root[a]linuxsand.info</p><p>本文案例来源于大恒图像的「镜头产品型录」，加入个人理解和演绎。最初发布于公司内部 Wiki。</p>
+<p>博客近期较少更新的原因是部分技术文章不便对外公开，写到公司 Wiki 中了。生活方面，一直在赶路，也没能阶段自省记录。</p>
+<hr />
+<p>问题：要求对一个边长为 100 mm 的黑白方形物体拍摄，<strong>系统</strong>的分辨率（我们往往称为「（系统整体的）精度」）小于 0.1 mm，相机到物体的距离在 200 ~ 400 mm，要求选择合适的相机和镜头。</p>
+<p>分析：</p>
+<ul>
+<li>物体是方的，但是相机内的感光元件的形状往往是矩形的，需要根据其最短边来计算分析</li>
+<li>系统的分辨率要求小于 0.1 mm，因此感光元件的最短边拥有的像素数目要大于 1000<ul>
+<li>物体的边长 / 整体精度：100 mm / 0.1 mm = 1000</li>
+</ul>
+</li>
+<li>距离在 200 ~ 400 mm，假定物距是 260 mm</li>
+<li>物体是黑白色，选用黑白相机即可</li>
+</ul>
+<h3>方案 1</h3>
+<p>选择的某相机主要参数。</p>
+<table>
+<thead>
+<tr>
+<th>靶面尺寸</th>
+<th>像素数</th>
+<th>单个像素大小（像元尺寸）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2/3英寸（8.8 X 6.6 mm）</td>
+<td>1392 X 1040</td>
+<td>6.45 μm</td>
+</tr>
+</tbody>
+</table>
+<p>我们倒推来分析参数是否匹配。</p>
+<ul>
+<li>系统的放大倍率 β = 6.6 / 100 = 0.066，感光元件短边尺寸 / 物体边长</li>
+<li>可分辨的景物精度 = 0.00645 / 0.066 = 0.098 mm &lt; 0.1 mm，满足要求；分辨精度 = 单个像素大小 / 系统放大倍率</li>
+<li>该感光元件的空间极限分辨率是 1 / (2 X 0.00645) = 77.5 lp/mm，大于系统像面的最低分辨率（1 / (2 X 0.1 X 0.066) = 76 lp/mm）<ul>
+<li>感光元件的空间极限分辨率的计算公式，1 / (2 * 单个像素大小)</li>
+<li>系统像面的最低分辨率 = 1 / (2 * 整体精度 * 放大倍率)</li>
+</ul>
+</li>
+</ul>
+<p>选择镜头需要满足：</p>
+<ul>
+<li>镜头焦距 f = l / ( 1 + 1 / β) = 260 / ( 1 + 1 / 0.066) = 16.1 mm</li>
+<li>镜头的空间极限分辨率，需要略大于感光元件的空间极限分辨率（本例是 77.5 lp/mm）；<a href="http://www.cnblogs.com/asus119/archive/2012/05/23/2514990.html">经验数据</a>如下</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>镜头像素数 百万</th>
+<th>空间极限分辨率 lp/mm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>90</td>
+</tr>
+<tr>
+<td>200</td>
+<td>110</td>
+</tr>
+<tr>
+<td>500</td>
+<td>160</td>
+</tr>
+</tbody>
+</table>
+<p>可选择 <a href="http://computar.com/resources/files_v2/163/M1614-MP2.pdf">Computar M1614-MP2</a></p>
+<hr />
+<h3>方案 2</h3>
+<p>选择的某相机主要参数。</p>
+<table>
+<thead>
+<tr>
+<th>靶面尺寸</th>
+<th>像素数</th>
+<th>单个像素大小（像元尺寸）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/2英寸（6.4X 4.8 mm）</td>
+<td>1392 X 1040</td>
+<td>4.65 μm</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>放大倍率 = 4.8 mm / 100 mm = 0.048</li>
+<li>可分辨的景物精度 = 0.00465 / 0.048 = 0.096875 mm &lt; 0.1 mm</li>
+<li>该感光元件的空间极限分辨率是 1 / (2 X 0.00465) = 107.5 lp/mm，大于系统像面的最低分辨率 1 / (2 X 0.1 X 0.048) = 104 lp/mm</li>
+</ul>
+<p>选择镜头需要满足：</p>
+<ul>
+<li>镜头焦距 f = l / ( 1 + 1 / β) = 260 / ( 1 + 1 / 0.048) = 11.9 mm</li>
+</ul>
+<p>可选择 KOWA LM12JCM。</p>
+<hr />
+<p>使用微信打赏。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/weixin_barcode5.png" /></p></body>
+</html>

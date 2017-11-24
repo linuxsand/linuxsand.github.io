@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>FANUC BG Logic（背景程序） | 黄杰的记事本</title>
+</head>
+<body>
+<h1>FANUC BG Logic（背景程序）</h1>
+<p style="text-align: right;">黄杰, 2013-12-25<br />root[a]linuxsand.info</p>
+<p>Via <a href="http://www.robot-forum.com/robotforum/fanuc-robot-forum/bglogic-code-that-i-have-found-useful/">http://www.robot-forum.com/robotforum/fanuc-robot-forum/bglogic-code-that-i-have-found-useful/</a> </p>
+<p>5# flatcurve:</p>
+<blockquote>
+<p>Background Logic programs are scan routine programs that constantly run in the background. They are executed one line at a time, from start to finish, repeatedly. If you know anything about PLC programming, they are very similar to the way those programs are structured and run. You can only use assignment statements in background logic programs. This means that you can not use motion instructions, branching statements (jump, label, call, run, etc...), timers, WAIT instructions or macros.</p>
+<p>So basically you are limited to setting registers, I/O and system variables. And the only conditional statement you can use is the mixed logic IF statement: IF (...)</p>
+<p>All of this is to keep the program simple so that it can be executed quickly. In my experience, if you're dealing with less than 16 inputs and 16 outputs, background logic is a good way to avoid using a PLC in the workcell if you don't have to. Anything more than that would probably be better suited to either the PMC option or a PLC. For me, the primary way I use it is to set up run conditions that must be met before the robot can be operated in automatic.</p>
+</blockquote>
+<p>9# andreic:</p>
+<blockquote>
+<p>You can setup BG LOGIC from Menu -&gt; Setup -&gt; BG LOGIC where you can choose your BG LOGIC program. </p>
+</blockquote>
+<p>5# 还有对一个程序的注解，程序为：</p>
+<pre><code>F[1]=(OFF)
+IF (DI[1] AND !F[2]),F[1]=(ON)
+F[2]=(DI[1])
+IF (F[1]), R[1]=R[1]+1
+</code></pre>
+<p>解释：</p>
+<pre><code>First scan with DI[1] on:
+F[1]=(OFF)  ;We always turn this flag off at the start of the cycle
+IF (DI[1] AND !F[2]),F[1]=(ON)  ;If DI[1] is on, and F[2] is off, we want to turn F[1] on
+F[2]=(DI[1]) ;Now we want to set F[2] to the same state as DI[1]. This means that on the next "scan", the condition in the previous line will not be met.
+IF (F[1]), R[1]=R[1]+1  ;If we've gotten this far, and we see that F[1] is on, that means we know it's the first scan where we've seen DI[1] on
+
+Second scan with DI[1] on:
+F[1]=(OFF) ;Again, this flag gets turned off to avoid repeating any of those assignments again
+IF (DI[1] AND !F[2]),F[1]=(ON)  ;This time around F[2] is on, so this condition is not met, and F[1] stays off
+F[2]=(DI[1]) ;This holds F[2] on until we see DI[1] turn off.
+IF (F[1]), R[1]=R[1]+1 ;This line will not execute
+
+First scan with DI[1] off:
+F[1]=(OFF)
+IF (DI[1] AND !F[2]),F[1]=(ON) ;DI[1] is off, and F[2] is still on from the last cycle. Condition still not met.
+F[2]=(DI[1]) ;Now F[2] is turned off. The next time DI[1] comes on, the above condition will be met again.
+IF (F[1]), R[1]=R[1]+1
+</code></pre>
+<p>嗯，BG LOGIC 真是个好东西；<a href="http://www.robot-forum.com/">http://www.robot-forum.com/</a> 真是个好论坛。</p>
+<p>拓展阅读：<a href="http://onerobotics.com/2014/01/11/intro-to-fanuc-background-logic.html">http://onerobotics.com/2014/01/11/intro-to-fanuc-background-logic.html</a></p>
+<br /><br />
+</body>
+</html>

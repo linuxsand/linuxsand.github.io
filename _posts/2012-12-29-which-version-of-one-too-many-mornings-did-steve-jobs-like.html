@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>Steve Jobs 喜欢哪个版本的 One Too Many Mornings | 黄杰的记事本</title>
+</head>
+<body>
+<h1>Steve Jobs 喜欢哪个版本的 One Too Many Mornings</h1>
+<p style="text-align: right;">黄杰, 2012-12-29<br />root[a]linuxsand.info</p>
+<p><img alt="" src="http://media.linuxsand.info/image/too-many-mornings.jpg" /></p>
+<blockquote>
+<p>他（linuxsand 注：鲍勃·迪伦）问乔布斯最喜欢什么歌，乔布斯提到了《多余的清晨》（One Too Many Mornings），于是迪伦当晚就唱了这首歌。演出结束后，乔布斯走在回家的路上，一辆旅行车驶过他身旁，发出了刺耳的刹车声，车门滑开了，“喂，你听到我为你唱的歌了吗？”-- P385 史蒂夫·乔布斯传</p>
+</blockquote>
+<p>那么在这场演唱会上，鲍勃·迪伦唱了哪个版本呢？我不知道这场演唱会的具体时间，只知道是乔布斯第一次见迪伦（2004 年 10月）之后；并且是在 2006 年之前（“不过，到 2006 年，拉克卸任索尼 BMG 的 CEO，乔布斯开始了新一轮谈判” P386）。</p>
+<p><a href="http://www.boblinks.com/guide.html">http://www.boblinks.com/guide.html</a> 记录了鲍勃迪伦的演唱会歌单，不一定准确，但具备参考价值。</p>
+<p>我写了脚本检查 2004、2005、2006 的歌单是否有这首 One Too Many Mornings。</p>
+<pre><code>from urllib2 import urlopen
+import re
+
+# 2004: http://www.boblinks.com/dates22.html
+# 2005 spring &amp; summer: http://www.boblinks.com/dates23.html
+# 2005 fall: http://www.boblinks.com/dates24c.html (no winter)
+# 2006: http://www.boblinks.com/dates25c.html
+
+years = ['http://www.boblinks.com/dates22.html',
+         'http://www.boblinks.com/dates23.html',
+         'http://www.boblinks.com/dates24c.html',
+         'http://www.boblinks.com/dates25c.html']
+
+setlists = []
+for year in years:
+    setlist = re.findall(r'\d{6}s\.html', urlopen(year).read())
+    setlists.extend(setlist)
+    print "sum of the year's set list", len(setlist)
+
+print '2004~2006\'s total amount', len(setlists)
+
+result = []
+for i in setlists:
+    url = 'http://www.boblinks.com/' + i
+    content = urlopen(url).read()
+    x = re.findall('one too many mornings', content, re.I)
+    if x:
+        print url
+        result.append(url)
+</code></pre>
+<p>运行结果：</p>
+<p><img alt="" src="http://media.linuxsand.info/image/one-too-many-mornings.png" /></p>
+<p>只在 2005 年 7 月 21 日的 Vancouver 的演唱会，鲍勃迪伦有唱这首歌（第八首）。见 <a href="http://www.boblinks.com/072105s.html">http://www.boblinks.com/072105s.html</a></p>
+<p>而 Vancouver 距离 Palo Alto 相距 1,576 公里，称不上“附近”（据传记可知演唱会在 Palo Alto 附近）。</p>
+<p>那么，可能的原因：</p>
+<ul>
+<li>www.boblinks.com 记录出错</li>
+<li>传记内容出错</li>
+</ul>
+<p>有趣的是，国外网友也有<a href="http://rockturtleneck.blogspot.com/2011/10/steve-jobs-favorite-bob-dylan-song-one.html?showComment=1319718616069#c1370634318559848015">类似看法</a>：</p>
+<blockquote>
+<p>Last time Dylan played "One Too Many Mornings" was July of 2005 in Vancouver. Before that was 2003, which is before his an Jobs first meeting. Unless "in town" refers to Vancouver, I don't think Dylan played "One Too Many Mornings" for Jobs. -- Greg</p>
+</blockquote>
+<p>相关链接：</p>
+<ul>
+<li>民谣版本 <a href="http://music.baidu.com/song/9634475">http://music.baidu.com/song/9634475</a>，于《The Times They Are A-Changin'》，1964</li>
+<li>摇滚版本 <a href="http://www.top100.cn/song/?song=jwadypboge4dccboge">http://www.top100.cn/song/?song=jwadypboge4dccboge</a>，于 Rolling Thunder Revue Tour，1975 </li>
+</ul>
+<iframe width="640" height="360" src="http://www.youtube.com/embed/Rz652bW-nLE?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
+<br /><br />
+</body>
+</html>

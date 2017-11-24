@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>机器人学导论阅读笔记 2 -- 空间描述和变换 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>机器人学导论阅读笔记 2 -- 空间描述和变换</h1>
+<p style="text-align: right;">黄杰, 2013-06-06<br />root[a]linuxsand.info</p>
+<p>tags: robotics</p>
+<p>原书目录：</p>
+<ul>
+<li>概述</li>
+<li>描述：位置、姿态与坐标系</li>
+<li>映射：从坐标系到坐标系的变换</li>
+<li>算子：平移、旋转和变换</li>
+<li>总结和说明</li>
+<li>变换算法</li>
+<li>变换方程</li>
+<li>姿态的其他描述方法</li>
+<li>自由矢量的变换</li>
+<li>计算分析</li>
+</ul>
+<h2>世界坐标系</h2>
+<p>讨论任何问题可以参照的坐标系。</p>
+<h2>位置描述</h2>
+<p>用 3 x 1 的位置矢量对世界坐标系中的任何点进行定位。</p>
+<p><img alt="位置描述图片" src="http://media.linuxsand.info/image/IMG_0095.JPG" /></p>
+<p>位置矢量用一个前置的上标来表明其参考的坐标系。或者用矩阵来表示：</p>
+<p><img alt="位置矢量矩阵" src="http://media.linuxsand.info/image/ap.png" /></p>
+<h2>姿态描述</h2>
+<p>在物体上固定一坐标系并给出此坐标系相对于参考系的表达。</p>
+<p>{B} 相对于 {A} 中的描述 -&gt; 姿态旋转矩阵 </p>
+<p><img alt="旋转矩阵" src="http://media.linuxsand.info/image/r-matrix.png" /></p>
+<p><img alt="单位余弦展开式" src="http://media.linuxsand.info/image/r.png" /></p>
+<ul>
+<li>点的位置：一个矢量</li>
+<li>物体姿态：一个矩阵</li>
+</ul>
+<p>旋转矩阵的各分量：方向余弦</p>
+<p><img alt="方向余弦" src="http://media.linuxsand.info/image/cos.png" /></p>
+<h2>正交矩阵 R，R <sup>-1</sup> = R <sup>T</sup></h2>
+<h2>坐标系的描述</h2>
+<p><img alt="物体位置和姿态的确定" src="http://media.linuxsand.info/image/IMG_0096.JPG" /></p>
+<p>由于位置和姿态经常成对出现，我们将此组合成为「坐标系」。4 个矢量为一组，表示了位置和姿态信息。</p>
+<p><img alt="坐标系" src="http://media.linuxsand.info/image/borg.png" /></p>
+<p>其中，<sup>A</sup>P<sub>BORG</sub> 是确定 {B} 的原点的位置矢量。</p>
+<h2>映射：坐标系之间的变换</h2>
+<ul>
+<li>平移（姿态相同）</li>
+<li>旋转</li>
+<li>二者结合</li>
+</ul>
+<h3>平移</h3>
+<p>可用矢量相加的方法求点 P 相对于 {A} 的表示 <sup>A</sup>P。</p>
+<p><img alt="平移" src="http://media.linuxsand.info/image/map-move.png" /></p>
+<h3>旋转</h3>
+<p>过程在 P18，结果的简化形式：</p>
+<p><img alt="旋转" src="http://media.linuxsand.info/image/map-rotate.png" /></p>
+<h3>一般坐标系的变换：</h3>
+<p>齐次变换矩阵</p>
+<p><img alt="一般式" src="http://media.linuxsand.info/image/map-universal.png" /></p>
+<p>简洁形式（用于公式推导）：</p>
+<p><img alt="简洁形式" src="http://media.linuxsand.info/image/map-universal-simple.png" /></p>
+<h3>算子</h3>
+<p>用于坐标系间点的映射的通用数学表达式。</p>
+<ul>
+<li>平移算子</li>
+<li>矢量旋转算子</li>
+<li>平移加旋转算子</li>
+</ul>
+<p>具体略过。</p>
+<h3>总结和说明</h3>
+<p>齐次变换矩阵：</p>
+<ol>
+<li>是坐标系的描述</li>
+<li>是变换映射</li>
+<li>是变换算子</li>
+</ol>
+<p>「坐标系」和「变换」都可用「位置矢量 + 姿态」来描述。一般来说，「坐标系」主要用来描述，「变换」主要用来表示映射或算子。</p>
+<p>（略过 2.6 变换算法，2.7 变换方程，2.8 姿态的其它描述方法，2.9 自由矢量的变换，2.10 计算分析）</p>
+<p>附，机器人系统的示教和预定义姿态运动。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/robot-describe.jpg" /></p>
+<br /><br />
+</body>
+</html>

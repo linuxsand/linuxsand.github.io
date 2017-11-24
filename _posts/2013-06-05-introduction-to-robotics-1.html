@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>机器人学导论阅读笔记 1 -- 绪论 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>机器人学导论阅读笔记 1 -- 绪论</h1>
+<p style="text-align: right;">黄杰, 2013-06-05<br />root[a]linuxsand.info</p>
+<p>tags: robotics</p>
+<p>原书目录：</p>
+<ul>
+<li>背景</li>
+<li>操作臂的机构与控制</li>
+<li>符号</li>
+</ul>
+<h2>基座、末端执行器 &amp; 基坐标系、工具坐标系</h2>
+<h2>正运动学 &amp; 逆运动学</h2>
+<p><img alt="" src="http://media.linuxsand.info/image/IMG_0091.JPG" /></p>
+<h2>笛卡尔坐标系</h2>
+<p>需要 6 个变量来描述，3 for 位置，3 for 姿态。</p>
+<h2>运动学方程</h2>
+<ol>
+<li>无解：目标点在工作空间外</li>
+<li>有解、多解：-</li>
+</ol>
+<h2>雅可比矩阵</h2>
+<p>从关节空间速度向笛卡尔空间速度的映射。会随着操作臂位形的变化而变化。</p>
+<h2>奇异点</h2>
+<p><a href="http://roboticsfaq.com/t/118">roboticsfaq | 大家来讨论一下奇异点吧</a></p>
+<p>在奇异点，雅可比矩阵不可逆。</p>
+<p>i.e. 老式战斗机后座舱机枪手，2 个自由度（仰角、方位角）</p>
+<p><img alt="" src="http://media.linuxsand.info/image/IMG_0092.JPG" /></p>
+<p>头顶仅剩一个自由度（仰角），「局部退化」。</p>
+<h2>动力学</h2>
+<p>通过「关节驱动器产生复杂的力矩函数」来达到「末端执行器 - 加速 - 匀速 - 减速 - 停止」的效果。</p>
+<p>通过「动力学方程」（一种可用的方法）来达到「控制操作臂路径」的效果。</p>
+<h2>轨迹生成</h2>
+<p>平稳运动？各关节同时开始、停止即可。</p>
+<p>路径是怎样的？知道终点，中间点（路径点）。 -&gt; 样条函数</p>
+<h2>力控制</h2>
+<p>是对位置控制（线性、非线性）的补偿。</p>
+<h2>（离线）编程</h2>
+<p>操作点（工具中心点 TCP）</p>
+<br /><br />
+</body>
+</html>

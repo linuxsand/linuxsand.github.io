@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>﻿FANUC socket server DEMO | 黄杰的记事本</title>
+</head>
+<body>
+<h1>﻿FANUC socket server DEMO</h1>
+<p style="text-align: right;">黄杰, 2017-08-16<br />root[a]linuxsand.info</p><p>大概两三年前，我在调试 FANUC 机器人时，对于这个话题是耿耿于怀：尽管在当时公司并不需要在项目中用到该技术，但仍然是想要掌握它。但是谈何容易，FANUC 相关的技术资料是如此稀少。当时唯一的线索是《B-82974EN/02 Ethernet Function OPERATOR'S MANUAL》的第十章 SOCKET MESSAGING。</p>
+<p>这期间，我渐渐不再使用 FANUC，甚至越来越多地把注意力从工业机器人方面移开，开始关心其它工控技术。</p>
+<hr />
+<p>一个契机来了。在过去的几个月前，有业界朋友使用 FANUC 控制器的 Ethernet/IP 功能和 LabView，实现了在 PC 上读取控制器数据的功能。闲聊中，我重新提起了这个方法：使用 KAREL 语言编写 socket server 程序，运行在 FANUC 控制器上；在 PC 编写相应的 socket client（任意语言、平台），完成通讯。</p>
+<p>但是……总是没有抽出时间去做这个事情，哪怕是一个简单的 DEMO。好在，这几天终于逼自己一把，利用出差间隙做了一个 DEMO 出来。</p>
+<p>目前这个 DEMO 的不足之处，主要是说 KAREL socket server：</p>
+<ul>
+<li><del>它没有足够的错误处理，在客户端突然关闭或者网络中断时，无法自动恢复</del> 当天下午解决</li>
+<li>程序是在前台的 TP 程序中被调用的，但显然我希望它静默地运行在后台，这个后续要挖掘一下看是否有办法</li>
+<li><del>它目前是写死的只能查询 <code>R[41]</code>，显然需要拓展</del> 当天晚上解决，客户端可使用特定语法查询（多个）特定寄存器的值</li>
+<li>需要制定更为严谨的通讯内容格式和时序</li>
+<li><del>考虑（多个）客户端循环请求不同资源时的情况</del> 我在当前程序里只使用了一个 server tag，那么暂时只考虑单个连接</li>
+</ul>
+<p>我不打算在此时此刻将源代码发出来，因为我对这个玩意儿有些私心，期待它能在稳定工作后，能够带来一些小小的经济收益，来补偿设计开发它所消耗的时间。</p>
+<hr />
+<p>介绍一下这个 DEMO 包含的程序：</p>
+<ul>
+<li>FANUC 控制器端：<ul>
+<li><code>J_SERV.PC</code> 是 KAREL 编写的 socket server 程序，它在 PC 客户端发送请求时，固定读取 <code>R[41]</code> 的值，返回给客户端</li>
+<li><code>ADD_R41.TP</code> 是 TP 程序，它每过 0.5 秒将 <code>R[41]</code> 的值加 1</li>
+<li><code>TEST_JSERV.TP</code> 是测试主程序，它同时运行上面的 <code>J_SERV.PC</code> 和 <code>ADD_R41.TP</code></li>
+</ul>
+</li>
+<li>PC 客户端：<ul>
+<li><code>j_client.py</code> 是使用 Python 编写 socket client 程序，它每隔 0.1 秒向 FANUC 控制器请求一次值（<code>R[41]</code>）</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://youtu.be/DdgRWFpH8Uk">YouTube link here</a></p>
+<p>播放优酷视频：</p>
+<p><embed src='http://player.youku.com/player.php/sid/XMjk4MTQ3MTAxMg==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed></p>
+<p>下图是需要加载到 FANUC 控制器的 <code>ADD_R41.TP</code> 和 <code>TEST_JSERV.TP</code>。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/karel_sm_1_program.jpg" /></p>
+<hr />
+<p>下图是 DEMO 运行时的截图。</p>
+<p>FANUC 示教器分成 3 个区域：</p>
+<ul>
+<li>左边主窗口是程序列表，其中黄色高亮了 2 个测试用的 TP 程序，蓝绿色高亮的是 KAREL 编写的 socket server 程序；</li>
+<li>右上角是 socket server 程序运行时打印的消息（我并没有输出很详细的过程信息）；</li>
+<li>右下角的是被查询的寄存器数值（见高亮的 <code>R[41]</code>）。</li>
+</ul>
+<p>最底下的黑色 console，是使用 Python 编写的、简单的 socket client，它不停在读取 <code>R[41]</code> 的值并刷新到当前行。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/karel_sm_2_runtime.jpg" /></p>
+<p>下图是当天更新过的，可灵活查询不同寄存器的值，同时发生连接中断时，服务端能自动恢复。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/karel_sm_3_program.jpg" /></p>
+<p><img alt="" src="http://media.linuxsand.info/image/karel_sm_4_runtime.jpg" /></p></body>
+</html>

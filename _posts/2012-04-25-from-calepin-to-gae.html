@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>Calepin.co 的简易替代 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>Calepin.co 的简易替代</h1>
+<p style="text-align: right;">黄杰, 2012-04-25<br />root[a]linuxsand.info</p>
+<p><em>UPDATE：见 <a href="http://blog.linuxsand.info/using-pelican-to-staticize-blog.html">http://blog.linuxsand.info/using-pelican-to-staticize-blog.html</a></em></p>
+<h2>结构</h2>
+<ul>
+<li>数据：存放在dropbox<ul>
+<li>文章列表：dropbox 的 public/blog 目录下一 index.txt 文件，用脚本生成</li>
+<li>文章：拷贝到 public/blog 目录。尝试右键获取复制公共地址，是经过URL编码的</li>
+</ul>
+</li>
+<li>功能实现：服务端为 GAE + web.py；本地有一脚本更新 index.txt<ul>
+<li>服务端无后台，有实质意义的只是2个页面：列表页（index），文章详情页（view）<ul>
+<li>列表页读取 index.txt，详情页读取对应的md文件</li>
+</ul>
+</li>
+<li>本地：脚本读取 dropbox 本地 public/blog 目录内 md 文件，提取若干字段，写入 index.txt</li>
+</ul>
+</li>
+</ul>
+<h3>服务端</h3>
+<pre><code>- blog.py           # 主程序
+- templates/        # 模板目录
+    - base.html     # 父模板
+    - index.html    # 列表页面模板
+    - view.html     # 文章详情页模板
+- web/              # web.py
+- markdown/         # markdown
+</code></pre>
+<p>贴一下 blog.py。</p>
+<pre><code># coding: utf-8
+import web
+import urllib2
+from markdown import markdown
+
+urls = (
+'/', 'Index',
+'/(.+)', 'View',
+)
+
+render = web.template.render('templates/', base='base')
+app = web.application(urls, globals())
+
+d_prefix = 'http://dl.dropbox.com/u/60841531/blog/'
+
+### uncomment it if testing at localhost
+# d_prefix = 'C:\\Users\\Administrator\\Dropbox\\Public\\blog\\'
+index_txt = d_prefix + 'index.txt'
+
+def open_(txt):
+    return open(txt)
+
+### comment it if testing at localhost
+open_ = urllib2.urlopen
+
+def get_and_render_content(lines):
+    title = lines[0].replace('title:', '').strip()
+    date = lines[1].replace('date:', '').strip()
+    text = markdown(''.join(lines[4:]).decode('utf8')).encode('utf8')
+    return render.view(title, date, text)
+
+# ugly function to avoid processing in template
+def process_list(alist):
+    all_ = [line.split('|') for line in alist]
+    months = [i[0].strip()[:-3] for i in all_] # '2012-04'
+
+    sset = sorted(set(months))
+    sset.reverse()
+    counts = [months.count(i) for i in sset]
+
+    container = []
+    for i, j in zip(sset, counts):
+        x = months.index(i) # 0
+        y = range(x, x+j) # range(0, 4)
+        container.append([i, y])
+    return container
+
+class Index:
+    def GET(self):
+        index_list = open_(index_txt).readlines()
+        # don't have to pass `index_list`, lazy...
+        return render.index("linuxsand's blog", process_list(index_list), index_list)
+
+class View:
+    url_dict = {}
+    for i in open_(index_txt):
+        key = i.split('|')[1].strip()[1:]
+        value = i.split('|')[3].strip()
+
+        # uncomment it if testing at localhost
+        # value = i.split('|')[2].strip().decode('utf8') 
+        url_dict[key] = value
+
+    def GET(self, slug):
+        try:
+            content = open_(d_prefix + self.url_dict[slug]).readlines()
+            return get_and_render_content(content)
+        except KeyError:
+            web.notfound()
+
+if __name__ == '__main__':
+    app.cgirun()
+    # app.run()
+</code></pre>
+<p>定义外观样式花的时间倒不比实现功能少。我直接把 CSS 写在其中了，可读性差。所以模板文件不贴了。</p>
+<h3>本地</h3>
+<p>只一个 __update__.py 文件，反正是在本地运行，怎么方便怎么写。</p>
+<pre><code>import os, sys
+from fnmatch import fnmatch
+import urllib
+
+def generate_index(dir):
+    lines = []
+    for i in os.listdir(dir):
+        if fnmatch(i, '*.md'):
+            f = open(dir + i)
+            filename = f.readline().replace('title:', '').strip() + '.md'
+            date = f.readline().replace('date:', '').strip()
+            slug = '/%s.html' % (f.readline().replace('slug:', '').strip())
+            url = urllib.quote(filename)
+            lines.append('%s | %s | %s | %s \n' % (date, slug, filename, url))
+    lines.sort()
+    lines.reverse()
+    return lines
+
+dir_ = 'C:/Users/Administrator/Dropbox/Public/blog/'
+lines = generate_index(dir_)
+with open('index.txt', 'w') as f:
+    f.writelines(lines)
+
+sitemap = ['http://blog.linuxsand.info' + i.split('|')[1].strip() + '\n' for i in lines]
+with open('sitemap.txt', 'w') as s:
+    s.writelines(sitemap)
+
+# os.system('python __atom__.py')
+</code></pre>
+<p>可以增添代码使其有「分类」「标签」等功能，但是我不需要。</p>
+<p>P.S. 迁移过来的一个小小的好处是不需在写完后到 Calepin.co 首页去点击 Publish 了。保持简单。</p>
+<br /><br />
+</body>
+</html>

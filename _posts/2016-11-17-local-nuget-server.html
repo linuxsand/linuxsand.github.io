@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>﻿使用本地 Nuget Server | 黄杰的记事本</title>
+</head>
+<body>
+<h1>﻿使用本地 Nuget Server</h1>
+<p style="text-align: right;">黄杰, 2016-11-17<br />root[a]linuxsand.info</p><div class="toc">
+<ul>
+<li><a href="#_1">前言</a></li>
+<li><a href="#nuget">NuGet 基本操作</a></li>
+<li><a href="#_2">搭建私有仓库</a><ul>
+<li><a href="#nuget-33">NuGet 3.3+</a></li>
+<li><a href="#nuget_1">旧版本的 NuGet</a></li>
+</ul>
+</li>
+<li><a href="#_3">使用本地仓库</a></li>
+<li><a href="#nuget_2">自己制作 NuGet 包</a></li>
+<li><a href="#_4">参考链接</a></li>
+</ul>
+</div>
+<h2 id="_1">前言</h2>
+<p>与其手工安装管理依赖，不如使用包管理工具。在 .NET 生态里，我们使用 Nuget。</p>
+<p>工具有了，软件源在哪里？就是 <a href="https://nuget.org">https://nuget.org</a> 啦。</p>
+<p>有了公开软件源，为啥我还要搭建私有 Nuget Server 呢？</p>
+<ol>
+<li>我的开发工作全是在虚拟机里进行，公司规定虚拟机不能联网</li>
+<li>部分包会是自己编写，用于公司业务，不能上传到公共 Server</li>
+</ol>
+<p>但是，作为一家工业自动化集成公司而不是软件公司，我司不提供一个服务器空间用于搭建私有服务器，所以只好使用共享目录来储存分发软件包了。</p>
+<p>（同样原因，托管 Git 仓库也是用了 Local Protocol 的……）</p>
+<hr />
+<h2 id="nuget">NuGet 基本操作</h2>
+<p>下载 nuget：</p>
+<ul>
+<li><a href="https://dist.nuget.org/index.html">https://dist.nuget.org/index.html</a></li>
+<li><a href="https://docs.nuget.org/ndocs/guides/install-nuget">https://docs.nuget.org/ndocs/guides/install-nuget</a></li>
+</ul>
+<p>安装、使用 nuget：</p>
+<p>对于命令行（CLI）的 nuget，安装某个包的命令就是：<code>nuget install package</code>。写本文时（2016-dec-1）的最新版本是 3.4.4.1321</p>
+<p>对于 Visual Studio 内的 Nuget Package Manager，它提供一个图形界面（GUI）和一个控制台（Console）。</p>
+<ul>
+<li>使用图形界面安装某个包，很直观，在打开某个解决方案后，Tools - NuGet Package Manager - Manage NuGet Packages for Solution</li>
+<li>使用控制台为当前解决方案安装某个包，Tools - NuGet Package Manager - Package Manager Console，在出现的 PowerShell 中输入 <code>Install-Package package</code></li>
+<li>对于旧版本的 VS，可以在 Tools &gt; Extension and Updates 里搜索 NuGet Package Manager 来安装<ul>
+<li>我使用 VS 2010，安装完成的 NuGet Package Manager 版本是 2.8.60318.667，并不是 3.x 版本！</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="_2">搭建私有仓库</h2>
+<p>到这里终于讲到正题：如何搭建（基于文件系统的）私有仓库。</p>
+<p>官方链接： <a href="http://docs.nuget.org/ndocs/hosting-packages/local-feeds">http://docs.nuget.org/ndocs/hosting-packages/local-feeds</a>，有以下 2 种情况。</p>
+<h3 id="nuget-33">NuGet 3.3+</h3>
+<p>按照链接内容操作后，我本机某个目录的结构如下。</p>
+<pre><code>Z:\D\Resources\01 PC End\03 .NET\30 NugetServer&gt;tree
+Z:.
+└─packages
+    └─xxxxx
+        └─1.0.0
+    └─yyyyy
+        └─2.0.0
+</code></pre>
+<p>注意：这种“层级式（hierarchical）”结构需要 nuget 3.3+ 才支持。</p>
+<h3 id="nuget_1">旧版本的 NuGet</h3>
+<p>如果你用的是老版本的 Package Manager Console（上一节提到，VS 2010 安装的是 2.8 版本），那就把所有的 *.nupkg 放在同一个目录下。</p>
+<pre><code>Z:\D\Resources\01 PC End\03 .NET\30 NugetServer&gt;tree /f
+Z:.
+└─packages
+    └─xxxxx
+    └─yyyyy
+</code></pre>
+<p>针对这 3 种情况使用正确的目录结构后，在 Visual Studio 的 Package Manager Settings中，新增加的 source 为：Z:\D\Resources\01 PC End\03 .NET\30 NugetServer\<strong>packages</strong></p>
+<hr />
+<h2 id="_3">使用本地仓库</h2>
+<p>接着就可以在某个解决方案中，使用本地的包啦，下面是使用 console 安装的：</p>
+<pre><code>PM&gt; Install-Package xxxxx
+Installing 'xxxxx 1.0.0'.
+Successfully installed 'xxxxx 1.0.0'.
+Adding 'xxxxx 1.0.0' to WpfApplication1.
+Successfully added 'xxxxx 2.0.0' to WpfApplication1.
+</code></pre>
+<p>另外，当你在 nuget.org 下载安装某个包后，会默认存放到本地缓存中（%userprofile%\AppData\Local\NuGet\Cache），因此也可以把这个路径作为一个本地私有仓库。</p>
+<hr />
+<h2 id="nuget_2">自己制作 NuGet 包</h2>
+<p>可以把常用的代码片段封装为类库（Class Library），再制作成 nuget 包（.nupkg），放到本地仓库供未来其它项目使用。</p>
+<p>打包的过程见： <a href="https://docs.nuget.org/ndocs/quickstart/create-and-publish-a-package">https://docs.nuget.org/ndocs/quickstart/create-and-publish-a-package</a></p>
+<hr />
+<h2 id="_4">参考链接</h2>
+<ul>
+<li><a href="http://docs.nuget.org/ndocs/consume-packages/overview-and-workflow">Package Consumption Overview and Workflow</a></li>
+<li><a href="http://docs.nuget.org/ndocs/hosting-packages/overview">Hosting Packages Overview</a></li>
+<li><a href="https://docs.nuget.org/ndocs/policies/nuget-faq">NuGet FAQ</a></li>
+</ul>
+<hr />
+<p>使用微信打赏。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/weixin_barcode5.png" /></p></body>
+</html>

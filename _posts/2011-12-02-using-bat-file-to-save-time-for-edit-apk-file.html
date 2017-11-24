@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>简化修改 apk 文件过程的批处理 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>简化修改 apk 文件过程的批处理</h1>
+<p style="text-align: right;">黄杰, 2011-12-02<br />root[a]linuxsand.info</p>
+<p>在博客后台看了下，大概有这么几篇与 Android 相关的博文。</p>
+<ul>
+<li><a href="/change-opera-mini-6-proxy-server-on-windows.html">Windows下更改Android版Opera Mini 6代理服务器</a></li>
+<li><a href="/another-opera-mini-6.html">制作Opera Mini 6共存版（Android）</a></li>
+<li><a href="/remove-ads-of-android-apps.html">Android应用去广告（以gReader为例）</a></li>
+</ul>
+<p>都是涉及修改 apk 文件的，其实 解包、打包、签名 这过程可以写一个简单的批处理文件实现自动化。</p>
+<pre>
+@echo off
+set name=
+set /p name=输入文件名，无后缀:
+
+echo.
+echo 开始解包
+java -jar apktool.jar d %name%.apk
+
+echo.
+echo 按任意键开始重新打包
+pause>nul
+
+echo.
+echo 开始打包
+java -jar apktool.jar b -f %name%
+
+set time=%time:~0,8%
+set time2=%time::=.%
+
+echo.
+echo 签名
+del /f /q .\Auto-Sign\*.apk
+copy .\%name%\dist\*.apk .\Auto-Sign
+cd .\Auto-Sign
+java -jar signapk.jar testkey.x509.pem testkey.pk8 *.apk "%name%-signed-at-%time2%.apk"
+</pre>
+<br /><br />
+</body>
+</html>

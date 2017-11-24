@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>序号递增（半自动） | 黄杰的记事本</title>
+</head>
+<body>
+<h1>序号递增（半自动）</h1>
+<p style="text-align: right;">黄杰, 2015-06-29<br />root[a]linuxsand.info</p>
+<p>ABB 机器人的配置文件是纯文本的，包括信号配置文件 EIO.CFG。有时，我需要批量建立一些新信号，名字递增，类似 vdo1, vdo2...</p>
+<pre><code>-Name "vdi1" -SignalType "DI" -Unit "MyVirtual" -UnitMap "0" -Access "Default"
+</code></pre>
+<p>数量一多，就嫌麻烦了。本打算写个小工具，做了一半嫌麻烦，又放弃了。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/indexing-app.jpg" /></p>
+<p>还是借助现有工具吧，例如 EXCEL / WPS。宗旨就是为了偷懒嘛。</p>
+<hr />
+<p>在语句的数字左右添加英文逗号。表格软件可能会把引号吃掉——随便插个反斜杠，这个可以批量替换：</p>
+<pre><code>-Name \"vdi,1,\" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \",0,\" -Access \"Default\"
+</code></pre>
+<p><strong>然后，另存为 CSV 文件。</strong>用 WPS 打开，拖选自动累加，复制出来。</p>
+<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/indexing-2.jpg" /></p>
+<p>贴回编辑器。</p>
+<pre><code>-Name \"vdi 1   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   0   \" -Access \"Default\"
+-Name \"vdi 2   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   1   \" -Access \"Default\"
+-Name \"vdi 3   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   2   \" -Access \"Default\"
+-Name \"vdi 4   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   3   \" -Access \"Default\"
+-Name \"vdi 5   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   4   \" -Access \"Default\"
+-Name \"vdi 6   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   5   \" -Access \"Default\"
+-Name \"vdi 7   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   6   \" -Access \"Default\"
+-Name \"vdi 8   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   7   \" -Access \"Default\"
+-Name \"vdi 9   \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   8   \" -Access \"Default\"
+-Name \"vdi 10  \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   9   \" -Access \"Default\"
+-Name \"vdi 11  \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   10  \" -Access \"Default\"
+-Name \"vdi 12  \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   11  \" -Access \"Default\"
+-Name \"vdi 13  \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   12  \" -Access \"Default\"
+-Name \"vdi 14  \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   13  \" -Access \"Default\"
+-Name \"vdi 15  \" -SignalType \"DI\" -Unit \"MyVirtual\" -UnitMap \"   14  \" -Access \"Default\"
+</code></pre>
+<p>批量替换掉 Tab 和反斜杠。</p>
+<pre><code>-Name "vdi1" -SignalType "DI" -Unit "MyVirtual" -UnitMap "0" -Access "Default"
+-Name "vdi2" -SignalType "DI" -Unit "MyVirtual" -UnitMap "1" -Access "Default"
+-Name "vdi3" -SignalType "DI" -Unit "MyVirtual" -UnitMap "2" -Access "Default"
+-Name "vdi4" -SignalType "DI" -Unit "MyVirtual" -UnitMap "3" -Access "Default"
+-Name "vdi5" -SignalType "DI" -Unit "MyVirtual" -UnitMap "4" -Access "Default"
+-Name "vdi6" -SignalType "DI" -Unit "MyVirtual" -UnitMap "5" -Access "Default"
+-Name "vdi7" -SignalType "DI" -Unit "MyVirtual" -UnitMap "6" -Access "Default"
+-Name "vdi8" -SignalType "DI" -Unit "MyVirtual" -UnitMap "7" -Access "Default"
+-Name "vdi9" -SignalType "DI" -Unit "MyVirtual" -UnitMap "8" -Access "Default"
+-Name "vdi10" -SignalType "DI" -Unit "MyVirtual" -UnitMap "9" -Access "Default"
+-Name "vdi11" -SignalType "DI" -Unit "MyVirtual" -UnitMap "10" -Access "Default"
+-Name "vdi12" -SignalType "DI" -Unit "MyVirtual" -UnitMap "11" -Access "Default"
+-Name "vdi13" -SignalType "DI" -Unit "MyVirtual" -UnitMap "12" -Access "Default"
+-Name "vdi14" -SignalType "DI" -Unit "MyVirtual" -UnitMap "13" -Access "Default"
+-Name "vdi15" -SignalType "DI" -Unit "MyVirtual" -UnitMap "14" -Access "Default"
+</code></pre>
+<p>半自动完成。不知道有没有更好的半自动、甚至全自动办法。</p>
+<p>（Oh，这似乎是一个不存在的需求。）</p>
+<hr />
+<p>扩展阅读：我之前有个命令行的办法，可以解决一些简单 index 问题。<a href="http://www.linuxsand.info/notes/random/join-text-with-line-numbers.txt">http://www.linuxsand.info/notes/random/join-text-with-line-numbers.txt</a></p>
+<br /><br />
+</body>
+</html>

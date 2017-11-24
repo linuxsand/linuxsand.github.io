@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>基于 PC 的机器人工作站控制程序 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>基于 PC 的机器人工作站控制程序</h1>
+<p style="text-align: right;">黄杰, 2015-06-15<br />root[a]linuxsand.info</p>
+<p>我司某合作项目使用了 ABB 机器人做工件检测，打算用 PC 代替 PLC 作为控制端，兼具 HMI 功能。实现上没有更多的选择，用我熟悉的 ABB PC SDK 实现。</p>
+<p>我用 MultiTasking、Interrupt实现了信号逻辑控制，显示上需要根据不同信号点显示该工件的所有被检测部分是否合格。之前没用高级编程语言做过HMI，思考、搜索了一番，做了个 DEMO 如下。</p>
+<p><img alt="动态图片：抽象的例子，在控件上自行更新图形" src="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi.gif" /></p>
+<p>使用 .NET 平台的 C# 语言，突破点是重写了 Control 的 OnPaint 方法。</p>
+<hr />
+<p>updated at 2015-06-30，这几天继续做了一部分内容。</p>
+<ul>
+<li>把卡扣的显示问题搞定了，可以手动 next</li>
+<li>初步做好了信号面板：500 ms 更新一次（暂时用轮询，以后改）</li>
+</ul>
+<p><img alt="图片：接近真实需求的 DEMO" src="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-2.jpg" /></p>
+<p><a href="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-2.jpg">点击链接，查看大图</a></p>
+<hr />
+<p>updated at 2015-07-03：</p>
+<ul>
+<li>信号面板的信号值更新的实现从轮询改为基于事件，节省了资源；且优化了更新策略，提高了性能</li>
+<li>卡扣的显示可以根据信号的 OFF -&gt; ON 自动绘制了</li>
+<li>增加了细节画面，可点击查看卡扣特写图片（用一个单例的窗体实现，因此细节窗口的弹出不会阻塞操作）</li>
+</ul>
+<p><a href="http://v.youku.com/v_show/id_XMTI3NjI5ODU1Mg==.html">去优酷看Demo</a></p>
+<hr />
+<p>（该项目最近启动了，抽出部分时间修改代码）</p>
+<p>updated at 2015-09-16：</p>
+<p>增加了检测 PC 程序是否取得控制权（mastership）的功能。简单地说，当请求某些控制器资源时，需要申请权限；那么问题就来了，如果你申请了权限，但由于某些原因没有释放、或者说在释放前的某些用户代码中发生了没有捕获的异常，那么下次就永远申请不到权限了。</p>
+<p>因此，我增加了这个功能，方便在现场调试中发现问题。</p>
+<p><img alt="动态图片：检测 Mastership" src="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-master.gif" /></p>
+<hr />
+<p>updated at 2015-09-22：</p>
+<ul>
+<li>美化：增加了程序首页默认图片</li>
+<li>原本的检测过程中，只会用红绿色的小圆表示测点的检测结果；现在给测点增加了序号</li>
+<li>重构了代码，添加了必要注释</li>
+</ul>
+<p><img alt="图片：增加首页图片" src="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-0922-homepage.jpg" /></p>
+<p><a href="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-0922-homepage.jpg">点击链接，查看大图</a></p>
+<p><img alt="图片：增加了序号" src="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-0922-add-index.jpg" /></p>
+<p><a href="http://77g3ho.com1.z0.glb.clouddn.com/pc-hmi-0922-add-index.jpg">点击链接，查看大图</a></p>
+<br /><br />
+</body>
+</html>
