@@ -1,0 +1,106 @@
+﻿FCC83 使用教程
+2017-11-18
+
+本文作为 <http://www.linuxsand.info/fanuc_tools/fcc83_faq.html> 的补充。
+
+通过点击上述链接，您可以了解 FCC83 是什么、能做什么，下面谈如何调用它进行编程实现。
+
+- 创建一个 C# .NET 项目（输出类型：控制台程序，框架版本 3.5 及以上）
+- 添加引用 FCC83.dll
+- 编程
+- 构建（Build）项目
+- 运行
+    - 请自行准备 FANUC 控制器的仿真环境，或者连接真实控制器
+    - 在示教器上操作，解锁 HTTP KAREL：SETUP -> HOST COMM. -> HTTP -> KAREL -> F3: UNLOCK
+
+点击这里下载完整项目（不含 FCC83.dll，因此无法构建成功）。
+
+添加运行图片2张
+
+虽然贴了如下几十行代码，但大部分都是检查用户输入的……最后部分才是真正的写入操作。考虑到读这篇文章的都是技术人员，因此代码中出现这些“防御性”内容，对于大家肯定是司空见惯了。
+
+
+        using System;
+        using FCC83;
+
+        namespace FCC83_Console
+        {
+            class Program
+            {
+                static void Main(string[] args)
+                {
+                    if (args.Length != 3)
+                    {
+                        Console.WriteLine("USAGE: fcc83console.exe <ip> <index> <value>");
+                        return;
+                    }
+
+                    // ip
+                    string _ip = args[0];
+                    var parts = _ip.Split(new char[] { '.' });
+                    if (parts.Length != 4)
+                    {
+                        Console.WriteLine("Input IP address error.");
+                        return;
+                    }
+                    byte[] address = new byte[4];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (!byte.TryParse(parts[i], out address[i]))
+                        {
+                            Console.WriteLine("Input IP address error.");
+                            return;
+                        }
+                    }
+                    // 至此，简单过滤了不合法的 IP 地址
+
+                    // index
+                    uint _index;
+                    if (!uint.TryParse(args[1], out _index))
+                    {
+                        Console.WriteLine("user input index is not a number");
+                        if (_index > 200)
+                        {
+                            Console.WriteLine("index: [1, 200], user input is invalid");
+                        }
+                        return;
+                    }
+                    // 至此，确认用户输入的是一个合法的数字寄存器序号（1 ~ 200 的数字）
+
+                    // value
+                    decimal _value = 0m;
+                    if (!Decimal.TryParse(args[2], out _value))
+                    {
+                        Console.WriteLine("user input value is invalid");
+                        return;
+                    }
+                    // 至此，确认用户输入的是一个合法的数值，可以尝试把它写入 FANUC 寄存器
+
+                    // start updating
+                    RegisterWriter regWriter = null; // 声明一个 RegisterWriter 对象
+                    try
+                    {
+                        regWriter = new RegisterWriter(_ip); // 尝试初始化 RegisterWriter 对象，这里可能出错
+                    }
+                    catch (Exception re)
+                    {
+                        Console.WriteLine(re.Message); // 出错原因只有一个：你所使用的 FCC83 库并没有得到授权
+                        return;
+                    }
+                    if (!regWriter.Ready) // 检查是否具备写入条件：目标 IP 是否能到达，控制器的 HTTP KAREL 是否解锁
+                    {
+                        Console.WriteLine("ERROR: " + regWriter.NotReadyReason); // 会显示未就绪的原因
+                        return;
+                    }
+
+                    // 至此，终于万事俱备，调用写入方法；检查返回值，看是否写入成功……
+                    bool ret = regWriter.Write(_index, _value);
+                    Console.WriteLine(string.Format("write result: {0}", ret));
+                    
+                    // 实际上，FCC83 提供了 3 种写入方法
+                    // WriteFast    不检查是否写入成功
+                    // Write        检查写入成功
+                    // Write2       检查写入成功（特殊情况下使用：会先将目标寄存器写零，再写入预期值）
+                }
+            }
+        }
