@@ -72,8 +72,6 @@ def gen_index():
 [
 <a href="http://www.linuxsand.info" target="_blank">about</a>
 |
-<a href="./page/" target="_blank">pages</a>
-|
 <a href="http://www.linuxsand.info/work_tools.html" target="_blank">tools</a>
 ]
 </div>
