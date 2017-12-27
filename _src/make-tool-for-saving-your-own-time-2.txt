@@ -5,7 +5,7 @@
 
 先上图。
 
-![manual trigger util]()
+![manual trigger util](http://media.linuxsand.info/image/manual-trigger-util.jpg)
 
 这个辅助工具实际上是一个小网站，作为一个消息中转程序。后端程序基于 Python Bottle web 框架，前端界面就是截图上的 HTML 网页了。
 
