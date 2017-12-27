@@ -10,14 +10,43 @@
 - 编程
 - 构建（Build）项目
 - 运行
-    - 请自行准备 FANUC 控制器的仿真环境，或者连接真实控制器
+    - 请自行准备 FANUC 控制器的仿真环境（RoboGuide），或者连接真实控制器
     - 在示教器上操作，解锁 HTTP KAREL：SETUP -> HOST COMM. -> HTTP -> KAREL -> F3: UNLOCK
 
-点击这里下载完整项目（不含 FCC83.dll，因此无法构建成功）。
+核心代码调用（不含错误处理）：
+
+
+        using System;
+        using FCC83;
+
+        namespace FCC83_Console
+        {
+            class Program
+            {
+                static void Main()
+                {
+                    RegisterWriter regWriter = new RegisterWriter("127.0.0.1"); // 使用真实的控制器时，填写相应的 IP
+                    if (!regWriter.Ready) // 检查是否具备写入条件：目标 IP 是否能到达，控制器的 HTTP KAREL 是否解锁
+                    {
+                        Console.WriteLine("ERROR: " + regWriter.NotReadyReason); // 会显示未就绪的原因
+                        return;
+                    }
+
+                    // 调用 FCC83 的写入方法；检查返回值，看是否写入成功……
+                    // 将 1 号数字寄存器的值改为 42
+                    bool ret = regWriter.Write(1, 42);
+                    Console.WriteLine(string.Format("write result: {0}", ret));
+                }
+            }
+        }
+        
 
 添加运行图片2张
 
-虽然贴了如下几十行代码，但大部分都是检查用户输入的……最后部分才是真正的写入操作。考虑到读这篇文章的都是技术人员，因此代码中出现这些“防御性”内容，对于大家肯定是司空见惯了。
+------
+
+
+如下是带有错误处理的代码。
 
 
         using System;
@@ -98,7 +127,7 @@
                     Console.WriteLine(string.Format("write result: {0}", ret));
                     
                     // 实际上，FCC83 提供了 3 种写入方法
-                    // WriteFast    不检查是否写入成功
+                    // WriteFast    不检查是否写入成功（只要传入数据正确合法，总是能成功）
                     // Write        检查写入成功
                     // Write2       检查写入成功（特殊情况下使用：会先将目标寄存器写零，再写入预期值）
                 }
