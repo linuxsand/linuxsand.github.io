@@ -1,0 +1,24 @@
+FANUC机器人基本知识：查看控制器内已经安装的选项软件
+2018-01-19
+
+有几种方法可以查看FANUC机器人控制器内已经安装的选项软件。
+
+## 查看 SUMMARY.DG 文件
+
+使用示教器上做文件备份，只需备份维护数据（Maintenance data），备份出的文件中有个 SUMMARY.DG，它列出了控制器方方面面的信息。
+
+可在个人电脑上使用任意纯文本编辑器（例如 notepad.exe）打开 SUMMARY.DG，查找关键词：例如想要知道是否安装了“用户网络通信库 USER SOCKET MSG”，输入「R648」或者「SOCKET」之类的词查找即可。
+
+![图片：备份维护数据](http://77g3ho.com1.z0.glb.clouddn.com/list-installed-software-options1.jpg)
+
+![图片：SUMMARY.DG 文件](http://77g3ho.com1.z0.glb.clouddn.com/list-installed-software-options2.jpg)
+
+还可以使用机器人控制器[内置的 web server 功能](/fanuc-robot-io-commenting.html)，去查看：
+
+当然，如果个人电脑已经能连通控制器的网口，打开个人电脑的网页浏览器，在地址栏输入 http://机器人该端口的IP地址/MD/SUMMARY.DG，就能看到 SUMMARY.DG 文件的内容，同样 CTRL + F 查找即可。
+
+## 使用示教器查看
+
+实际上这个方法不需要使用个人电脑，比较受现场调试人员的欢迎。但是它没有办法快速查找某个已知的选项软件名字。
+
+按下示教器的菜单按键，NETX --> STATUS --> Version ID --> CONFIG (F3)。
