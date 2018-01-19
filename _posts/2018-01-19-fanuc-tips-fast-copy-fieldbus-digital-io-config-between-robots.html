@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>﻿FANUC小贴士：批量复制总线和数字I/O配置到其它控制器 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>﻿FANUC小贴士：批量复制总线和数字I/O配置到其它控制器</h1>
+<p style="text-align: right;">黄杰, 2018-01-19<br />root[a]linuxsand.info</p><p>如果你需要配置几台同样总线（FieldBus）和数字 I/O 的 FANUC 机器人控制器，那么在配置好一台后，可以备份相关文件，再加载到第二台控制器，节约大量时间。</p>
+<p>由于将要加载的是系统文件，FANUC 控制器必须 Controlled Start 后进行加载操作。</p>
+<p>（罗嗦一句，做好备份再进行操作。）</p>
+<h2 id="_1">两个文件的介绍</h2>
+<ul>
+<li>SYSEIP.SV，它是常用的 ETHERNET/IP 总线的系统配置文件。其它总线，例如 DeviceNet 则是 SYSDNET.SV</li>
+<li>DIOCFGIO.SV，它是数字 I/O 的配置文件，包括 I/O 是如何映射的，每个信号的注释内容等</li>
+</ul>
+<p>将这两个文件备份出来。</p>
+<h2 id="controlled-start">如何 Controlled Start</h2>
+<p>这是基本知识了。参见《B-83284EN_04》B SPECIAL OPERATION -- B.1 START MODE -- B.1.3 Controlled Start。</p>
+<ul>
+<li>按住示教器上的 PREV 和 NEXT 按键，打开控制器电源</li>
+<li>在稍后出现的配置菜单中，选择 3. Controlled Start 即可</li>
+</ul>
+<h2 id="_2">加载文件</h2>
+<p>进入 Controlled Start 后，按下菜单按钮，进入文件菜单。按顺序加载 SYSEIP.SV 和 DIOCFGIO.SV 文件，确认相应的提示。完成后，按下功能键，选择冷启动。</p>
+<p><img alt="图片：加载EIP文件，并冷启动" src="http://77g3ho.com1.z0.glb.clouddn.com/load-eip-config.jpg" /></p>
+<p>注意，如果两台控制器使用的数字 I/O 数量不同的话，需要改成一致的；默认是 512 个位，下图改成了 1024 个。</p>
+<p><img alt="图片：更改数字I/O的数量" src="http://77g3ho.com1.z0.glb.clouddn.com/change-io-ports.jpg" /></p>
+<p>（完）</p></body>
+</html>
