@@ -27,7 +27,7 @@
 
 ![图片：加载EIP文件，并冷启动](http://77g3ho.com1.z0.glb.clouddn.com/load-eip-config.jpg)
 
-注意，如果两台控制器使用的数字 I/O 数量不同的话，需要改成一致的；默认是 512 个位，下图改成了 1024 个。
+注意，如果两台控制器使用的数字 I/O 数量不同的话，需要改成一致的；默认是 512 个位，见下图。
 
 ![图片：更改数字I/O的数量](http://77g3ho.com1.z0.glb.clouddn.com/change-io-ports.jpg)
 
