@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>工业机器人的程序保护 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>工业机器人的程序保护</h1>
+<p style="text-align: right;">黄杰, 2018-04-11<br />root[a]linuxsand.info</p><p>本文针对主流工业机器人。当一家（集成）公司积累了一定的机器人代码后，应当考虑代码保护的问题了。一般机器人代码都是解释执行，用户能从示教器上读出源代码；竞争对手也能拷贝、阅读和修改，省去了正向开发的时间成本，对于公司来说无疑是不利的。</p>
+<p>下面介绍 ABB / KUKA / FANUC 机器人的保护方法，其它品牌限于个人经验无法说明。我理解的保护，至少有 2 个层面：</p>
+<ul>
+<li>代码内容的保护</li>
+<li>与运行环境（硬件）的绑定</li>
+</ul>
+<hr />
+<h2 id="abb">ABB</h2>
+<p>可以使用 ABB 的内部命令行工具 encode（Windows only）进行 RAPID 程序内容的保护。</p>
+<pre><code>encode [options] sourcefile destfile
+
+[options]
+
+-e  exclusively encoded files: Only add encoded files into the destfile, no copies of other files will be made.
+-s  syntax check: Make syntax check before encoding.
+-r  remove comment: Remove all comments before encoding. This option can not be used without –s.
+-n  NOVIEW: This option can not be used without –s.
+</code></pre>
+<p>完成后，生成的 destfile 是二进制文件，可以拷贝加载到 ABB 控制器内运行，用户无法看到内容。</p>
+<p>硬件绑定层面，可以使用函数 <code>GetSysInfo</code> 来获取序列号，与预设的进行比对。</p>
+<h2 id="kuka">KUKA</h2>
+<p>使用 KUKA.Encryption 工具（图形界面工具，Windows only），可以加密 KRL 模块，将 .src 和 .dat 转换为一个 .pfc 文件。与 ABB 不同的是，生成的 .pfc 文件还是一个纯文本文件（XML）。</p>
+<p>KUKA.Encryption 既可以加密（encrypt），也可以签名（sign）；仅加密不能阻止用户改写被加密模块中的变量值，有此需求请同时使用签名功能。</p>
+<p>我个人曾经的探究结果是，使用了非对称加解密方法。公钥在 KUKA.Encryption 内，私钥在 KSS 内。典型的 .pfc 内容如下。</p>
+<pre><code>&lt;protectedFilesContainer&gt;
+  &lt;protectedFile name="xxxxxxx"&gt;
+    &lt;header&gt;
+      &lt;author&gt;
+      &lt;/author&gt;
+      &lt;comment&gt;
+      &lt;/comment&gt;
+      &lt;encryptionCertificateStore&gt;KUKA Roboter GmbH&lt;/encryptionCertificateStore&gt;
+      &lt;signatureCertificateStore&gt;KUKA Roboter GmbH&lt;/signatureCertificateStore&gt;
+      &lt;signatureCertificateName&gt;KUKA Roboter GmbH&lt;/signatureCertificateName&gt;
+      &lt;encryptionCertificateName&gt;KUKA Roboter GmbH&lt;/encryptionCertificateName&gt;
+      &lt;signedBlocks&gt;None&lt;/signedBlocks&gt;
+      &lt;encryptedBlocks&gt;Content, PrivateData&lt;/encryptedBlocks&gt;
+      &lt;privateHeader&gt;
+        &lt;entry name="&amp;amp;ACCESS" value="RVO" /&gt;
+        &lt;entry name="&amp;amp;REL" value="254" /&gt;
+        &lt;entry name="&amp;amp;PARAM EDITMASK =" value="*" /&gt;
+        &lt;entry name="&amp;amp;PARAM TEMPLATE =" value="C:\KRC\Roboter\Template\ExpertVorgabe" /&gt;
+      &lt;/privateHeader&gt;
+    &lt;/header&gt;
+    &lt;privateData&gt;kkkkkkkkkkkkkkkkkkkkk&lt;/privateData&gt;
+    &lt;content&gt;xxxxxxxxxxxxxxxxxxx&lt;/content&gt;
+    &lt;signature&gt;
+    &lt;/signature&gt;
+  &lt;/protectedFile&gt;
+&lt;/protectedFilesContainer&gt;
+</code></pre>
+<p>.pfc 无法直接在示教器上删除，需要使用卸载脚本。FIXME</p>
+<p>硬件绑定层面，可以读取 <code>$KR_SERIALNO</code> 与预设的进行比对。</p>
+<h2 id="fanuc">FANUC</h2>
+<p>好消息是 FANUC 的 KAREL 代码经过编译后就是二进制文件（p-code），不必考虑内容保护问题。</p>
+<p>而硬件绑定，根据<a href="https://www.robot-forum.com/robotforum/fanuc-robot-forum/how-to-get-control-uint-serial-number-by-karel/msg108118/#msg108118">这里的讨论</a>，绑定 MAC 地址是一个可行的选择。</p></body>
+</html>
