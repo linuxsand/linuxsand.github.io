@@ -24,7 +24,14 @@
     ORINET: VECTOR -- RO
     APPROACH: VECTOR -- RO
     LOCATION: VECTOR -- RW
-    CONFIG_DATA: VECTOR -- RW
+    CONFIG_DATA: CONFIG -- RW
+ENDSTRUCTURE
+</code></pre>
+<p>还需要提及 <code>VECTOR</code> 类型，它是包含三个浮点数的类型（向量），可以是位置，也可以是方向；所有字段可读写。</p>
+<pre><code>VECTOR = STRUCTURE
+    X: REAL
+    Y: REAL
+    Z: REAL
 ENDSTRUCTURE
 </code></pre>
 <p>可以使用“相对位置操作符 <code>:</code>” 进行坐标变化，使用 <code>&gt;=&lt;</code> 判断两个 POSITION 是否基本相等（不可能比较两个浮点数相等，对不对）。</p>
