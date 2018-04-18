@@ -1,0 +1,69 @@
+FANUC 位置寄存器支持的四种数据类型
+2018-04-18
+
+在 TPP（Teach pendant programming）层面，存储在位置寄存器（PR）中的往往是关节数据或直角坐标系下的位姿数据。
+
+实际上，PR 支持四种数据类型。
+
+1. POSITION
+2. XYZWPR
+3. XYZWPREXT
+4. JOINTPOS
+
+下面分别介绍。
+
+## POSITION
+
+它可不是仅仅包含 X Y Z 三个元素，而是一个更加复杂的数据结构，占用 56 字节的空间。
+
+    POSITION = STRUCTURE
+        NORMAL: VECTOR -- RO
+        ORINET: VECTOR -- RO
+        APPROACH: VECTOR -- RO
+        LOCATION: VECTOR -- RW
+        CONFIG_DATA: VECTOR -- RW
+    ENDSTRUCTURE
+
+可以使用“相对位置操作符 `:`” 进行坐标变化，使用 `>=<` 判断两个 POSITION 是否基本相等（不可能比较两个浮点数相等，对不对）。
+
+## XYZWPR
+
+XYZWPR 是表示机器人本体在直角坐标系下位置姿态的数据类型，WPR 是 XYZ 顺序的欧拉角，表示姿态；加上轴配置数据，一共 32 个字节。下面所有的字段都可以读写。
+
+    XYZWPR = STRUCTURE
+        X: REAL
+        Y: REAL
+        Z: REAL
+        W: REAL
+        P: REAL
+        R: REAL
+        CONFIG_DATA: CONFIG
+    ENDSTRUCTURE
+
+那么，`CONFIG` 变量就占用 32 - 6 * 4 = 8 个字节。其中四个字节 `R(L)U(D)N(F)T(B)` 表示关节朝向，剩余四个字节表示十六种（-8 ~ 7）旋转圈数的组合。
+## XYZWPREXT
+
+相比于 XYZWPR，XYZWPREXT 增加了三个外部轴的字段，占用空间达到 32 + 3 * 4 = 44 字节，其余保持一致。下面所有的字段都可以读写。
+
+    XYZWPR = STRUCTURE
+        X: REAL
+        Y: REAL
+        Z: REAL
+        W: REAL
+        P: REAL
+        R: REAL
+        CONFIG_DATA: CONFIG
+        EXT1: REAL
+        EXT2: REAL
+        EXT3: REAL
+    ENDSTRUCTURE
+
+## JOINTPOS
+
+表示关节位置，由于某个轴可能是直线轴，也可能是旋转轴，所以数值单位会相应是毫米或角度。占用的字节是 4 + 4 * n（n 是轴的数量）。
+
+使用 `CNV_REL_JPOS` 和 `CNV_JPS_REL` 去访问 JOINTPOS 中的数值。前者将某个浮点数数组写入某个 JOINTPOS 变量，后者将某个 JOINTPOS 变量的数值读出、写入到某个浮点数数组中。角度度量单位是 degree。
+
+
+
+
