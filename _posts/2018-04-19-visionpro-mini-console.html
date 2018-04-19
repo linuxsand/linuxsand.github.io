@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>VisionPro 应用控制台 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>VisionPro 应用控制台</h1>
+<p style="text-align: right;">黄杰, 2018-04-19<br />root[a]linuxsand.info</p><p>（这次不知道怎么起个合适的标题）</p>
+<p>前言：最近要测试我给一个国产机器人编写的程序库是否有问题（视觉二维引导方面），需要搭建测试环境；其中一个要求就是快速做出视觉程序。
+我以前基于 Cognex VisionPro 做的视觉应用太重了些，同时通信部分需要重写来适配新的消息格式——因此干脆从头做这个视觉应用。
+反正就我自己用，那么不考虑易用性，突发奇想：做一个命令行驱动的应用，在这个应用里可以完成视觉工程的编写，也能直接运行起来。</p>
+<p>这回受了 FANUC KCL 很大的启发，但为了方便查看图片，必须有个图像显示（CogRecordDisplay Control）；于是做成了这样：</p>
+<p><img alt="visionpro mini console screenshot" src="http://media.linuxsand.info/image/visionpro_mini_console.png" /></p>
+<p>目前它支持的命令如下：</p>
+<ul>
+<li><code>newtb tbname</code> 创建一个叫做 tbname 的新 CogToolBlock 对象，同时弹出一个窗口（CogToolBlock Edit Control）去编辑它</li>
+<li><code>renametb oldname newname</code> 重命名 CogToolBlock 对象</li>
+<li><code>loadtb tbpath</code> 从磁盘加载 vpp 文件并反序列化成 CogToolBlock 对象</li>
+<li><code>loadtbs tbsfolder</code> 从磁盘加载存有若干 vpp 文件的目录，并依次序列化成 CogToolBlock</li>
+<li><code>listtbs</code> 列出已经加载了的 CogToolBlock</li>
+<li><code>showtb tbname</code> 详细打印出该 CogToolBlock 的信息，包括输入输出终端、包含的工具</li>
+<li><code>edittb tbname</code> 弹出窗口编辑某个 CogToolBlock</li>
+<li><code>deltb tbname</code> 从内存中删除某个 CogToolBlock</li>
+<li><code>setrunorder tb1 tb2 ...</code> 为内存中已经加载了的 CogToolBlock 们排序，提供给 run 命令使用</li>
+<li><code>run</code> 运行已经排过序的 CogToolBlock，这个不通用，我这里默认除了最后一个 ToolBlock，其它的输入输出都是 CogImage8Grey 类型</li>
+<li><code>gc</code> 手动调用 .NET 垃圾收集器</li>
+<li><code>lsvpp path</code> 列出某个磁盘路径下的 vpp 文件</li>
+<li><code>clear</code> 清屏</li>
+<li><code>help</code> 显示帮助信息</li>
+<li><code>cmd</code> 呼叫出一个 cmd.exe</li>
+<li><code>exit</code> 退出程序</li>
+</ul>
+<p>典型的使用过程：</p>
+<ol>
+<li>创建 ToolBlock，<code>newtb tbname</code>，自行保存；或者加载磁盘上的 vpp，<code>loadtb tbpath</code> 或 <code>loadtbs tbsfolder</code></li>
+<li>排序 <code>setrunorder tb1 tb2 ...</code></li>
+<li>运行 <code>run</code></li>
+</ol>
+<p>运行之后，会将最后一个 ToolBlock 产出的图像（带图线 Records）显示出来；同时将结果打印出来，并以文本文件的形式保存到磁盘某处。之所以用文本文件，是为了尽可能通用，减少特定项目的硬编码。</p>
+<p>这个 Mini Console 内建了一个 socket server，它接收客户端的特定指令，去运行一串 ToolBlock，将结果（即上面持久化到磁盘的文本文件）读取解析出来，再封装成合法的消息返回给客户端。当然通信逻辑和消息格式是硬编码的，暂时没时间和精力去抽象出来。</p>
+<p>做这个东西花了今天白天的大部分时间，做完仍然觉得挺有意思：相信它能持续改善，发光发热。</p>
+<p><img alt="visionpro mini console screenshot 2" src="http://media.linuxsand.info/image/visionpro_mini_console_2.png" /></p></body>
+</html>
