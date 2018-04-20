@@ -16,7 +16,7 @@ VisionPro 应用控制台
 - `newtb tbname` 创建一个叫做 tbname 的新 CogToolBlock 对象，同时弹出一个窗口（CogToolBlock Edit Control）去编辑它
 - `renametb oldname newname` 重命名 CogToolBlock 对象
 - `loadtb tbpath` 从磁盘加载 vpp 文件并反序列化成 CogToolBlock 对象
-- `loadtbs tbsfolder` 从磁盘加载存有若干 vpp 文件的目录，并依次序列化成 CogToolBlock
+- `loadtbs tbsfolder` 从磁盘加载存有若干 vpp 文件的目录，并依次反序列化成 CogToolBlock
 - `listtbs` 列出已经加载了的 CogToolBlock
 - `showtb tbname` 详细打印出该 CogToolBlock 的信息，包括输入输出终端、包含的工具
 - `edittb tbname` 弹出窗口编辑某个 CogToolBlock
