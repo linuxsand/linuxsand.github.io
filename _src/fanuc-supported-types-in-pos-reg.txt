@@ -1,4 +1,4 @@
-FANUC 位置寄存器支持的四种数据类型
+﻿FANUC 位置寄存器支持的四种数据类型
 2018-04-18
 
 在 TPP（Teach pendant programming）层面，存储在位置寄存器（PR）中的往往是关节数据或直角坐标系下的位姿数据。
@@ -70,7 +70,7 @@ XYZWPR 是表示机器人本体在直角坐标系下位置姿态的数据类型�
 
 表示关节位置，由于某个轴可能是直线轴，也可能是旋转轴，所以数值单位会相应是毫米或角度。占用的字节是 4 + 4 * n（n 是轴的数量）。
 
-使用 `CNV_REL_JPOS` 和 `CNV_JPS_REL` 去访问 JOINTPOS 中的数值。前者将某个浮点数数组写入某个 JOINTPOS 变量，后者将某个 JOINTPOS 变量的数值读出、写入到某个浮点数数组中。角度度量单位是 degree。
+使用 `CNV_REL_JPOS` 和 `CNV_JPOS_REL` 去访问 JOINTPOS 中的数值。前者将某个浮点数数组写入某个 JOINTPOS 变量，后者将某个 JOINTPOS 变量的数值读出、写入到某个浮点数数组中。角度度量单位是 degree。
 
 
 
