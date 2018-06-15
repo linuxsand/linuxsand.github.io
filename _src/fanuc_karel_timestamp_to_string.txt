@@ -48,6 +48,7 @@ We can use mask and shift to extract year, month, ...  Karel has no SHIFT operat
     | month   | 0x01e00000 (AND 31457280)  | >> 21 (DIV 2097152)  |
     | day     | 0x001f0000 (AND 2031616)   | >> 16 (DIV 65536)    |
     | hour    | 0x0000f800 (AND 63488)     | >> 11 (DIV 2048)     |
+    | minute  | 0x000007e0 (AND 2016)      | >> 5  (DIV 32)       |
     | second  | 0x0000001f (AND 31)        | -                    |
     +---------+----------------------------+----------------------+
 
