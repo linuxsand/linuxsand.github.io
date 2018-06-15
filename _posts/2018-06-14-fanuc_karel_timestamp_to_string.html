@@ -35,7 +35,7 @@
 <pre><code>0100110,0110,01110 --&gt; year(7),month(4),day(5)
 01011,100000,00111 --&gt; hour(5),minute(6),second(5)
 </code></pre>
-<p>We can use mask and shift to extract year, month...karel has no SHIFT operator.</p>
+<p>We can use mask and shift to extract year, month, ...  Karel has no SHIFT operator, so use <code>DIV</code> to right shift.  I made a table below.</p>
 <pre><code>+---------+----------------------------+----------------------+
 |  field  |            mask            |        shift         |
 +---------+----------------------------+----------------------+
@@ -66,5 +66,5 @@ BEGIN
     )
 END now2str_
 </code></pre>
-<p>Feel free to use code above, you may need to modify them.</p></body>
+<p>Feel free to use code above, modify them to suit your scenario.</p></body>
 </html>

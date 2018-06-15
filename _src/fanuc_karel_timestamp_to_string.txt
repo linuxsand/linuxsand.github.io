@@ -39,7 +39,7 @@ so the binary form of `1288592391` is `0100,1100,1100,1110,0101,1100,0000,0111`.
     0100110,0110,01110 --> year(7),month(4),day(5)
     01011,100000,00111 --> hour(5),minute(6),second(5)
 
-We can use mask and shift to extract year, month...karel has no SHIFT operator.
+We can use mask and shift to extract year, month, ...  Karel has no SHIFT operator, so use `DIV` to right shift.  I made a table below.
 
     +---------+----------------------------+----------------------+
     |  field  |            mask            |        shift         |
@@ -73,4 +73,4 @@ Karel code:
         )
     END now2str_
 
-Feel free to use code above, you may need to modify them.
+Feel free to use code above, modify them to suit your scenario.
