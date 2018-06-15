@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>Convert Fanuc karel timestamp to string | 黄杰的记事本</title>
+</head>
+<body>
+<h1>Convert Fanuc karel timestamp to string</h1>
+<p style="text-align: right;">黄杰, 2018-06-14<br />root[a]linuxsand.info</p><p>Preface: try to write this topic in english.</p>
+<hr />
+<p>Let' say we have a string <code>2018-06-14 11:32:07</code> which stores current time.</p>
+<h2 id="unix-timestamp">Unix timestamp</h2>
+<pre><code>&gt;&gt;&gt; from datetime import datetime
+&gt;&gt;&gt; x = datetime(2018, 6, 14, 11, 32, 7)
+&gt;&gt;&gt; import time
+&gt;&gt;&gt; time.mktime(x.timetuple())
+1528947127.0
+</code></pre>
+<p>We got the unix-timestamp representation: <code>1528947127</code>.</p>
+<h2 id="fanuc-karel-timestamp">Fanuc Karel timestamp</h2>
+<p>Karel timestamp is not the same as unix's.  The same time <code>2018-06-14 11:32:07</code> is <code>1288592391</code> in fanuc karel.</p>
+<p>And the built-in function <code>CNV_TIME_STR</code> will convert time to <code>14-JUN-18 11:32</code> form (no seconds), that is why I need to implement it on my own.</p>
+<hr />
+<p>Note: 2018 = 1980 (year starts from 1980 in karel) + 38</p>
+<pre><code>--&gt; 38 = 0b0100110
+--&gt; 6  = 0b0110
+--&gt; 14 = 0b01110
+--&gt; 11 = 0b01011
+--&gt; 32 = 0b100000
+--&gt; 7  = 0b00111
+</code></pre>
+<p>so the binary form of <code>1288592391</code> is <code>0100,1100,1100,1110,0101,1100,0000,0111</code>.  The definition:</p>
+<pre><code>0100110,0110,01110 --&gt; year(7),month(4),day(5)
+01011,100000,00111 --&gt; hour(5),minute(6),second(5)
+</code></pre>
+<p>We can use mask and shift to extract year, month...karel has no SHIFT operator.</p>
+<pre><code>+---------+----------------------------+----------------------+
+|  field  |            mask            |        shift         |
++---------+----------------------------+----------------------+
+| year    | -                          | &gt;&gt; 25 (DIV 33554432) |
+| month   | 0x01e00000 (AND 31457280)  | &gt;&gt; 21 (DIV 2097152)  |
+| day     | 0x001f0000 (AND 2031616)   | &gt;&gt; 16 (DIV 65536)    |
+| hour    | 0x0000f800 (AND 63488)     | &gt;&gt; 11 (DIV 2048)     |
+| second  | 0x0000001f (AND 31)        | -                    |
++---------+----------------------------+----------------------+
+</code></pre>
+<p>Karel code:</p>
+<pre><code>-- util
+ROUTINE lfill(i: INTEGER): STRING
+VAR
+    s: STRING[2]
+BEGIN
+    IF i &lt; 10 THEN
+        s = '0' + i_to_s(i)
+    ELSE
+        s = i_to_s(i)
+    ENDIF
+    RETURN(s)
+END lfill
+
+
+ROUTINE now2str: STRING
+VAR
+    sec: INTEGER
+    y, mo, d, h, mi, s: INTEGER
+BEGIN
+    GET_TIME(sec)
+    y = sec DIV 33554432 + 1980
+    mo = sec AND 31457280 DIV 2097152
+    d = sec AND 2031616 DIV 65536
+    h = sec AND 63488 DIV 2048
+    mi = sec AND 2016 DIV 32
+    s = sec AND 31
+
+    RETURN(
+        i_to_s(y) + '-' + lfill(mo) + '-' + lfill(d) + ' ' + &amp;
+        lfill(h) + ':' + lfill(mi) + ':' + lfill(s) &amp;
+    )
+END now2str
+</code></pre>
+<p>Feel free to use code above.</p></body>
+</html>

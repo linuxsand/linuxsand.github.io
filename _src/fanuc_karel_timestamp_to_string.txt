@@ -1,0 +1,90 @@
+Convert Fanuc karel timestamp to string
+2018-06-14
+
+Preface: try to write this topic in english.
+
+-----------
+
+Let' say we have a string `2018-06-14 11:32:07` which stores current time.
+
+## Unix timestamp
+
+    >>> from datetime import datetime
+    >>> x = datetime(2018, 6, 14, 11, 32, 7)
+    >>> import time
+    >>> time.mktime(x.timetuple())
+    1528947127.0
+
+We got the unix-timestamp representation: `1528947127`.
+
+## Fanuc Karel timestamp
+
+Karel timestamp is not the same as unix's.  The same time `2018-06-14 11:32:07` is `1288592391` in fanuc karel.
+
+And the built-in function `CNV_TIME_STR` will convert time to `14-JUN-18 11:32` form (no seconds), that is why I need to implement it on my own.
+
+----
+
+Note: 2018 = 1980 (year starts from 1980 in karel) + 38
+
+    --> 38 = 0b0100110
+    --> 6  = 0b0110
+    --> 14 = 0b01110
+    --> 11 = 0b01011
+    --> 32 = 0b100000
+    --> 7  = 0b00111
+
+so the binary form of `1288592391` is `0100,1100,1100,1110,0101,1100,0000,0111`.  The definition:
+
+    0100110,0110,01110 --> year(7),month(4),day(5)
+    01011,100000,00111 --> hour(5),minute(6),second(5)
+
+We can use mask and shift to extract year, month...karel has no SHIFT operator.
+
+    +---------+----------------------------+----------------------+
+    |  field  |            mask            |        shift         |
+    +---------+----------------------------+----------------------+
+    | year    | -                          | >> 25 (DIV 33554432) |
+    | month   | 0x01e00000 (AND 31457280)  | >> 21 (DIV 2097152)  |
+    | day     | 0x001f0000 (AND 2031616)   | >> 16 (DIV 65536)    |
+    | hour    | 0x0000f800 (AND 63488)     | >> 11 (DIV 2048)     |
+    | second  | 0x0000001f (AND 31)        | -                    |
+    +---------+----------------------------+----------------------+
+
+
+Karel code:
+
+    -- util
+    ROUTINE lfill(i: INTEGER): STRING
+    VAR
+        s: STRING[2]
+    BEGIN
+        IF i < 10 THEN
+            s = '0' + i_to_s(i)
+        ELSE
+            s = i_to_s(i)
+        ENDIF
+        RETURN(s)
+    END lfill
+
+
+    ROUTINE now2str: STRING
+    VAR
+        sec: INTEGER
+        y, mo, d, h, mi, s: INTEGER
+    BEGIN
+        GET_TIME(sec)
+        y = sec DIV 33554432 + 1980
+        mo = sec AND 31457280 DIV 2097152
+        d = sec AND 2031616 DIV 65536
+        h = sec AND 63488 DIV 2048
+        mi = sec AND 2016 DIV 32
+        s = sec AND 31
+
+        RETURN(
+            i_to_s(y) + '-' + lfill(mo) + '-' + lfill(d) + ' ' + &
+            lfill(h) + ':' + lfill(mi) + ':' + lfill(s) &
+        )
+    END now2str
+
+Feel free to use code above.
