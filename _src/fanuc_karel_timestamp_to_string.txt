@@ -54,21 +54,7 @@ We can use mask and shift to extract year, month...karel has no SHIFT operator.
 
 Karel code:
 
-    -- util
-    ROUTINE lfill(i: INTEGER): STRING
-    VAR
-        s: STRING[2]
-    BEGIN
-        IF i < 10 THEN
-            s = '0' + i_to_s(i)
-        ELSE
-            s = i_to_s(i)
-        ENDIF
-        RETURN(s)
-    END lfill
-
-
-    ROUTINE now2str: STRING
+    ROUTINE now2str_
     VAR
         sec: INTEGER
         y, mo, d, h, mi, s: INTEGER
@@ -81,10 +67,10 @@ Karel code:
         mi = sec AND 2016 DIV 32
         s = sec AND 31
 
-        RETURN(
-            i_to_s(y) + '-' + lfill(mo) + '-' + lfill(d) + ' ' + &
-            lfill(h) + ':' + lfill(mi) + ':' + lfill(s) &
+        WRITE(
+            y, '-', mo, '-', d, ' ', &
+            h, ':', mi, ':', s, CR &
         )
-    END now2str
+    END now2str_
 
-Feel free to use code above.
+Feel free to use code above, you may need to modify them.

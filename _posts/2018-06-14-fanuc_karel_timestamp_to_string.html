@@ -47,21 +47,7 @@
 +---------+----------------------------+----------------------+
 </code></pre>
 <p>Karel code:</p>
-<pre><code>-- util
-ROUTINE lfill(i: INTEGER): STRING
-VAR
-    s: STRING[2]
-BEGIN
-    IF i &lt; 10 THEN
-        s = '0' + i_to_s(i)
-    ELSE
-        s = i_to_s(i)
-    ENDIF
-    RETURN(s)
-END lfill
-
-
-ROUTINE now2str: STRING
+<pre><code>ROUTINE now2str_
 VAR
     sec: INTEGER
     y, mo, d, h, mi, s: INTEGER
@@ -74,11 +60,11 @@ BEGIN
     mi = sec AND 2016 DIV 32
     s = sec AND 31
 
-    RETURN(
-        i_to_s(y) + '-' + lfill(mo) + '-' + lfill(d) + ' ' + &amp;
-        lfill(h) + ':' + lfill(mi) + ':' + lfill(s) &amp;
+    WRITE(
+        y, '-', mo, '-', d, ' ', &amp;
+        h, ':', mi, ':', s, CR &amp;
     )
-END now2str
+END now2str_
 </code></pre>
-<p>Feel free to use code above.</p></body>
+<p>Feel free to use code above, you may need to modify them.</p></body>
 </html>
