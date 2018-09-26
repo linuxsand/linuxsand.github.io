@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>PLB 中的几个坐标系 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>PLB 中的几个坐标系</h1>
+<p style="text-align: right;">黄杰, 2018-09-26<br />root[a]linuxsand.info</p><p>PLB 是 SICK 的视觉产品，可以理解为一套软硬件结合的系统，全称是 Part Localization in Bins，即箱中工件定位。它用于引导机器人实现 <a href="https://en.wikipedia.org/wiki/Bin_picking">random bin picking</a>。</p>
+<p>和 SICK China 合作，我实现了 FANUC（发那科） 和 KAWASAKI（川崎）的通信接口和代码示例，覆盖了 PLB 5.2 的基础功能。</p>
+<hr />
+<p>本文仅涉及 PLB 中的几个坐标系，对初入 3D 视觉的朋友也许会有帮助。内容和截图来源于 PLB 5.2 版本操作手册中的 3.2.4 Reference frames 章节。</p>
+<p>PLB 最终将计算出“工件坐标系（相对于机器人坐标系）”和“抓手相对于工件坐标系的位姿”。</p>
+<h2 id="part-frame">工件坐标系 part frame</h2>
+<p><img alt="" src="http://media.linuxsand.info/image/plb_part_frame.png" /></p>
+<p>A 是工件数模中的参考坐标系，B 是调整后的坐标系。part frame 的数值是相对于机器人坐标系的（事先需要完成标定），由 PLB 计算而来。</p>
+<h2 id="gripper-frame">抓手坐标系 gripper frame</h2>
+<p><img alt="" src="http://media.linuxsand.info/image/plb_gripper_frame.png" /></p>
+<p>A 是抓手数模中的参考坐标系，C 是调整过后的坐标系（原点需要和真实的 TCP 重合），B 是 A ---&gt; C 的变换。</p>
+<h2 id="pick-pose">抓取位姿 pick pose</h2>
+<p><img alt="" src="http://media.linuxsand.info/image/plb_pick_pose.png" /></p>
+<p>A 是调整过后的抓手坐标系，B 是调整过后的工件坐标系。</p>
+<p>如果是相对简单的应用，可以让 PLB 为你计算好真正的 pick pose（即 absolute tool frame），在机器人接口中指定使用 absolute tool frame 即可。</p>
+<p>但是在使用相对工具坐标系（relative tool frame）时，PLB 输出的数据不能直接让机器人运动过去，而是需要先自行做变换，见<a href="/multiply-frames-in-mainstream-indurial-robots.html">旧文</a>：</p>
+<pre><code>pick pose = part frame × relative tool frame
+</code></pre>
+<p>更复杂的情况是，某些工件从横截面看是轴对称的，只需要一种抓取姿态就可以应付；为此 PLB 引入了 vertical correction，即垂直校正。那么，这时：</p>
+<pre><code>pick pose = vertical correction × part frame × relative frame
+</code></pre>
+<p>摘取 PLB 5.2 机器人接口支持的字段。    </p>
+<pre><code>[PartResultMsg]
+PartResult,
+    $result,
+    $imageId,
+    $jobAlias,
+    $rotationConvention,
+    $partFrameX,$partFrameY,$partFrameZ,
+    $partFrameR1,$partFrameR2,$partFrameR3,
+    $numValidPickPoses,
+
+    $pickPoseAlias0,$gripperAlias0,
+    $absoluteToolFrame0X,$absoluteToolFrame0Y,$absoluteToolFrame0Z,       ; &lt;------ 绝对工具坐标系
+    $absoluteToolFrame0R1,$absoluteToolFrame0R2,$absoluteToolFrame0R3,
+    $relativeToolFrame0X,$relativeToolFrame0Y,$relativeToolFrame0Z,       ; &lt;------ 相对工具坐标系
+    $relativeToolFrame0R1,$relativeToolFrame0R2,$relativeToolFrame0R3,
+    $verticalCorrection0X,$verticalCorrection0Y,$verticalCorrection0Z,    ; &lt;------ 垂直校正
+    $verticalCorrection0R1,$verticalCorrection0R2,$verticalCorrection0R3,
+
+    $pickPoseAlias1,$gripperAlias1,
+    $absoluteToolFrame1X,$absoluteToolFrame1Y,$absoluteToolFrame1Z,
+    $absoluteToolFrame1R1,$absoluteToolFrame1R2,$absoluteToolFrame1R3,
+    $relativeToolFrame1X,$relativeToolFrame1Y,$relativeToolFrame1Z,
+    $relativeToolFrame1R1,$relativeToolFrame1R2,$relativeToolFrame1R3,
+    $verticalCorrection1X,$verticalCorrection1Y,$verticalCorrection1Z,
+    $verticalCorrection1R1,$verticalCorrection1R2,$verticalCorrection1R3,
+
+    $highestPointX,$highestPointY,$highestPointZ,
+    $moreToAnalyze;
+</code></pre>
+<hr />
+<p>拓展：为了放工件时更加灵活和优雅，也可以根据这些坐标系数据计算出一个新的机器人工具数据，新工具的 TCP 与工件的坐标系原点重合。手册里并没有指出如何变换。</p>
+<p>但是这无非就是求出 tool 1 ---&gt; tool 2 的变换关系 T。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/plb_new_tool.png" /></p>
+<pre><code>T = inv(pick pose) × part frame
+
+tool 2 = tool 1 × T
+       = tool 1 × inv(pick pose) × part frame
+       = tool 1 × inv(vertical correction × part frame × relative frame) × part frame
+</code></pre></body>
+</html>
