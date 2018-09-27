@@ -75,7 +75,7 @@ A 是调整过后的抓手坐标系，B 是调整过后的工件坐标系。
 
 拓展：为了放工件时更加灵活和优雅，也可以根据这些坐标系数据计算出一个新的机器人工具数据，新工具的 TCP 与工件的坐标系原点重合。手册里并没有指出如何变换。
 
-但是这无非就是求出 tool 1 ---> tool 2 的变换关系 T。
+但这实际上就是求出 tool 1 ---> tool 2 的变换关系 T。
 
 ![](http://media.linuxsand.info/image/plb_new_tool.png)
 
@@ -83,4 +83,4 @@ A 是调整过后的抓手坐标系，B 是调整过后的工件坐标系。
 
     tool 2 = tool 1 × T
            = tool 1 × inv(pick pose) × part frame
-           = tool 1 × inv(vertical correction × part frame × relative frame) × part frame
+           = tool 1 × inv(vertical correction × part frame × relative tool frame) × part frame
