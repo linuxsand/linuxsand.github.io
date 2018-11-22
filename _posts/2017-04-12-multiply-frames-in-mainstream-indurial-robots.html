@@ -13,9 +13,11 @@
 <li>KUKA KRC4，见 Operating and Programming Instructions for System Integrators 的 11.13.2 - Geometric Operator <code>:</code></li>
 <li>ABB IRC5，见 RAPID Instructions, Functions and Data types 的 2.100 - <code>PoseMult</code></li>
 <li>FANUC R-30iB，使用 KAREL 的 Relative Position Operator <code>:</code></li>
+<li>Motoman，使用 INFORM 中的 <code>MULMAT</code></li>
+<li>Universal Robots 的 <code>pose_trans</code></li>
 </ul>
-<p>KUKA 和 FANUC 使用了操作符（<code>:</code>）的形式，而 ABB 使用了封装为函数的形式。</p>
-<p>如果碰到一些所谓高端的应用，需要使用坐标系变换，一个选择是使用这些机器人系统内建的方法来完成。当然，也可以在外部设备上编程实现，那是另外一个话题了，这里不表。</p>
+<p>KUKA 和 FANUC 使用了操作符（<code>:</code>）的形式，而其它几种使用了函数的形式。</p>
+<p>如果碰到一些所谓“高端”的应用，需要使用坐标系变换，一个选择是使用这些机器人系统内建的方法来完成。当然，也可以在外部设备上编程实现，那是另外一个话题了，这里不表。</p>
 <hr />
 <p>KUKA 的例子见<a href="/kuka-convert-pos-from-one-base-to-another.html">这里</a>。</p></body>
 </html>
