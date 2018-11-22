@@ -31,8 +31,6 @@ code {
     padding: 2px 4px;
     font-size: 90%;
     color: #c0341d;
-    background-color: #fcedea;
-    border-radius: 3px;
 }
 pre, blockquote {padding-left: 15px; border-left: 3px solid #acacac; word-wrap: break-word;}
 a {color: #ccc;}
