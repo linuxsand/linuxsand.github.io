@@ -36,7 +36,12 @@
 <p>要想可视化机器人运动，只要能快速频繁地读取机器人的各关节度数就行。对于 KRC，就是频繁读取系统变量 <code>$AXIS_ACT</code>，将其值解析为浮点数，调用 RoboDK 的 API 就能实现预期目的。</p>
 <p>RoboDK API: <a href="https://robodk.com/doc/en/RoboDK-API.html">https://robodk.com/doc/en/RoboDK-API.html</a></p>
 <p>当然，需要先创建带有 KUKA 机器人的 RoboDK 工程，请使用 KR 210-2 这款本体，它是 OfficeLite 使用的本体型号。</p>
-<p>我在 RoboDK 中创建了两个脚本，一个是定期频繁读取机器人关节读数的脚本（<code>poll_joints.py</code>），也就是将控制器同步到本体模型；另一个脚本（<code>send_joints.py</code>）则相反，将本体模型的关节角同步到控制器，例如我在 RoboDK 中手动拖拽了模型，运行 <code>send_joints.py</code>，它就将模型的关节角写入 KRC 的用户自定义全局变量（也可以偷懒利用系统内建的 <code>XHOME</code> 变量）；回到在 KRC 端，使用几行 KRL 代码就可以从变量中取出数值，拼接为 <code>AXIS</code> 类型，最后 PTP 插补，这就完成了模型到控制器的手动同步。</p>
+<p>我在 RoboDK 中创建了两个脚本，一个是定期频繁读取机器人关节读数的脚本（<code>poll_joints.py</code>），也就是将控制器同步到本体模型；另一个脚本（<code>send_joints.py</code>）则相反，将本体模型的关节角同步到控制器，例如我在 RoboDK 中手动拖拽了模型，运行 <code>send_joints.py</code>，它就将模型的关节角写入 KRC 的用户自定义全局变量（也可以偷懒利用系统内建的 <code>XHOME</code> 变量）；回到 KRC 端，使用几行 KRL 代码就可以从变量中取出数值，拼接为 <code>AXIS</code> 类型，最后 PTP 插补，这就完成了模型到控制器的手动同步。</p>
 <p>效果如下。</p>
-<iframe width=520  height=288 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe></body>
+<p>优酷</p>
+<iframe width=520  height=288 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe>
+
+<hr />
+<p>Youtube</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DwKwxEhbRDA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></body>
 </html>

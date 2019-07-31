@@ -34,8 +34,16 @@ RoboDK API: <https://robodk.com/doc/en/RoboDK-API.html>
 
 当然，需要先创建带有 KUKA 机器人的 RoboDK 工程，请使用 KR 210-2 这款本体，它是 OfficeLite 使用的本体型号。
 
-我在 RoboDK 中创建了两个脚本，一个是定期频繁读取机器人关节读数的脚本（`poll_joints.py`），也就是将控制器同步到本体模型；另一个脚本（`send_joints.py`）则相反，将本体模型的关节角同步到控制器，例如我在 RoboDK 中手动拖拽了模型，运行 `send_joints.py`，它就将模型的关节角写入 KRC 的用户自定义全局变量（也可以偷懒利用系统内建的 `XHOME` 变量）；回到在 KRC 端，使用几行 KRL 代码就可以从变量中取出数值，拼接为 `AXIS` 类型，最后 PTP 插补，这就完成了模型到控制器的手动同步。
+我在 RoboDK 中创建了两个脚本，一个是定期频繁读取机器人关节读数的脚本（`poll_joints.py`），也就是将控制器同步到本体模型；另一个脚本（`send_joints.py`）则相反，将本体模型的关节角同步到控制器，例如我在 RoboDK 中手动拖拽了模型，运行 `send_joints.py`，它就将模型的关节角写入 KRC 的用户自定义全局变量（也可以偷懒利用系统内建的 `XHOME` 变量）；回到 KRC 端，使用几行 KRL 代码就可以从变量中取出数值，拼接为 `AXIS` 类型，最后 PTP 插补，这就完成了模型到控制器的手动同步。
 
 效果如下。
 
+优酷
+
 <iframe width=520  height=288 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe>
+
+------------
+
+Youtube
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DwKwxEhbRDA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
