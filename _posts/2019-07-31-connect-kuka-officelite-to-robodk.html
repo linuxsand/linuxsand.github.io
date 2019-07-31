@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>连接 KUKA OfficeLite 到 RoboDK | 黄杰的记事本</title>
+</head>
+<body>
+<h1>连接 KUKA OfficeLite 到 RoboDK</h1>
+<p style="text-align: right;">黄杰, 2019-07-31<br />root[a]linuxsand.info</p><p>许久没做 KRC4 的编程，其实当前工作上也不需要，只是想强制自己练练手。</p>
+<p>在写了几十行代码后，我想将机器人本体可视化出来，这样能带来直观的调试感受。无奈，我并没有 KUKA SimPro，无法将 OfficeLite 连接到它。我想到用 RoboDK 来做这件事情，于是有了这篇文章。</p>
+<hr />
+<h2 id="_1">前提</h2>
+<ul>
+<li>KUKA OfficeLite 虚拟机<ul>
+<li>安装了 KicVarGateway 或 KukaVarProxy，前者是我以前工作的成果之一，不便分享</li>
+</ul>
+</li>
+<li>RoboDK 仿真软件<ul>
+<li>调用 <a href="https://pypi.org/project/py-openshowvar/">py_openshowvar</a> 去连接 OfficeLite 中的 KicVarGateway</li>
+</ul>
+</li>
+</ul>
+<p>稍微解释一下：</p>
+<ul>
+<li>OfficeLite 是 KUKA 的控制器仿真软件，它等效于一台 KRC（库卡机器人控制器），但不能可视化本体</li>
+<li>KukaVarProxy 是 ImtsSrl 开发的、运行于 KRC 的服务端软件，它接受客户端请求去读写 KRC 的变量；<a href="https://www.imts.eu/open-sourcing-kukavarproxy/">现已开源</a></li>
+<li>KicVarGateway 是我和前同事 LT 开发的、兼容 KukaVarProxy 的服务端软件，未开源</li>
+<li>Openshowvar 是运行于外部计算机的客户端软件，它有多种实现，C++ / Java / Python；我实现了 Python 版本<a href="https://github.com/linuxsand/py_openshowvar">并开源</a></li>
+</ul>
+<p>如果你不喜欢使用这套连接技术，可自行使用 TCP/IP socket 来实现；那么你就需要在 KRC 中安装 Ethernet KRL 来让库卡的编程语言具备网络通信能力，同时在 PC 端利用 RoboDK 的脚本功能实现网络通信。</p>
+<hr />
+<h2 id="_2">开始</h2>
+<p>要想可视化机器人运动，只要能快速频繁地读取机器人的各关节度数就行。对于 KRC，就是频繁读取系统变量 <code>$AXIS_ACT</code>，将其值解析为浮点数，调用 RoboDK 的 API 就能实现预期目的。</p>
+<p>RoboDK API: <a href="https://robodk.com/doc/en/RoboDK-API.html">https://robodk.com/doc/en/RoboDK-API.html</a></p>
+<p>当然，需要先创建带有 KUKA 机器人的 RoboDK 工程，请使用 KR 210-2 这款本体，它是 OfficeLite 使用的本体型号。</p>
+<p>我在 RoboDK 中创建了两个脚本，一个是定期频繁读取机器人关节读数的脚本（<code>poll_joints.py</code>），也就是将控制器同步到本体模型；另一个脚本（<code>send_joints.py</code>）则相反，将本体模型的关节角同步到控制器，例如我在 RoboDK 中手动拖拽了模型，运行 <code>send_joints.py</code>，它就将模型的关节角写入 KRC 的用户自定义全局变量（也可以偷懒利用系统内建的 <code>XHOME</code> 变量）；回到在 KRC 端，使用几行 KRL 代码就可以从变量中取出数值，拼接为 <code>AXIS</code> 类型，最后 PTP 插补，这就完成了模型到控制器的手动同步。</p>
+<p>效果如下。</p>
+<iframe height=498 width=886 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe></body>
+</html>
