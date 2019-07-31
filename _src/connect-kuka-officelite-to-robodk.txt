@@ -16,6 +16,7 @@
 
 稍微解释一下：
 
+- [RoboDK](https://robodk.com) 是一款机器人仿真软件，具备 Python / C# / C++ 等编程接口
 - OfficeLite 是 KUKA 的控制器仿真软件，它等效于一台 KRC（库卡机器人控制器），但不能可视化本体
 - KukaVarProxy 是 ImtsSrl 开发的、运行于 KRC 的服务端软件，它接受客户端请求去读写 KRC 的变量；[现已开源](https://www.imts.eu/open-sourcing-kukavarproxy/)
 - KicVarGateway 是我和前同事 LT 开发的、兼容 KukaVarProxy 的服务端软件，未开源
@@ -37,4 +38,4 @@ RoboDK API: <https://robodk.com/doc/en/RoboDK-API.html>
 
 效果如下。
 
-<iframe height=498 width=886 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe>
+<iframe width=520  height=288 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe>

@@ -24,6 +24,7 @@
 </ul>
 <p>稍微解释一下：</p>
 <ul>
+<li><a href="https://robodk.com">RoboDK</a> 是一款机器人仿真软件，具备 Python / C# / C++ 等编程接口</li>
 <li>OfficeLite 是 KUKA 的控制器仿真软件，它等效于一台 KRC（库卡机器人控制器），但不能可视化本体</li>
 <li>KukaVarProxy 是 ImtsSrl 开发的、运行于 KRC 的服务端软件，它接受客户端请求去读写 KRC 的变量；<a href="https://www.imts.eu/open-sourcing-kukavarproxy/">现已开源</a></li>
 <li>KicVarGateway 是我和前同事 LT 开发的、兼容 KukaVarProxy 的服务端软件，未开源</li>
@@ -37,5 +38,5 @@
 <p>当然，需要先创建带有 KUKA 机器人的 RoboDK 工程，请使用 KR 210-2 这款本体，它是 OfficeLite 使用的本体型号。</p>
 <p>我在 RoboDK 中创建了两个脚本，一个是定期频繁读取机器人关节读数的脚本（<code>poll_joints.py</code>），也就是将控制器同步到本体模型；另一个脚本（<code>send_joints.py</code>）则相反，将本体模型的关节角同步到控制器，例如我在 RoboDK 中手动拖拽了模型，运行 <code>send_joints.py</code>，它就将模型的关节角写入 KRC 的用户自定义全局变量（也可以偷懒利用系统内建的 <code>XHOME</code> 变量）；回到在 KRC 端，使用几行 KRL 代码就可以从变量中取出数值，拼接为 <code>AXIS</code> 类型，最后 PTP 插补，这就完成了模型到控制器的手动同步。</p>
 <p>效果如下。</p>
-<iframe height=498 width=886 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe></body>
+<iframe width=520  height=288 src='http://player.youku.com/embed/XNDI5MzkyNzUyNA==' frameborder=0 'allowfullscreen'></iframe></body>
 </html>
