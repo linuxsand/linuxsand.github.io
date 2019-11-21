@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>cmd.exe 的快速编辑模式阻塞了应用程序 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>cmd.exe 的快速编辑模式阻塞了应用程序</h1>
+<p style="text-align: right;">黄杰, 2019-11-21<br />root[a]linuxsand.info</p><p>近期出差发生了一件很有意思的事情。</p>
+<h2 id="_1">经过描述</h2>
+<p>工控机上跑着一个命令行程序（该程序具备网络通信功能），它会频繁打印信息到标准输出。由于需要定期查看输出的最新信息，我们习惯按住鼠标左键拖选关键输出（此时进入了 cmd.exe 的快速编辑模式），这样就能高亮显示了，阅读起来轻松些。</p>
+<p>看完输出后，人就走开了（此时仍然维持着快速编辑模式）。</p>
+<p>不久，我们发现似乎程序在某个时间点，本该收到外部网络数据，但是迟迟收不到。纳闷。</p>
+<p>于是不得不中断设备的运行，切到手动模式操作。</p>
+<hr />
+<p>后来同事提及，他碰到过类似事情，最后发现在选中 cmd.exe 的输出时，会阻塞程序的运行。</p>
+<p>我写了几行代码验证，果然如此。</p>
+<pre><code>import time
+import sys
+
+i = 0
+while 1:
+    sys.stdout.write('%d select console output\n' % i)
+    i += 1
+    time.sleep(1)
+</code></pre>
+<h2 id="_2">解决办法</h2>
+<ul>
+<li>手动设置 cmd.exe 的属性：不勾选“快速编辑模式”</li>
+<li>或者，在自己的命令行程序中，通过编程动态地禁用“快速编辑模式” <a href="https://stackoverflow.com/a/42998160">https://stackoverflow.com/a/42998160</a></li>
+<li>管好自己的手；选中输出后，可以通过回车键或 Esc 键退出“快速编辑模式”</li>
+</ul>
+<h2 id="_3">拓展阅读</h2>
+<p><a href="https://stackoverflow.com/questions/30418886/how-and-why-does-quickedit-mode-in-command-prompt-freeze-applications">https://stackoverflow.com/questions/30418886/how-and-why-does-quickedit-mode-in-command-prompt-freeze-applications</a></p></body>
+</html>
