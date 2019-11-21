@@ -17,7 +17,8 @@
 <hr />
 <p>后来同事提及，他碰到过类似事情，最后发现在选中 cmd.exe 的输出时，会阻塞程序的运行。</p>
 <p>我写了几行代码验证，果然如此。</p>
-<pre><code>import time
+<pre>
+import time
 import sys
 
 i = 0
@@ -25,7 +26,8 @@ while 1:
     sys.stdout.write('%d select console output\n' % i)
     i += 1
     time.sleep(1)
-</code></pre>
+</pre>
+
 <h2 id="_2">解决办法</h2>
 <ul>
 <li>手动设置 cmd.exe 的属性：不勾选“快速编辑模式”</li>

@@ -19,15 +19,16 @@ cmd.exe 的快速编辑模式阻塞了应用程序
 
 我写了几行代码验证，果然如此。
 
+<pre>
+import time
+import sys
 
-    import time
-    import sys
-
-    i = 0
-    while 1:
-        sys.stdout.write('%d select console output\n' % i)
-        i += 1
-        time.sleep(1)
+i = 0
+while 1:
+    sys.stdout.write('%d select console output\n' % i)
+    i += 1
+    time.sleep(1)
+</pre>
 
 ## 解决办法
 
