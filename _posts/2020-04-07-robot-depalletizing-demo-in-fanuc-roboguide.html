@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>使用 FANUC Roboguide 进行拆垛应用仿真 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>使用 FANUC Roboguide 进行拆垛应用仿真</h1>
+<p style="text-align: right;">黄杰, 2020-04-07<br />root[a]linuxsand.info</p><p>三月底时，领导让我紧急做个 FANUC 机器人的拆垛仿真，需要：</p>
+<ol>
+<li>评估循环时间</li>
+<li>仿真需要有吸取放置的效果</li>
+</ol>
+<p>前者这条约束，导致没法用 RoboDK 这样的第三方软件。</p>
+<p>于是不得不用 FANUC 的 RoboGuide 了，虽然我接触 FANUC 好些年了，但只用 Roboguide 做程序代码的仿真和基本的布局验证。</p>
+<p>好一顿折腾，记录如下。<strong>不欢迎全文转载或部分转载，请使用超链接传播</strong>。</p>
+<hr />
+<p>我会从本次任务中抽取几个主题，构成本文内容：</p>
+<ol>
+<li>基本的建模</li>
+<li>概念：Part / Fixture</li>
+<li>手动生成垛型</li>
+<li>实现仿真抓放</li>
+<li>混合使用机器人程序（TPE）和仿真程序</li>
+</ol>
+<hr />
+<h2 id="1">1. 基本的建模</h2>
+<p>除去机器人模型外，需要若干基本模型，用于支持仿真。例如，搬运对象：箱子（立方体）；托盘；机器人工具（吸盘）。</p>
+<p>可以通过文件来导入，也可以在 Roboguide 内进行简单几何体的建模。模型导入或创建完毕后，依据布局图进行相应的模型摆放。</p>
+<p>如何安装机器人工具这类操作，不在此赘述，请查找自带的帮助文档，或者按照你习惯的操作进行探索。</p>
+<p>Roboguide 给框定的操作逻辑是，用户先想好导入的模型是什么类别（machine / fixture / part / obstacle），然后再导入。</p>
+<h2 id="2-part-fixture">2. 概念：Part / Fixture</h2>
+<p>摘录自帮助文档的《Working with Parts》章节：</p>
+<ul>
+<li><code>Parts are objects that the robot can take actions with.</code></li>
+<li><code>There is a direct relationship between fixtures and parts in the workcell.</code></li>
+<li><code>Parts are used in fixtures.</code></li>
+<li><code>Parts must be associated with a fixture and/ or with end of arm tooling before they can be used.</code></li>
+</ul>
+<p>例如，已经导入了类别为 Part 的模型，但是它不能直接使用；用户需要将它与夹具或机器人工具关联。</p>
+<h2 id="3">3. 手动生成垛型</h2>
+<p>下表为手工生成垛型的操作。</p>
+<table>
+<thead>
+<tr>
+<th>示意图</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/1.jpg" /></td>
+<td>左图已经安装了机器人工具，放置了托盘到合适位置；箱子作为 part 已经导入（但由于未关联，因此不显示）</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/2.jpg" /></td>
+<td>左图显示了作为 fixture 的托盘，它的基本属性（位姿等）</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/3.jpg" /></td>
+<td>切换到托盘的 Parts 属性页，可以从中看到仿真工作站内所有的 parts，勾选某个 part 后就完成了 part 与 fixture 的关联</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/4.jpg" /></td>
+<td>完成关联后，作为 part 的箱子就出现在作为 fixture 的托盘上，由于 part offset 全部为零，箱子位于托盘的几何原点</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/5.jpg" /></td>
+<td>可以通过调整 part offset 来改变箱子在托盘上的位姿；当前只有一个箱子，点击 Add 按钮后能批量创建箱子副本</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/6.jpg" /></td>
+<td>进入到 place parts 页面，提供两种方式进行对象的批量产生：类似 AutoCAD 的阵列，或从文本文件导入；左图显示了使用阵列的方式创建四层箱子，每层是三行三列。</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/7.jpg" /></td>
+<td>创建完成后，可以看到一共有了 36 个箱子， 36 = 3 * 3 * 4，以 box[x, y, z] 的形式来表征。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4">4. 实现仿真抓放</h2>
+<p>为了实现仿真抓放，我们先配置机器人工具以实现抓取、放置的动画效果，下表的操作将机器人工具（EOAT）与 parts 关联。</p>
+<table>
+<thead>
+<tr>
+<th>示意图</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/21.jpg" /></td>
+<td>以工具一（EOAT 1）为例。进入其属性页</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/22.jpg" /></td>
+<td>切换到 Parts 标签页，与上一章节的关联 fixture 与 part 类似，这里也是勾选 part 即可；同样可以编辑 part offset 来调整 part 在工具上的位姿。<br/><br/>注意：右下角有两个复选框：1）示教时可见；2）运行时可见 —— 顾名思义，前者勾选表示在示教时被关联的 part 是显示在机器人工具上的（如图），后者不勾选表示运行时被关联的 part 不会默认显示，除非调用了 <code>Pickup</code> 命令。<br/><br/>需要手动测试位姿数据的合理性：将机器人移动到某个箱子上表面附近，点击左图右下角的 <code>MoveTo</code>，如果不能按预期到达箱子上表面，请检查箱子的姿态。</td>
+</tr>
+</tbody>
+</table>
+<p>将机器人工具与 part 关联后，如何实现 attach / detach 呢？Roboguide 提供了一种特别类型的程序，叫做仿真程序（Simulation program）；它与真实的机器人程序（TPE / KAREL 程序）不同，只能用于仿真环境。</p>
+<p>从 Teach 菜单添加仿真程序，例如 <code>attach_box</code>：</p>
+<table>
+<thead>
+<tr>
+<th>示意图</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/23.jpg" /></td>
+<td>插入 <code>Pickup</code> 指令，<code>Pickup (part) From (fixture) With (tool)</code> 用什么工具从哪里抓取什么工件，很好理解了</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/24.jpg" /></td>
+<td>可以从下拉菜单中选择某个特定的 part 副本，此处选择了 <code>box[*]</code>，实测效果为抓取最靠近机器人工具的 part 副本，类似于 <code>AttachClosest</code> 这样的语义。</td>
+</tr>
+</tbody>
+</table>
+<p>同理，可以添加放置的程序（使用 <code>Drop</code> 指令）。至此完成了仿真抓放。</p>
+<h2 id="5-tpe">5. 混合使用机器人程序（TPE）和仿真程序</h2>
+<p>终于到了综合部分：如何让机器人运动到某个位姿，抓取箱子，运动到另一个位姿，放置箱子。</p>
+<p>如果只是抓取位姿、放置位姿都是固定的，那么很简单：添加仿真程序，插入类似 <code>J P[...] 100% FINE</code> 的指令，混合 <code>Pickup</code> <code>Drop</code> 指令就可以。</p>
+<p>但是本任务的特点是：</p>
+<ul>
+<li>有 36 个箱子待搬运，数量很多，不可能一一示教</li>
+<li>明明箱子的位姿是规律的（使用阵列生成），如果不用自动化来实现非常可惜</li>
+</ul>
+<p>好，这“一推一拉”的形势，决定了我们肯定要用聪明些的方法。</p>
+<p>分解：</p>
+<ul>
+<li>设法得到所有箱子的位姿</li>
+<li>在程序中设法利用上一步的箱子位姿</li>
+</ul>
+<p>帮助文档的《Teach a program》章含有 Combining simulation and TP programs into a single animation program 小节，完成本任务需要用到仿真程序和机器人程序的结合。因为仿真程序（Simulation program）的指令和能力非常有限。</p>
+<p>因此我的思路为，得到箱子位姿后，设法计算、生成两个机器人程序（<code>APPRO.TP</code> / <code>PICK.TP</code>，前者为接近、离开某个箱子提供位姿数据，后者为吸取某个箱子提供位姿数据）；这两个机器人程序被仿真程序调用，如下图。</p>
+<p><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/27.jpg" /></p>
+<p>细心的读者会发现，在仿真程序中使用了全局的数字寄存器 <code>R[1]</code>，用以表示当前搬运哪个箱子。<code>APPRO.TP</code> / <code>PICK.TP</code> 会查询 <code>R[1]</code> 的值，来提供正确的箱子位姿，同样地，当前的箱子位姿使用了全局的位置寄存器 <code>PR[1]</code>。</p>
+<hr />
+<p>下表为如何得到箱子们的位姿。</p>
+<table>
+<thead>
+<tr>
+<th>示意图</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/25.jpg" /></td>
+<td>回到托盘：托盘属性的 part 标签页下，有 Export 按钮，点击后即可导出箱子数据</td>
+</tr>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/26.jpg" /></td>
+<td>导出格式为 CSV 文件，利于外部处理；打开 CSV 文件可以看到，每行是单个箱子的位姿 X Y Z RX RY RZ；这个位姿的含义是：箱子参考托盘的位姿；实际使用时，应该把箱子位姿变换到机器人世界坐标系下面：托盘位姿是已知的，所以箱子的绝对位姿是可以在外部算出来的，本文不讲这些</td>
+</tr>
+</tbody>
+</table>
+<p>得到箱子的绝对位姿后，根据需要做处理后（至少按照箱子 z 值排个序吧），就可以根据如下的 FANUC TPE 程序的模板来生成 <code>APPRO.TP</code> / <code>PICK.TP</code> 了 （注意，下面的代码无法成功编译，仅作示意）。</p>
+<p><a href="javascript:alert('下载链接还没准备好')">点击这里下载</a>生成的 pick.ls 程序，注意 pick.ls 是为了配合仿真程序而生成的，很冗长。</p>
+<p>科普：TPE 程序的源文件后缀为 .ls，可以通过 Roboguide 或 WinOLPC 编译成二进制的 .tp，.tp 能直接被 FANUC 控制器加载执行。</p>
+<pre>
+/PROG  PICK
+/ATTR
+OWNER       = MNEDITOR;
+COMMENT     = ""
+PROG_SIZE   = 913;
+CREATE      = DATE 20-03-28  TIME 11:00:00;
+MODIFIED      = DATE 20-03-28  TIME 11:00:00;
+FILE_NAME   = ;
+VERSION    = 0;
+LINE_COUNT  = 13;
+MEMORY_SIZE = 1197;
+PROTECT     = READ_WRITE;
+TCD:  STACK_SIZE    = 0,
+      TASK_PRIORITY = 50,
+      TIME_SLICE    = 0,
+      BUSY_LAMP_OFF = 0,
+      ABORT_REQUEST = 0,
+      PAUSE_REQUEST = 0;
+DEFAULT_GROUP   = 1,*,*,*,*,*,*,* ;
+CONTROL_CODE    = 00000000 00000000;
+/APPL
+/MN
+1:UTOOL_NUM[GP1]= 1 ;
+2:UFRAME_NUM[GP1]= 0 ;
+! 一堆运动语句;
+/POS
+! 一堆位姿数据
+/END
+
+</pre>
+
+<p>至此，就能实现精确运动到每个箱子上表面，抓取和放置了。</p>
+<table>
+<thead>
+<tr>
+<th>使用微信打赏</th>
+<th>使用支付宝打赏</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/pay/weixin_8.png" /></td>
+<td><img alt="" src="http://media.linuxsand.info/image/pay/zhifubao_8.jpg" /></td>
+</tr>
+</tbody>
+</table>
+<script type="text/javascript">
+
+    var images = document.getElementsByTagName("img");
+    for (let i=0; i<images.length; i++) {
+        //console.log(images[i].style.width);
+        images[i].style.width = "50%";
+        //images[i].onclick = "window.open(this.src)";
+
+    }
+
+    var table_style = "1px solid black";
+
+    var table = document.getElementsByTagName("table");
+    for (let i=0; i<table.length; i++) {
+        table[i].style.border = table_style;
+        table[i].style.table_layout = "fixed";
+        table[i].style.width = "150%";
+        if (i == table.length - 1) {
+            table[i].style.width = "80%";
+        }
+    } 
+
+    var td = document.getElementsByTagName("td");
+    for (let i=0; i<td.length; i++) {
+        if (i % 2 == 1) {
+            td[i].style.width = "50%";
+        }
+        td[i].style.border = table_style;
+        td[i].style.word_wrap = "break-word";
+    }   
+    var th = document.getElementsByTagName("th");
+    for (let i=0; i<th.length; i++) {
+        if (i % 2 == 1) {
+            th[i].style.width = "50%";
+        }
+        th[i].style.border = table_style;
+        th[i].style.word_wrap = "break-word";
+    }    
+</script></body>
+</html>
