@@ -123,24 +123,24 @@
 <p>同理，可以添加放置的程序（使用 <code>Drop</code> 指令）。至此完成了仿真抓放。</p>
 <h2 id="5-tpe">5. 混合使用机器人程序（TPE）和仿真程序</h2>
 <p>终于到了综合部分：如何让机器人运动到某个位姿，抓取箱子，运动到另一个位姿，放置箱子。</p>
-<p>如果只是抓取位姿、放置位姿都是固定的，那么很简单：添加仿真程序，插入类似 <code>J P[...] 100% FINE</code> 的指令，混合 <code>Pickup</code> <code>Drop</code> 指令就可以。</p>
+<p>如果抓取位姿、放置位姿都是固定的，那么很简单：添加仿真程序，插入类似 <code>J P[...] 100% FINE</code> 的指令，混合 <code>Pickup</code> <code>Drop</code> 指令就可以。</p>
 <p>但是本任务的特点是：</p>
 <ul>
 <li>有 36 个箱子待搬运，数量很多，不可能一一示教</li>
 <li>明明箱子的位姿是规律的（使用阵列生成），如果不用自动化来实现非常可惜</li>
 </ul>
 <p>好，这“一推一拉”的形势，决定了我们肯定要用聪明些的方法。</p>
-<p>分解：</p>
-<ul>
+<h3 id="51">5.1 仿真程序的限制</h3>
+<p>帮助文档的《Teach a program》章含有 Combining simulation and TP programs into a single animation program 小节，完成本任务需要用到仿真程序和机器人程序的结合。因为仿真程序（Simulation program）的指令和能力非常有限。</p>
+<h3 id="52">5.2 思路分解</h3>
+<ol>
 <li>设法得到所有箱子的位姿</li>
 <li>在程序中设法利用上一步的箱子位姿</li>
-</ul>
-<p>帮助文档的《Teach a program》章含有 Combining simulation and TP programs into a single animation program 小节，完成本任务需要用到仿真程序和机器人程序的结合。因为仿真程序（Simulation program）的指令和能力非常有限。</p>
-<p>因此我的思路为，得到箱子位姿后，设法计算、生成两个机器人程序（<code>APPRO.TP</code> / <code>PICK.TP</code>，前者为接近、离开某个箱子提供位姿数据，后者为吸取某个箱子提供位姿数据）；这两个机器人程序被仿真程序调用，如下图。</p>
+</ol>
+<p>我的思路为，得到箱子位姿后，设法计算、生成两个机器人程序（<code>APPRO.TP</code> / <code>PICK.TP</code>，前者为接近、离开某个箱子提供位姿数据，后者为吸取某个箱子提供位姿数据）；这两个机器人程序被仿真程序调用，如下图。</p>
 <p><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/27.jpg" /></p>
 <p>细心的读者会发现，在仿真程序中使用了全局的数字寄存器 <code>R[1]</code>，用以表示当前搬运哪个箱子。<code>APPRO.TP</code> / <code>PICK.TP</code> 会查询 <code>R[1]</code> 的值，来提供正确的箱子位姿，同样地，当前的箱子位姿使用了全局的位置寄存器 <code>PR[1]</code>。</p>
-<hr />
-<p>下表为如何得到箱子们的位姿。</p>
+<h3 id="53">5.3 得到箱子们的位姿</h3>
 <table>
 <thead>
 <tr>
@@ -155,13 +155,21 @@
 </tr>
 <tr>
 <td><img alt="" src="http://media.linuxsand.info/image/depalletizer_demo_roboguide/26.jpg" /></td>
-<td>导出格式为 CSV 文件，利于外部处理；打开 CSV 文件可以看到，每行是单个箱子的位姿 X Y Z RX RY RZ；这个位姿的含义是：箱子参考托盘的位姿；实际使用时，应该把箱子位姿变换到机器人世界坐标系下面：托盘位姿是已知的，所以箱子的绝对位姿是可以在外部算出来的，本文不讲这些</td>
+<td>导出格式为 CSV 文件，利于外部处理；打开 CSV 文件可以看到，每行是单个箱子的位姿 X Y Z RX RY RZ；这个位姿的含义是：箱子参考托盘的位姿</td>
 </tr>
 </tbody>
 </table>
-<p>得到箱子的绝对位姿后，根据需要做处理后（至少按照箱子 z 值排个序吧），就可以根据如下的 FANUC TPE 程序的模板来生成 <code>APPRO.TP</code> / <code>PICK.TP</code> 了 （注意，下面的代码无法成功编译，仅作示意）。</p>
+<h3 id="54">5.4 箱子位姿数据处理</h3>
+<ul>
+<li>姿态变换</li>
+<li>数据处理</li>
+</ul>
+<p>5.3 节得到了箱子参考托盘的位姿，实际使用时应该把箱子位姿变换到机器人世界坐标系下面：托盘位姿是已知的，所以箱子的绝对位姿是可以在外部算出来的。</p>
+<p>得到箱子的绝对位姿后，至少要按照箱子的 Z 值排序，以便进行从高到低的拆垛（废话）。当吸盘比箱子大时，同层的箱子也不能随便吸取，否则就露馅了；而是应当用吸盘边角去吸取。这个涉及到计算，为了减少麻烦，本次通过设置机器人工具的 part offset 来规避。</p>
+<h3 id="55">5.5 机器人程序生成</h3>
+<p>到这里，我们已经手握 36 个处理后（排序）的箱子位姿，就可以根据如下的 FANUC TPE 程序的模板来生成 <code>APPRO.TP</code> / <code>PICK.TP</code> 了 （注意，下面的代码无法成功编译，仅作示意）。说白了，就是使用你熟悉的工具、编程语言进行文本处理。</p>
 <p><a href="javascript:alert('下载链接还没准备好')">点击这里下载</a>生成的 pick.ls 程序，注意 pick.ls 是为了配合仿真程序而生成的，很冗长。</p>
-<p>科普：TPE 程序的源文件后缀为 .ls，可以通过 Roboguide 或 WinOLPC 编译成二进制的 .tp，.tp 能直接被 FANUC 控制器加载执行。</p>
+<p>科普：TPE 程序的源文件后缀为 <code>.ls</code>，可以通过 Roboguide 或 WinOLPC 编译成二进制的 <code>.tp</code>，<code>.tp</code> 能直接被 FANUC 控制器加载执行。</p>
 <pre>
 /PROG  PICK
 /ATTR
@@ -194,7 +202,7 @@ CONTROL_CODE    = 00000000 00000000;
 
 </pre>
 
-<p>至此，就能实现精确运动到每个箱子上表面，抓取和放置了。</p>
+<p>至此，仿真程序就能调用生成的机器人程序（包含接近、吸取、离开箱子的位姿），实现精确运动到每个箱子上表面，抓取和放置了。开始仿真、profiling、录屏，结束。</p>
 <table>
 <thead>
 <tr>
