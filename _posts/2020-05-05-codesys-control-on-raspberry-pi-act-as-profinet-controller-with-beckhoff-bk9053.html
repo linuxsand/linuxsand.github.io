@@ -55,18 +55,19 @@
 +------------+     +------------+     +------------+
 </pre>
 
+<p>下载、安装设备的 GSD 文件操作，这里也不提。</p>
 <p>关键步骤：</p>
 <ul>
 <li>在 Device 下添加 Ethernet 设备，使用软 PLC 的 eth0</li>
 <li>在 Ethernet 设备下，添加 PN_Controller</li>
-<li>在 PN_Controller 下按照实际硬件添加模块，或使用扫描出网络中的设备后复制到项目中</li>
+<li>在 PN_Controller 下按照实际硬件添加模块，或扫描出网络中的设备后复制到项目中</li>
 </ul>
 <h2 id="3">3 尝试置位信号</h2>
 <p>硬件组态完成后，进行 I/O 映射。</p>
 <p>我使用的硬件：BK9053 耦合器 <code>+</code> Kx2xx8 八通道数字输出模块 <code>* 4</code>，每个数字输出模块的信号与一个类型为 <code>USINT</code> 的变量关联。</p>
 <p>完成映射后发现无法手动强制信号……最后发现用代码置位信号后，可以手动强制了，不解。</p>
 <h2 id="4-demo">4 录制的 demo 视频</h2>
-<p>最后录制了一个“跑马灯”效果的 demo：循环点亮每个数字输出通道。视频如下，前一分四十秒我综述了步骤和注意点，之后为“跑马灯”效果。</p>
+<p>最后录制了一个“跑马灯”效果的 demo：循环点亮每个数字输出通道。视频如下，前一分四十秒（无视频）我综述了步骤和注意点，之后为“跑马灯”效果。</p>
 <iframe width=520  height=288 src='http://player.youku.com/embed/XNDY1OTQ5NjA4OA==' frameborder=0 'allowfullscreen'></iframe>
 
 <hr />
