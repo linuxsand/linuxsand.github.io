@@ -21,9 +21,9 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 1. 给树莓派安装操作系统 raspbian
 - 安装 Codesys control for Raspberry Pi package 到你的 Codesys IDE
 - 安装 Codesys runtime 到树莓派
-- 使用购买的授权码，对 runtime 进行授权；同时配备授权文件（CMLicenseNew.WibuCmRaU）
+- 使用购买的授权码，对 runtime 进行授权；最好备份授权文件（CMLicenseNew.WibuCmRaU）
 
-完成授权后，尝试新建工程并下载，确保正常工作，至此树莓派变身为一台软 PLC。
+完成授权后启动 runtime，尝试新建工程并下载，确保正常工作，至此树莓派变身为一台软 PLC。
 
 
 ## 2 组态 Profinet
