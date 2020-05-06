@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>Codesys 作为 Profinet 控制器操作 Beckhoff BK9053 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>Codesys 作为 Profinet 控制器操作 Beckhoff BK9053</h1>
+<p style="text-align: right;">黄杰, 2020-05-05<br />root[a]linuxsand.info</p><p>最近我从 Codesys 中国购买了学习套件：树莓派4B、Codesys 许可证和《开放式控制系统编程技术》这本书。</p>
+<p>五一假期试玩了一把。以下凭借记忆叙述大致步骤，作为备忘，也希望帮助从搜索引擎过来的朋友。</p>
+<hr />
+<p>目录：</p>
+<div class="toc">
+<ul>
+<li><a href="#1-plc">1 树莓派变身为软PLC</a></li>
+<li><a href="#2-profinet">2 组态 Profinet</a></li>
+<li><a href="#3">3 尝试置位信号</a></li>
+<li><a href="#4-demo">4 录制的 demo 视频</a></li>
+</ul>
+</div>
+<h2 id="1-plc">1 树莓派变身为软PLC</h2>
+<p>树莓派的相关操作，例如配置 ssh / vnc server、配置网络接口 eth0 等操作不在此赘述，可参考 <a href="http://bbs.hicodesys.com/thread-4425-1-1.html">这里</a> 。</p>
+<p>大致步骤：</p>
+<ol>
+<li>给树莓派安装操作系统 raspbian</li>
+<li>安装 Codesys control for Raspberry Pi package 到你的 Codesys IDE</li>
+<li>安装 Codesys runtime 到树莓派</li>
+<li>使用购买的授权码，对 runtime 进行授权；同时配备授权文件（CMLicenseNew.WibuCmRaU）</li>
+</ol>
+<p>完成授权后，尝试新建工程并下载，确保正常工作，至此树莓派变身为一台软 PLC。</p>
+<h2 id="2-profinet">2 组态 Profinet</h2>
+<p>使用网络交换机将设备连接到一起，我的设备情况如下。</p>
+<ul>
+<li>倍福 BK9053 的 IP = 192.168.0.15/24</li>
+<li>软 PLC 的 IP（eth0） = 192.168.0.122/24</li>
+</ul>
+<pre>
+               +-------------+
+               |             |
+               |    Network  |
+               |    Switch   |
+        +------+             +-------------+
+        |      +---------+---+             |
+        |                |                 |
+        |                |                 |
+        |                |                 |
+        |                |                 |
++-------+----+     +-----+------+     +----+-------+
+|            |     |            |     |Beckhoff    |
+|Laptop      |     |Pi (SoftPLC)|     |BK9053 w/   |
+|Codesys IDE |     |Codeys      |     |I/O modules |
+|            |     |Runtime     |     |            |
++------------+     +------------+     +------------+
+</pre>
+
+<p>关键步骤：</p>
+<ul>
+<li>在 Device 下添加 Ethernet 设备，使用软 PLC 的 eth0</li>
+<li>在 Ethernet 设备下，添加 PN_Controller</li>
+<li>在 PN_Controller 下按照实际硬件添加模块，或使用扫描出网络中的设备后复制到项目中</li>
+</ul>
+<h2 id="3">3 尝试置位信号</h2>
+<p>硬件组态完成后，进行 I/O 映射。</p>
+<p>我使用的硬件：BK9053 耦合器 <code>+</code> Kx2xx8 八通道数字输出模块 <code>* 4</code>，每个数字输出模块的信号与一个类型为 <code>USINT</code> 的变量关联。</p>
+<p>完成映射后发现无法手动强制信号……最后发现用代码置位信号后，可以手动强制了，不解。</p>
+<h2 id="4-demo">4 录制的 demo 视频</h2>
+<p>最后录制了一个“跑马灯”效果的 demo：循环点亮每个数字输出通道。视频如下，前一分四十秒我综述了步骤和注意点，之后为“跑马灯”效果。</p>
+<iframe width=520  height=288 src='http://player.youku.com/embed/XNDY1OTQ5NjA4OA==' frameborder=0 'allowfullscreen'></iframe>
+
+<hr />
+<p>如你想要捐赠，可使用如下方式。</p>
+<p><a href="https://afdian.net/@linuxsand">新捐赠方式：爱发电</a>；方便快捷，尤其你是用手机在看本文时。</p>
+<p>老方式如下，扫描二维码</p>
+<table>
+<thead>
+<tr>
+<th>使用微信</th>
+<th>使用支付宝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="http://media.linuxsand.info/image/pay/weixin_8.png" /></td>
+<td><img alt="" src="http://media.linuxsand.info/image/pay/zhifubao_8.jpg" /></td>
+</tr>
+</tbody>
+</table></body>
+</html>
