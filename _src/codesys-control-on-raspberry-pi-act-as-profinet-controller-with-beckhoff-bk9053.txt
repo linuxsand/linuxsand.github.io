@@ -33,6 +33,8 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 - 倍福 BK9053 的 IP = 192.168.0.15/24
 - 软 PLC 的 IP（eth0） = 192.168.0.122/24
 
+注意：我遇到了无法树莓派的 eth0 无法 ping 通外部设备的情况。搜索后执行了 `sudo ip route add 192.168.0.0/24 dev eth0` 方能 ping 通。
+
 <pre>
                +-------------+
                |             |
