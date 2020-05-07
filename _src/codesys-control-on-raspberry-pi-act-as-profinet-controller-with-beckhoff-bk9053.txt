@@ -13,7 +13,7 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 
 ## 1 树莓派变身为软PLC
 
-树莓派的相关操作，例如配置 ssh / vnc server、配置网络接口 eth0 等操作不在此赘述，可参考 [这里](http://bbs.hicodesys.com/thread-4425-1-1.html) 。
+树莓派的相关操作，例如配置 ssh / vnc server、配置网络接口 eth0 等操作不在此赘述，可参考 [这里](http://bbs.hicodesys.com/thread-4425-1-1.html) 或者官方文档（Help -- Contents -- Add-ons -- CODESYS Control for Raspberry Pi SL）。
 
 
 大致步骤：
@@ -75,20 +75,13 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 
 ## 4 录制的 demo 视频
 
-最后录制了一个“跑马灯”效果的 demo：循环点亮每个数字输出通道。视频如下，前一分四十秒（无视频）我综述了步骤和注意点，之后为“跑马灯”效果。
+最后录制了一个“跑马灯”效果的 demo：循环点亮每个数字输出通道。
 
-
-<iframe width=520  height=288 src='http://player.youku.com/embed/XNDY1OTQ5NjA4OA==' frameborder=0 'allowfullscreen'></iframe>
+https://v.youku.com/v_show/id_XNDY2MzY4MjAzMg==.html
+<iframe width=520  height=288 src='http://player.youku.com/embed/XNDY2MzY4MjAzMg==' frameborder=0 'allowfullscreen'></iframe>
 
 --------
 
 如你想要捐赠，可使用如下方式。
 
 [新捐赠方式：爱发电](https://afdian.net/@linuxsand)；方便快捷，尤其你是用手机在看本文时。
-
-
-老方式如下，扫描二维码
-
-| 使用微信 | 使用支付宝 |
-|--|--|
-| ![](http://media.linuxsand.info/image/pay/weixin_8.png) | ![](http://media.linuxsand.info/image/pay/zhifubao_8.jpg) |
