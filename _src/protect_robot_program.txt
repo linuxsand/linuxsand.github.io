@@ -70,4 +70,4 @@ KUKA.Encryption 既可以加密（encrypt），也可以签名（sign）；仅�
 
 好消息是 FANUC 的 KAREL 代码经过编译后就是二进制文件（p-code），不必考虑内容保护问题。
 
-而硬件绑定，根据[这里的讨论](https://www.robot-forum.com/robotforum/fanuc-robot-forum/how-to-get-control-uint-serial-number-by-karel/msg108118/#msg108118)，绑定 MAC 地址是一个可行的选择。
+而硬件绑定，根据[这里的讨论](https://www.robot-forum.com/robotforum/thread/25436-how-to-get-control-uint-serial-number-by-karel/)，绑定 MAC 地址是一个可行的选择。

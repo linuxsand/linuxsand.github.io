@@ -21,18 +21,18 @@ def join_post_content(title, date, content):
     
     return header.format(title=title, date=date) + \
            markdown.markdown(
-               content.decode(CHARSET),
+               content,
                 extensions=[
                     "markdown.extensions.tables",
                     "markdown.extensions.toc"
                     ]
-               ).encode(CHARSET) + \
+               ) + \
            body_end
 
            
            
 def get_meta_from_src(filename):
-    thisfile = open(filename, "r")
+    thisfile = open(filename, "r", encoding="utf-8")
     line1 = thisfile.readline().rstrip()
     line2 = thisfile.readline().rstrip()
     content = thisfile.read().strip()
@@ -44,7 +44,7 @@ def get_title_from_post(html_name):
     if html_name.endswith('2013-06-18-robotics.html'):
         #return '机器人学导论阅读笔记'
         return None
-    with open(html_name, 'r') as f:
+    with open(html_name, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         title = lines[9][4:-6]#.decode('utf8').encode('gbk', 'ignore') # test in cmd.exe
         return title
@@ -103,9 +103,9 @@ document.getElementsByClassName("blog_title").length.toString() +
     for info in posts:
         lines.append( line_tpl.format( info[0], info[1]) )
         
-    with open ('../index.html', 'w') as index:
+    with open ('../index.html', 'w', encoding='utf-8') as index:
         index.write(header + '\n'.join(lines) + footer)
-    print 'index generated.\n'
+    print('index generated.\n')
     
     
     
@@ -113,13 +113,13 @@ def gen_new_posts():
     md_files = []
     for _file in os.listdir("."):
         if not _file.endswith(".txt"): continue
-        print "...converting " + _file
+        print("...converting " + _file)
         title, date, content = get_meta_from_src(_file)
         html_content = join_post_content(title, date, content)
-        with open("../_posts/" + date + "-" + _file.replace(".txt", ".html"), "w") as f:
+        with open("../_posts/" + date + "-" + _file.replace(".txt", ".html"), "w", encoding='utf-8') as f:
             f.write(html_content)
         md_files.append(_file)
-    print "\nnew posts generated.\n"
+    print("\nnew posts generated.\n")
         
         
         
@@ -129,11 +129,11 @@ def gen_sitemap():
     
     
 if __name__ == "__main__":
-    print '---Start---\n'
+    print('---Start---\n')
     gen_new_posts()
     gen_sitemap()
     gen_index()
-    print "\n\n--End--"
+    print("\n\n--End--")
     import time
     time.sleep(3)
     
