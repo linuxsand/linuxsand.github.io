@@ -28,7 +28,6 @@ li {line-height: 160%; font-size: 13px; }
 li.blog_title {line-height: 280%;}
 pre, code {font-family: Consolas, "Courier New", serif;}
 code {
-    padding: 2px 4px;
     font-size: 90%;
     color: #c0341d;
 }
