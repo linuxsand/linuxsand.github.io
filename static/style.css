@@ -29,7 +29,7 @@ li.blog_title {line-height: 280%;}
 pre, code {font-family: Consolas, "Courier New", serif;}
 code {
     font-size: 90%;
-    color: #c0341d;
+    color: #ddd;
 }
 pre, blockquote {padding-left: 15px; border-left: 3px solid #acacac; word-wrap: break-word;}
 a {color: #ccc;}
