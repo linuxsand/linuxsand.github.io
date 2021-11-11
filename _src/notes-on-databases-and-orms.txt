@@ -106,7 +106,7 @@ Dapper 的性能是很好的，它是由 Stack Overflow 的工程师们发起的
 
 当遇到需要存储大量数据，并且表结构经常要变化的项目时，我选用 SQL Server 2019 Express 和 Entity Framework 的搭配。先说 Entity Framework <https://www.nuget.org/packages/EntityFramework/>。
 
-EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了软件设计和开发效率，程序员可以直接用 Linq 查询和数据库软件交互。
+EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了开发效率，程序员可以直接用 [Linq](https://docs.microsoft.com/en-us/dotnet/csharp/linq/) 数据库软件交互。
 
 
     public class BlacklistActionModel
@@ -133,15 +133,15 @@ EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了�
         {
             using (var ctx = new ContextBlacklist())
             {
-                // Linq 方式读取记录
+                // Linq 读取记录（method syntax）
                 var rows = ctx.BlacklistActions.Where(q => q.Process == 1).ToList();
                 foreach (var row in rows) NaiLogger.LogDebug(row.ToString());
                 
-                // Linq 方式插入记录
+                // Linq 插入记录（method syntax）
                 ctx.BlacklistActions.Add(new BlacklistActionModel() { ... });
                 // ctx.SaveChanges();
                 
-                // Linq 方式更新记录
+                // Linq 更新记录（method syntax）
                 var row = ctx.BlacklistActions.Where(q => q.SkuDesc == "sku name").FirstOrDefault();
                 if (row != null) row.SpeedPercent = 42;
                 ctx.SaveChanges()
@@ -151,12 +151,12 @@ EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了�
     } // end of class
     
 
-很多人说 EF6 性能不行，但是对我来说足够了。或许是被不爱读文档的用户误用了……？几个小贴士可以显著提升性能：
+很多人说 EF6 性能不行，但是对我来说足够了。几个小贴士可以显著提升性能：
 
 - 在只需要读取、不需要写入时，使用 AsNoTracking，例 `var rows = ctx.BlacklistActions.AsNoTracking().Where(q => q.Process == 1).ToList();`
 - 在循环中插入数据时，关闭跟踪；可以在循环外用 `AddRange` 而不是在循环体内逐个 `Add`；或者显式关闭、打开 `Configuration.AutoDetectChangesEnabled` 来关闭循环体内的跟踪
 
-另一个我喜欢的 EF 功能是自动迁移（Auto Migration）是。当模型发生变化时，例如增加数据表栏位（column）时，在控制台执行 `Add-Migration changelog_xx`，`Update-Database` 即可，或者在程序初始化处使用 `MigrateDatabaseToLatestVersion` 就能无需执行 `Update-Database` 自动迁移（因生产环境中可能不便使用控制台）。
+另一个我喜欢的功能是自动迁移（Auto Migration）。当模型发生变化时，例如增加数据表栏位（column）时，在控制台执行 `Add-Migration changelog_xx`，`Update-Database` 即可，或者在程序初始化处使用 `MigrateDatabaseToLatestVersion` 就能无需执行 `Update-Database` 自动迁移（因生产环境中可能不便使用控制台）。
 
 ---
 
