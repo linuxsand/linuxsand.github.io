@@ -106,7 +106,7 @@ Dapper 的性能是很好的，它是由 Stack Overflow 的工程师们发起的
 
 当遇到需要存储大量数据，并且表结构经常要变化的项目时，我选用 SQL Server 2019 Express 和 Entity Framework 的搭配。先说 Entity Framework <https://www.nuget.org/packages/EntityFramework/>。
 
-EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了开发效率，程序员可以直接用 [Linq](https://docs.microsoft.com/en-us/dotnet/csharp/linq/) 数据库软件交互。
+EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了开发效率，程序员可以直接用 [Linq](https://docs.microsoft.com/en-us/dotnet/csharp/linq/) 编写查询功能。
 
 
     public class BlacklistActionModel
