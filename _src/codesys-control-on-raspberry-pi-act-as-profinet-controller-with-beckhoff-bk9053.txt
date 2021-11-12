@@ -33,7 +33,7 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 - 倍福 BK9053 的 IP = 192.168.0.15/24
 - 软 PLC 的 IP（eth0） = 192.168.0.122/24
 
-注意：我遇到了无法树莓派的 eth0 无法 ping 通外部设备的情况。搜索后执行了 `sudo ip route add 192.168.0.0/24 dev eth0` 方能 ping 通。
+注意：我遇到了树莓派的 eth0 无法 ping 通外部设备的情况。搜索后执行了 `sudo ip route add 192.168.0.0/24 dev eth0` 方能 ping 通。
 
 <pre>
                +-------------+
@@ -58,7 +58,7 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 
 关键步骤：
 
-- 在 Device 下添加 Ethernet 设备，使用软 PLC 的 eth0
+- 在 Device 下添加 Ethernet 设备，使用软 PLC 的 `eth0`
 - 在 Ethernet 设备下，添加 PN_Controller
 - 在 PN_Controller 下按照实际硬件添加模块，或扫描出网络中的设备后复制到项目中
 
@@ -82,6 +82,4 @@ https://v.youku.com/v_show/id_XNDY2MzY4MjAzMg==.html
 
 --------
 
-如你想要捐赠，可使用如下方式。
-
-[新捐赠方式：爱发电](https://afdian.net/@linuxsand)；方便快捷，尤其你是用手机在看本文时。
+推广：欢迎关注我的微信公号 NaiStudio。

@@ -36,7 +36,7 @@
 <li>倍福 BK9053 的 IP = 192.168.0.15/24</li>
 <li>软 PLC 的 IP（eth0） = 192.168.0.122/24</li>
 </ul>
-<p>注意：我遇到了无法树莓派的 eth0 无法 ping 通外部设备的情况。搜索后执行了 <code>sudo ip route add 192.168.0.0/24 dev eth0</code> 方能 ping 通。</p>
+<p>注意：我遇到了树莓派的 eth0 无法 ping 通外部设备的情况。搜索后执行了 <code>sudo ip route add 192.168.0.0/24 dev eth0</code> 方能 ping 通。</p>
 <pre>
                +-------------+
                |             |
@@ -59,7 +59,7 @@
 <p>下载、安装设备的 GSD 文件操作，这里也不提。</p>
 <p>关键步骤：</p>
 <ul>
-<li>在 Device 下添加 Ethernet 设备，使用软 PLC 的 eth0</li>
+<li>在 Device 下添加 Ethernet 设备，使用软 PLC 的 <code>eth0</code></li>
 <li>在 Ethernet 设备下，添加 PN_Controller</li>
 <li>在 PN_Controller 下按照实际硬件添加模块，或扫描出网络中的设备后复制到项目中</li>
 </ul>
@@ -69,9 +69,9 @@
 <p>完成映射后发现无法手动强制信号……最后发现用代码置位信号后，可以手动强制了，不解。</p>
 <h2 id="4-demo">4 录制的 demo 视频</h2>
 <p>最后录制了一个“跑马灯”效果的 demo：循环点亮每个数字输出通道。</p>
-<p>https://v.youku.com/v_show/id_XNDY2MzY4MjAzMg==.html
-<iframe width=520  height=288 src='http://player.youku.com/embed/XNDY2MzY4MjAzMg==' frameborder=0 'allowfullscreen'></iframe></p>
+<p>https://v.youku.com/v_show/id_XNDY2MzY4MjAzMg==.html</p>
+<iframe width=520  height=288 src='http://player.youku.com/embed/XNDY2MzY4MjAzMg==' frameborder=0 'allowfullscreen'></iframe>
+
 <hr />
-<p>如你想要捐赠，可使用如下方式。</p>
-<p><a href="https://afdian.net/@linuxsand">新捐赠方式：爱发电</a>；方便快捷，尤其你是用手机在看本文时。</p></body>
+<p>推广：欢迎关注我的微信公号 NaiStudio。</p></body>
 </html>
