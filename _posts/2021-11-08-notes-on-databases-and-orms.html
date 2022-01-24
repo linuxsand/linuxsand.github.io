@@ -152,19 +152,18 @@ public class Test
 <li>在只需要读取、不需要写入时，使用 AsNoTracking，例 <code>var rows = ctx.BlacklistActions.AsNoTracking().Where(q =&gt; q.Process == 1).ToList();</code></li>
 <li>在循环中插入数据时，关闭跟踪；可以在循环外用 <code>AddRange</code> 而不是在循环体内逐个 <code>Add</code>；或者显式关闭、打开 <code>Configuration.AutoDetectChangesEnabled</code> 来关闭循环体内的跟踪</li>
 </ul>
-<p>另一个我喜欢的功能是自动迁移（Auto Migration）。当模型发生变化时，例如增加数据表栏位（column）时，在控制台执行 <code>Add-Migration changelog_xx</code>，<code>Update-Database</code> 即可，或者在程序初始化处使用 <code>MigrateDatabaseToLatestVersion</code> 就能无需执行 <code>Update-Database</code> 自动迁移（因生产环境中可能不便使用控制台）。</p>
+<p>另一个我喜欢的功能是自动迁移（Auto Migration）。当模型发生变化时，例如增加数据表栏位（column）时，在控制台执行 <code>Add-Migration changelog_xx</code>，<code>Update-Database</code> 即可，或者在程序初始化处使用 <code>MigrateDatabaseToLatestVersion</code> 就能无需执行 <code>Update-Database</code> 自动迁移（因生产环境中可能不便使用控制台）；当然也可以导出 SQL 脚本来进行数据库迁移。</p>
 <hr />
 <p>说完了 EF，再说回 SQL Server。我对 SQL Server 没有任何抱怨。</p>
 <p>不过由于我使用了免费版本（2019 Express），它的限制之一是数据库文件的<a href="https://docs.microsoft.com/en-us/sql/sql-server/editions-and-components-of-sql-server-version-15?view=sql-server-ver15#Cross-BoxScaleLimits">最大体积为 10GB</a>。而这个限制在需要储存大量数据时就没法用了，不购买标准版或企业版 SQL Server的话，就要更换数据库软件。</p>
-<p>我选择的替代是 PostgreSQL <a href="https://www.postgresql.org/">https://www.postgresql.org/</a>（以下简称 PG），它是可以免费商用的。PG 的 SQL 语法相比于 SQL Server 的 T-SQL，最大的不同是表名、栏位名需要用引号括起来，而且被引号括起来的内容是大小写敏感的。</p>
+<p>我选择的替代是 PostgreSQL <a href="https://www.postgresql.org/">https://www.postgresql.org/</a>（以下简称 PG），它是可以免费商用的。PG 的 SQL 语法是大小写敏感的，这不同于 SQL Server 的 T-SQL。没被双引号包括的大写字符会被自动转为小写字符，当使用 <code>Npqsql</code> 和 <code>EF6 / EFCore</code> 时，默认会将你的 .NET 类、属性名套上双引号。—— 那么， 当你用 O/RM 建表后再有写 SQL 的需要时，得自己给表名、栏位名加上双引号，见 <a href="https://www.npgsql.org/efcore/modeling/table-column-naming.html">这里</a> 和 <a href="https://stackoverflow.com/questions/55297807/when-do-postgres-column-or-table-names-need-quotes-and-when-dont-they#comment97326958_55297807">这里</a> 。</p>
 <pre><code>-- SQL Server T-SQL
 select * from dbo.blacklistactions where process=1;
 
 -- PG SQL
 select * from dbo."BlacklistActions" where "Process"=1;
 </code></pre>
-<p>那么，如果你是手工编写 SQL 来操作数据库的，从 SQL Server 迁移到 PG，你得仔细查找并修改代码。</p>
-<p>幸好我使用了 O/RM 框架，因此更换数据库几乎没有什么额外工作，安装几个包来连接 PG 即可。</p>
+<p>.NET 下使用 PG 往往用到如下这几个包。</p>
 <ul>
 <li>Npgsql <a href="https://www.nuget.org/packages/Npgsql/">https://www.nuget.org/packages/Npgsql/</a>，不过它在 <code>net461</code> 下依赖 7 个其它的包</li>
 <li>EntityFramework6.Npgsql <a href="https://www.nuget.org/packages/EntityFramework6.Npgsql/">https://www.nuget.org/packages/EntityFramework6.Npgsql/</a></li>
