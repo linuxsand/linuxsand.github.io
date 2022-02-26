@@ -1,0 +1,120 @@
+手动管理 PostgreSQL 数据库的分区表（二）
+2022-02-27
+
+
+[上一篇文章](/partitions-manual-management-1-in-postgresql.html)写了继承式分区表。这一篇记录我对 PostgreSQL 10+ 引入的声明式分区表（原生分区表）的学习所得。
+
+
+## 声明式分区的基本操作
+
+第一，用户通过在创建表时需用 `PARTITION BY` 从句。（依然用它的 `DetectedTime` 这个栏位作为分区键）
+
+    create table dbo.test2
+    (
+        "Id" bigserial,
+        -- ...other columns
+         "DetectedTime" timestamp without time zone
+    ) PARTITION BY range("DetectedTime");
+
+
+第二，手动创建子表和索引
+
+    create table dbo.test2_p2022_01 PARTITION OF dbo.test2
+        -- 不包括 '2022-02-01'
+        for values from ('2022-01-01') to ('2022-02-01');
+
+    create table dbo.test2_p2022_02 PARTITION OF dbo.test2
+        for values from ('2022-02-01') to ('2022-03-01');
+
+    create index on dbo.test2 ("DetectedTime");
+    create index on dbo.test2 ("Id");
+
+我们在 psql 内查看父表和子表。（为了照顾页面宽度，删除了表格的部分栏位）
+
+    postgres=# \d+ dbo.test2;
+                                        Partitioned table "dbo.test2"
+        Column    |            Type             | Collation | Nullable |                 Default                 |
+    --------------+-----------------------------+-----------+----------+-----------------------------------------+
+     Id           | integer                     |           | not null | nextval('dbo."test2_Id_seq"'::regclass) |
+     DetectedTime | timestamp without time zone |           |          |                                         |
+    Partition key: RANGE ("DetectedTime")
+    Indexes:
+        "test2_DetectedTime_idx" btree ("DetectedTime")
+        "test2_Id_idx" btree ("Id")
+    Partitions: dbo.test2_p2022_01 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2022-02-01 00:00:00'),
+                dbo.test2_p2022_02 FOR VALUES FROM ('2022-02-01 00:00:00') TO ('2022-03-01 00:00:00')
+
+
+
+
+
+    postgres=# \d+ dbo.test2_p2022_01;
+                                       Table "dbo.test2_p2022_01"
+        Column    |            Type             | Collation | Nullable |                 Default                 |
+    --------------+-----------------------------+-----------+----------+-----------------------------------------+
+     Id           | integer                     |           | not null | nextval('dbo."test2_Id_seq"'::regclass) |
+     DetectedTime | timestamp without time zone |           |          |                                         |
+    Partition of: dbo.test2 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2022-02-01 00:00:00')
+    Partition constraint: (("DetectedTime" IS NOT NULL)
+                            AND ("DetectedTime" >= '2022-01-01 00:00:00'::timestamp without time zone)
+                            AND ("DetectedTime" < '2022-02-01 00:00:00'::timestamp without time zone))
+    Indexes:
+        "test2_p2022_01_DetectedTime_idx" btree ("DetectedTime")
+        "test2_p2022_01_Id_idx" btree ("Id")
+    Access method: heap
+
+
+到这里就完成了。这是原生的分区表，不像上一篇用继承实现的分区表需要编写 function 和 trigger 来做父表到子表的重定向。
+
+我们插入 32 条测试数据试一下。PG 返回 `INSERT 0 32`，这下不必做 trick 也能让 ORM 框架正确工作了（上一篇的继承式分区表做了 trick）。
+
+    postgres=# INSERT INTO dbo.test2 ("DetectedTime")
+	postgres=# select generate_series('2022-01-10'::date, '2022-02-10'::date, '1 day');
+    INSERT 0 32
+
+再看看两张子表的行数量。分别为 22 行和 10 行，说明数据正确地写入了相应的子表。
+
+    postgres=# select
+    postgres-# (select count(1) from dbo.test2_p2022_01) month1,
+    postgres-# (select count(1) from dbo.test2_p2022_02) month2;
+     month1 | month2
+    --------+--------
+         22 |     10
+    (1 row)
+
+
+
+## 分区维护
+
+上面的基本操作中，我们创建了固定数量的分区。我们在原生分区表中手动新增子表是相对很方便了，因此只需在操作系统或者应用软件层面执行定时任务：在特定时机“拼接”出下面的 SQL 执行即可。
+
+    create table dbo.test2_p2022_03 PARTITION OF dbo.test2
+        for values from ('2022-03-01') to ('2022-04-01');
+
+
+下面的代码用于移除子表。
+
+    -- 从父表中移除子表，但保留数据
+    alter table dbo.test2 DETACH PARTITION dbo.test2_p2022_01 CONCURRENTLY;
+
+    -- 直接扔掉某张子表
+    drop table dbo.test2_p2022_01;
+
+
+## 优点和缺点
+
+优点：
+
+- 使用简单
+- 性能相对高
+
+缺点：
+
+- 只能支持范围（range）、列表（list）、哈希（hash）分区
+
+
+## 小结
+
+本文介绍了声明式分区（原生分区表）的基本操作、分区维护和优缺点。
+
+下一篇将介绍使用 pg_partman 进行分区的自动管理。
