@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>手动管理 PostgreSQL 数据库的分区表 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>手动管理 PostgreSQL 数据库的分区表</h1>
+<p style="text-align: right;">黄杰, 2022-02-26<br />root[a]linuxsand.info</p><p>最近工作之余，我在学习 PostgreSQL 的分区表。</p>
+<p>被分区的表叫做 partitioned table，下文用“父表”这个词；分出的若干个表叫做 partitions，下文用“子表”这个词。</p>
+<h2 id="_1">介绍</h2>
+<p>我在 Windows 10 上使用 PostgreSQL 14（以下简称 PG），从<a href="https://www.postgresql.org/docs/14/ddl-partitioning.html">文档</a>看出，它支持两类分区方式：</p>
+<ol>
+<li>继承式分区（partitioning using inheritance），这种全程需要用户自己操心使力，这是本文的内容</li>
+<li>声明式分区（declarative partitioning），支持 PG 10+，这是下一篇文章的内容</li>
+</ol>
+<p>假定有父表叫做 <code>dbo.test</code>，我们要用它的 <code>DetectedTime</code> 这个栏位作为分区键。</p>
+<h2 id="_2">继承式分区的基本操作</h2>
+<p>第一，用户通过 <code>inherits</code> 创建子表。</p>
+<pre><code>create table dbo.test_202201
+    ( check ("DetectedTime" &gt;= '2022-01-01' and "DetectedTime" &lt; '2022-02-01') )
+inherits (dbo.test);
+
+create table dbo.test_202202
+    ( check ("DetectedTime" &gt;= '2022-02-01' and "DetectedTime" &lt; '2022-03-01') )
+inherits (dbo.test);
+
+create table dbo.test_default
+    ()
+inherits (dbo.test);
+
+-- 略过创建索引等操作
+</code></pre>
+<p>第二，编写 function 来实现父表到子表的重定向。</p>
+<pre><code>CREATE OR REPLACE FUNCTION fn_before_insert_to_test() RETURNS TRIGGER AS $$
+BEGIN
+    if (new."DetectedTime" &gt;= date '2022-01-01' and new."DetectedTime" &lt; date '2022-02-1') then
+        insert into dbo.test_202201 values (new.*);
+    elsif (new."DetectedTime" &gt;= date '2022-02-01' and new."DetectedTime" &lt; date '2022-03-1') then
+        insert into dbo.test_202202 values (new.*);
+    -- ...
+    else
+        insert into dbo.test_default (new.*);
+    end if;
+    return NULL;
+END;
+$$
+LANGUAGE plpgsql;
+</code></pre>
+<p>第三，编写 trigger 使得插入新行之前、执行刚刚编写好的 function：</p>
+<pre><code>CREATE TRIGGER trg_before_insert_to_test BEFORE INSERT ON dbo.test
+    FOR EACH ROW EXECUTE FUNCTION fn_before_insert_to_test();
+</code></pre>
+<p>到这里，我们向父表插入数据后，会发现数据实际存储在某个子表中。同时，对父表执行 <code>select count(1) from dbo.test;</code> 会查询所有子表的行数。</p>
+<h2 id="orm">应用 ORM 框架的额外工作</h2>
+<p>使用 ORM 框架的开发者需要注意，我们向父表插入 1 行数据， ORM 框架预期的返回是 <code>INSERT 0 1</code>，实际 PG 的返回是 <code>INSERT 0 0</code>，ORM 框架将报错 —— 我用 Entity Framework 6 就引发了 <code>OptimisticLockException</code> 的异常。</p>
+<ul>
+<li><a href="https://www.postgresql.org/message-id/56F191B0.5050505@consistentstate.com">Partitioning and ORM tools</a></li>
+<li><a href="https://stackoverflow.com/questions/36475235/table-partitioning-with-jpa-throws-optimisticlockexception">table partitioning with jpa throws OptimisticLockException</a></li>
+</ul>
+<p>我们可通过修改原 function、增加新的 function 和 trigger 作为应变方法 <a href="https://stackoverflow.com/a/49583740">https://stackoverflow.com/a/49583740</a>，不过这种应变方法会造成 <code>Id</code> 不连续。</p>
+<pre><code>-- 修改原 function
+CREATE OR REPLACE FUNCTION fn_before_insert_to_test() RETURNS TRIGGER AS $$
+BEGIN
+    if (new."DetectedTime" &gt;= date '2022-01-01' and new."DetectedTime" &lt; date '2022-02-1') then
+        insert into dbo.test_202201 values (new.*);
+    elsif (new."DetectedTime" &gt;= date '2022-02-01' and new."DetectedTime" &lt; date '2022-03-1') then
+        insert into dbo.test_202202 values (new.*);
+    -- ...
+    else
+        insert into dbo.test_default (new.*);
+    end if;
+
+    -- return NULL; -- 不再返回 NULL
+    new."Id" = nextval('dbo.test_id_seq');
+    return new;
+END;
+$$
+LANGUAGE plpgsql;
+</code></pre>
+<p>新增 function 和 trigger，用于插入后的动作。</p>
+<pre><code>-- new function
+CREATE OR REPLACE FUNCTION fn_after_insert_to_test()
+RETURNS TRIGGER AS $$
+BEGIN
+    EXECUTE 'DELETE FROM dbo.test where "Id" = ' || new."Id";
+    return NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+-- new trigger
+CREATE TRIGGER trg_after_insert_to_test AFTER INSERT ON dbo.test
+    FOR EACH ROW EXECUTE FUNCTION fn_after_insert_to_test();
+</code></pre>
+<p>这样 ORM 框架就不会抱怨了。</p>
+<h2 id="_3">分区维护</h2>
+<p>上面的基本操作中，我们创建了固定数量的分区。随着时间的推移，如何自动创建新的分区呢？<a href="https://www.cybertec-postgresql.com/en/automatic-partition-creation-in-postgresql/">这篇文章</a>介绍了两类思路。</p>
+<p>我个人比较偏向于：</p>
+<ol>
+<li>在操作系统或者应用软件层面执行定时任务：在特定时机创建新的分区，更新 <code>fn_before_insert_to_test()</code> 内的 <code>if-else</code> 代码</li>
+<li>直接利用 <a href="https://github.com/pgpartman/pg_partman">pg_partman</a> 等工具进行分区创建和丢弃（后续会专门写一篇文章）</li>
+</ol>
+<p>除了新增分区，维护往往也需要删除过时数据。这个很方便：</p>
+<pre><code>-- 直接扔掉某张子表
+drop table dbo.test_2022_01;
+
+-- 从父表中移除子表，但保留数据
+alter table dbo.test_2022_01 NO INHERIT dbo.test;
+</code></pre>
+<h2 id="_4">优点和缺点</h2>
+<p>优点：</p>
+<ul>
+<li>继承式分区的子表栏位不必和父表相等，可以增加额外的栏位</li>
+<li>可以多重继承</li>
+<li>除了范围（range）、列表（list）、哈希（hash）分区外，支持其它用户自定义的分区方式</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>需要手动创建 function 和 trigger，并且定期需要维护它们</li>
+<li>性能比声明式分区差</li>
+</ul>
+<h2 id="_5">小结</h2>
+<p>本文介绍了继承式分区的基本操作、应用此方式时需为 ORM 框架做的额外工作、分区维护和优缺点。</p>
+<p>下一篇将介绍声明式分区。</p></body>
+</html>
