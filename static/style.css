@@ -31,7 +31,7 @@ code, a {
     font-size: 90%;
     color: #b9a193;
 }
-pre, blockquote {padding: 15px; border: 1px dashed #b9a193; white-space: pre-wrap; word-wrap: break-word;}
+pre, blockquote {padding: 15px; border: 1px dashed #b9a193; overflow: auto;}
 a:hover {color: #f3f3f2; background-color: #b9a193;}
 table {border-collapse: collapse; }
 th, td {padding: 10px;}
