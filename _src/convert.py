@@ -1,5 +1,5 @@
 #coding=utf-8
-'''Qucik and dirty script to generate my blog site.'''
+'''A quick and dirty script to generate my blog site.'''
 import os, sys
 import shutil
 import markdown
@@ -57,9 +57,9 @@ def gen_index():
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Notes about Industrial Automation, also some thoughts recorded here.">
+    <meta name="description" content="Weblog for software development and industrial automation applications.">
     <link rel="stylesheet" href="static/style.css" />
-    <title>Notes | Huang Jie</title>
+    <title>Weblog | Huang Jie</title>
     <style type="text/css">
     .left {text-align: left;}
     .right {text-align: right;}
@@ -70,9 +70,7 @@ def gen_index():
 <h1>索引 | 黄杰的记事本</h1>
 <div class="right">
 [
-<a href="http://www.linuxsand.info" target="_blank">about</a>
-|
-<a href="http://www.linuxsand.info/work_tools.html" target="_blank">tools</a>
+<a href="http://linuxsand.info" target="_blank">about</a>
 ]
 </div>
 <ul>'''
@@ -175,7 +173,7 @@ if __name__ == "__main__":
     gen_sitemap()
     gen_index()
     print("\n\n--End--")
-    import time
-    time.sleep(3)
+    # import time
+    # time.sleep(3)
     
     
