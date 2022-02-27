@@ -20,7 +20,8 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
 阅读 `Makefile` 可以知道，在 Windows 下没法直接、方便地进行构建（尽管我的 path 内有部分 GNU 工具链）。
 
-通过搜索 github issues，找到了[一个应变方法](https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231)；我修改了这个 make.sh 文件的 [Shebang](https://www.linux.cn/article-3664-1.html) 、添加了注释如下。
+通过搜索 github issues，找到了[一个应变方法](https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231)；
+我修改了这个 make.sh 文件的 [Shebang](https://bash.cyberciti.biz/guide/Shebang) 、添加了注释如下。
 
 
     #! /usr/bin/bash

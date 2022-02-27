@@ -20,7 +20,8 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 <li>一堆 Python 脚本（我暂时不需要）</li>
 </ul>
 <p>阅读 <code>Makefile</code> 可以知道，在 Windows 下没法直接、方便地进行构建（尽管我的 path 内有部分 GNU 工具链）。</p>
-<p>通过搜索 github issues，找到了<a href="https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231">一个应变方法</a>；我修改了这个 make.sh 文件的 <a href="https://www.linux.cn/article-3664-1.html">Shebang</a> 、添加了注释如下。</p>
+<p>通过搜索 github issues，找到了<a href="https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231">一个应变方法</a>；
+我修改了这个 make.sh 文件的 <a href="https://bash.cyberciti.biz/guide/Shebang">Shebang</a> 、添加了注释如下。</p>
 <pre><code>#! /usr/bin/bash
 # huangjie comments: execute in git bash
 # then copy to C:\Program Files\PostgreSQL\14\share\extension
