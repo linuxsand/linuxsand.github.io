@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>使用 pg_partman 自动管理 PostgreSQL 数据库的分区表 | 黄杰的记事本</title>
+</head>
+<body>
+<h1>使用 pg_partman 自动管理 PostgreSQL 数据库的分区表</h1>
+<p style="text-align: right;">黄杰, 2022-02-27<br />root[a]linuxsand.info</p><p>前两篇文章（<a href="/partitions-manual-management-1-in-postgresql.html">（一）</a> 和 <a href="/partitions-manual-management-2-in-postgresql.html">（二）</a>）写了手动管理 PostgreSQL 的分区表。</p>
+<p>本文记录了使用 <a href="https://github.com/pgpartman/pg_partman/">pg_partman</a> 这个 PostgreSQL 拓展（extension）进行分区的创建和自动维护。
+pg_partman 支持继承式分区表和声明式（原生）分区表，本文使用原生分区表。</p>
+<h2 id="1-pg_partman">1 安装 pg_partman</h2>
+<p>对于 Windows 用户来说，pg_partman 的安装可比配置和使用麻烦多了：需要自己克隆代码（<code>git clone https://github.com/pgpartman/pg_partman/</code>）并构建（<code>make install</code>）出 pg_partman。</p>
+<p>构建后，预期得到的文件有：</p>
+<ul>
+<li>.control 和 .sql 文件：<code>pg_partman.control</code> 和 <code>pg_partman--4.6.0.sql</code>，这是必须的文件</li>
+<li>BGW（background worker）：<code>pg_partman_bgw.dll</code>，这是 C 库，它会在后台定期执行维护例程，我需要它</li>
+<li>一堆 Python 脚本（我暂时不需要）</li>
+</ul>
+<p>阅读 <code>Makefile</code> 可以知道，在 Windows 下没法直接、方便地进行构建（尽管我的 path 内有部分 GNU 工具链）。</p>
+<p>通过搜索 github issues，找到了<a href="https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231">一个应变方法</a>；我修改了这个 make.sh 文件的 <a href="https://www.linux.cn/article-3664-1.html">Shebang</a> 、添加了注释如下。</p>
+<pre><code>#! /usr/bin/bash
+# huangjie comments: execute in git bash
+# then copy to C:\Program Files\PostgreSQL\14\share\extension
+# then in psql, execute `create extension pg_partman`
+# finally, check if it displayed in extensions list
+# end huangjie comments
+EXTENSION=pg_partman
+VERSION=$(grep default_version $EXTENSION.control | \
+          sed -e "s/default_version[[:space:]]*=[[:space:]]*'\([^']*\)'/\1/")
+
+cat sql/types/*.sql &gt; "${EXTENSION}--${VERSION}.sql"
+cat sql/tables/*.sql &gt;&gt; "${EXTENSION}--${VERSION}.sql"
+cat sql/functions/*.sql &gt;&gt; "${EXTENSION}--${VERSION}.sql"
+</code></pre>
+<p>直接在 git bash 内执行 <code>./make.sh</code>，得到了 <code>pg_partman.control</code> 和 <code>pg_partman--4.6.0.sql</code> 文件。</p>
+<p>接着把它俩拷贝到 <code>C:\Program Files\PostgreSQL\14\share\extension</code>。然后在 psql 内执行 <code>create extension pg_paratman</code> 就完成了安装，验证如下。</p>
+<pre><code>postgres=# select * from pg_available_extensions where name='pg_partman';
+    name    | default_version | installed_version |                       comment
+------------+-----------------+-------------------+------------------------------------------------------
+ pg_partman | 4.6.0           | 4.6.0             | Extension to manage partitioned tables by time or ID
+(1 row)
+</code></pre>
+<p>尽管现在可以进入配置和使用环节，但不如等 BGW 安装完毕后一起操作。</p>
+<p>关于 BGW 在 Windows 上的构建方法，我参考了<a href="https://www.highgo.ca/2020/05/15/build-postgresql-and-extension-on-windows/">这篇文章</a>。
+用 Visual Studio 2019 创建空白 C++ 项目，（略），复制了 pg_partman_bgw.c 内的代码（<code>src/pg_partman_bgw.c</code>），（略），构建得到了 pg_partman_bgw.dll。
+将 pg_partman_bgw.dll 复制到 <code>C:\Program Files\PostgreSQL\14\lib</code> 内，并且通过 <code>services.msc</code> 重启 postgresql 服务。</p>
+<p>附上我构建完毕的 pg_partman 压缩包（64bit）。<a href="http://media.linuxsand.info/misc/pg_partman_windows_linuxsand.info.7z">http://media.linuxsand.info/misc/pg_partman_windows_linuxsand.info.7z</a></p>
+<h2 id="2-pg_partman">2 配置 pg_partman</h2>
+<p>参照文档，修改 postgresql.conf。</p>
+<pre><code># - Shared Library Preloading -
+shared_preload_libraries = 'pg_partman_bgw' # (change requires restart)
+
+# Add settings for extensions here
+pg_partman_bgw.dbname = 'postgres'
+pg_partman_bgw.interval = 3600
+</code></pre>
+<p>重新加载配置：</p>
+<pre><code>postgres=# select pg_reload_conf();
+ pg_reload_conf
+----------------
+ t
+(1 row)
+</code></pre>
+<h2 id="3-pg_partman">3 使用 pg_partman</h2>
+<h3 id="31">3.1 创建分区表</h3>
+<p>我们直接使用 pg_partman.create_parent 按月来创建分区表：</p>
+<pre><code>create table dbo.test3
+(
+    "Id" bigserial,
+    -- ...other columns
+     "DetectedTime" timestamp without time zone
+) PARTITION BY Range("DetectedTime");
+
+-- 略过创建索引
+-- create index on dbo.test3 ("DetectedTime");
+-- create index on dbo.test3 ("Id");
+
+-- 'native' 即原生分区表（声明式分区表）
+select create_parent('dbo.test3', 'DetectedTime', 'native', 'monthly');
+</code></pre>
+<p>查看 <code>create_parent</code> 创建的子表，我们可以看到一共创建了 10 张表（<code>p_premake</code>参数默认为 4 时，1 张当月表，4 张过去的月份表，4 张未来的月份表，1 张默认表）：</p>
+<pre><code>postgres=# \d+ dbo.test3;
+                                     Partitioned table "dbo.test3"
+    Column    |            Type             | Collation | Nullable |                 Default                 |
+--------------+-----------------------------+-----------+----------+-----------------------------------------+
+ Id           | bigint                      |           | not null | nextval('dbo."test3_Id_seq"'::regclass) |
+ DetectedTime | timestamp without time zone |           |          |                                         |
+Partition key: RANGE ("DetectedTime")
+Partitions: dbo.test3_p2021_10 FOR VALUES FROM ('2021-10-01 00:00:00') TO ('2021-11-01 00:00:00'),
+            dbo.test3_p2021_11 FOR VALUES FROM ('2021-11-01 00:00:00') TO ('2021-12-01 00:00:00'),
+            dbo.test3_p2021_12 FOR VALUES FROM ('2021-12-01 00:00:00') TO ('2022-01-01 00:00:00'),
+            dbo.test3_p2022_01 FOR VALUES FROM ('2022-01-01 00:00:00') TO ('2022-02-01 00:00:00'),
+            dbo.test3_p2022_02 FOR VALUES FROM ('2022-02-01 00:00:00') TO ('2022-03-01 00:00:00'),
+            dbo.test3_p2022_03 FOR VALUES FROM ('2022-03-01 00:00:00') TO ('2022-04-01 00:00:00'),
+            dbo.test3_p2022_04 FOR VALUES FROM ('2022-04-01 00:00:00') TO ('2022-05-01 00:00:00'),
+            dbo.test3_p2022_05 FOR VALUES FROM ('2022-05-01 00:00:00') TO ('2022-06-01 00:00:00'),
+            dbo.test3_p2022_06 FOR VALUES FROM ('2022-06-01 00:00:00') TO ('2022-07-01 00:00:00'),
+            dbo.test3_default DEFAULT
+</code></pre>
+<p>就这么简单。</p>
+<p>贴一下 create_parent 的完整签名备忘。</p>
+<pre><code>create_parent(p_parent_table text, p_control text, p_type text, p_interval text,
+              p_constraint_cols text[] DEFAULT NULL, p_premake int DEFAULT 4,
+              p_automatic_maintenance text DEFAULT 'on', p_start_partition text DEFAULT NULL,
+              p_inherit_fk boolean DEFAULT true, p_epoch text DEFAULT 'none',
+              p_upsert text DEFAULT '', p_publications text[] DEFAULT NULL,
+              p_trigger_return_null boolean DEFAULT true, p_template_table text DEFAULT NULL,
+              p_jobmon boolean DEFAULT true, p_date_trunc_interval text DEFAULT NULL)
+      RETURNS boolean
+</code></pre>
+<h3 id="32">3.2 自动维护分区表</h3>
+<p>使用 <code>run_maintenance</code> 或 <code>run_maintenance_proc</code> 进行分区维护，两者的签名如下。</p>
+<pre><code>run_maintenance(p_parent_table text DEFAULT NULL, p_analyze boolean DEFAULT NULL,
+                p_jobmon boolean DEFAULT true)
+    RETURNS void
+
+run_maintenance_proc(p_wait int DEFAULT 0, p_analyze boolean DEFAULT NULL,
+                p_jobmon boolean DEFAULT true)
+</code></pre>
+<p>可以手动针对 dbo.test3 进行维护：</p>
+<pre><code>select run_maintenance('dbo.test3', false);
+</code></pre>
+<p>根据上一节的配置，BGW 会每隔 3600 秒自动调用 <code>run_maintenance</code>；自动维护时不能传入表名作为参数，BGW 会自动维护 <code>part_config</code> 内的 <code>automatic_maintenance</code> 为真的表。</p>
+<pre><code>postgres=# select automatic_maintenance from part_config where parent_table='dbo.test3';
+ automatic_maintenance
+-----------------------
+ on
+(1 row)
+</code></pre>
+<p>如何丢弃分区？<code>retention</code> 为 NULL，默认是不丢弃的。</p>
+<pre><code>postgres=# select retention, retention_keep_table from part_config where parent_table='dbo.test3';
+ retention | retention_keep_table
+-----------+----------------------
+           | t
+(1 row)
+</code></pre>
+<p>对于本文中基于时间（<code>DetectedTime</code> 栏位）的分区方式，将 <code>retention</code> 设置为某个 interval 即可。而 <code>retention_keep_table</code> 为真表示只 detach 或 no inherit 表，并不删除数据。</p>
+<pre><code>postgres=# update part_config set retention=interval '1 year' where parent_table='dbo.test3';
+UPDATE 1
+
+postgres=# select retention, retention_keep_table from part_config where parent_table='dbo.test3';
+ retention | retention_keep_table
+-----------+----------------------
+ 1 year    | t
+(1 row)
+</code></pre>
+<h2 id="4">4 小结</h2>
+<p>本文介绍了 pg_partman 这个工具的安装、配置和使用。</p></body>
+</html>
