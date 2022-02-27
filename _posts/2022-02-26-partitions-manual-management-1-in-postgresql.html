@@ -100,8 +100,8 @@ CREATE TRIGGER trg_after_insert_to_test AFTER INSERT ON dbo.test
 <p>上面的基本操作中，我们创建了固定数量的分区。随着时间的推移，如何自动创建新的分区呢？<a href="https://www.cybertec-postgresql.com/en/automatic-partition-creation-in-postgresql/">这篇文章</a>介绍了两类思路。</p>
 <p>我个人比较偏向于：</p>
 <ol>
-<li>在操作系统或者应用软件层面执行定时任务：在特定时机创建新的分区，更新 <code>fn_before_insert_to_test()</code> 内的 <code>if-else</code> 代码</li>
 <li>直接利用 <a href="https://github.com/pgpartman/pg_partman">pg_partman</a> 等工具进行分区创建和丢弃（后续会专门写一篇文章）</li>
+<li>在操作系统或者应用软件层面执行定时任务：在特定时机创建新的分区，更新 <code>fn_before_insert_to_test()</code> 内的 <code>if-else</code> 代码</li>
 </ol>
 <p>除了新增分区，维护往往也需要删除过时数据。这个很方便：</p>
 <pre><code>-- 从父表中移除子表，但保留数据
@@ -124,5 +124,5 @@ drop table dbo.test_2022_01;
 </ul>
 <h2 id="_5">小结</h2>
 <p>本文介绍了继承式分区的基本操作、应用此方式时需为 ORM 框架做的额外工作、分区维护和优缺点。</p>
-<p>下一篇将介绍声明式分区。</p></body>
+<p><a href="/partitions-manual-management-2-in-postgresql.html">下一篇</a>将介绍声明式分区。</p></body>
 </html>

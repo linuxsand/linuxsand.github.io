@@ -87,7 +87,7 @@
 
 上面的基本操作中，我们创建了固定数量的分区。我们在原生分区表中手动新增子表是相对很方便了，因此只需在操作系统或者应用软件层面执行定时任务：在特定时机“拼接”出下面的 SQL 执行即可。
 
-    create table dbo.test2_p2022_03 PARTITION OF dbo.test2
+    create table IF NOT EXISTS dbo.test2_p2022_03 PARTITION OF dbo.test2
         for values from ('2022-03-01') to ('2022-04-01');
 
 

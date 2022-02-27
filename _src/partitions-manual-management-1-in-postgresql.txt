@@ -115,8 +115,8 @@
 
 我个人比较偏向于：
 
-1. 在操作系统或者应用软件层面执行定时任务：在特定时机创建新的分区，更新 `fn_before_insert_to_test()` 内的 `if-else` 代码
-2. 直接利用 [pg_partman](https://github.com/pgpartman/pg_partman) 等工具进行分区创建和丢弃（后续会专门写一篇文章）
+1. 直接利用 [pg_partman](https://github.com/pgpartman/pg_partman) 等工具进行分区创建和丢弃（后续会专门写一篇文章）
+2. 在操作系统或者应用软件层面执行定时任务：在特定时机创建新的分区，更新 `fn_before_insert_to_test()` 内的 `if-else` 代码
 
 除了新增分区，维护往往也需要删除过时数据。这个很方便：
 
@@ -145,4 +145,4 @@
 
 本文介绍了继承式分区的基本操作、应用此方式时需为 ORM 框架做的额外工作、分区维护和优缺点。
 
-下一篇将介绍声明式分区。
+[下一篇](/partitions-manual-management-2-in-postgresql.html)将介绍声明式分区。

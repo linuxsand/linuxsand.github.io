@@ -79,7 +79,7 @@ postgres-# (select count(1) from dbo.test2_p2022_02) month2;
 </code></pre>
 <h2 id="_2">分区维护</h2>
 <p>上面的基本操作中，我们创建了固定数量的分区。我们在原生分区表中手动新增子表是相对很方便了，因此只需在操作系统或者应用软件层面执行定时任务：在特定时机“拼接”出下面的 SQL 执行即可。</p>
-<pre><code>create table dbo.test2_p2022_03 PARTITION OF dbo.test2
+<pre><code>create table IF NOT EXISTS dbo.test2_p2022_03 PARTITION OF dbo.test2
     for values from ('2022-03-01') to ('2022-04-01');
 </code></pre>
 <p>下面的代码用于移除子表。</p>
