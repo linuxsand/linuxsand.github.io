@@ -116,4 +116,4 @@
 
 本文介绍了声明式分区（原生分区表）的基本操作、分区维护和优缺点。
 
-下一篇将介绍使用 pg_partman 进行分区的自动管理。
+[下一篇](/partitions-automatic-management-in-postgresql-by-pg_partman.html)将介绍使用 pg_partman 进行分区的自动管理。
