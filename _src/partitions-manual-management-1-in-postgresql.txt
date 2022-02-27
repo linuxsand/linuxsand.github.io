@@ -120,11 +120,11 @@
 
 除了新增分区，维护往往也需要删除过时数据。这个很方便：
 
-    -- 直接扔掉某张子表
-    drop table dbo.test_2022_01;
-
     -- 从父表中移除子表，但保留数据
     alter table dbo.test_2022_01 NO INHERIT dbo.test;
+
+    -- 直接扔掉某张子表
+    drop table dbo.test_2022_01;
 
 
 ## 优点和缺点

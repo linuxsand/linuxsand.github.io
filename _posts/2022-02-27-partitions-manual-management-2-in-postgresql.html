@@ -16,7 +16,7 @@
     "Id" bigserial,
     -- ...other columns
      "DetectedTime" timestamp without time zone
-) PARTITION BY range("DetectedTime");
+) PARTITION BY Range("DetectedTime");
 </code></pre>
 <p>第二，手动创建子表和索引</p>
 <pre><code>create table dbo.test2_p2022_01 PARTITION OF dbo.test2

@@ -4,7 +4,6 @@
 
 [上一篇文章](/partitions-manual-management-1-in-postgresql.html)写了继承式分区表。这一篇记录我对 PostgreSQL 10+ 引入的声明式分区表（原生分区表）的学习所得。
 
-
 ## 声明式分区的基本操作
 
 第一，用户通过在创建表时需用 `PARTITION BY` 从句。（依然用它的 `DetectedTime` 这个栏位作为分区键）
@@ -14,7 +13,7 @@
         "Id" bigserial,
         -- ...other columns
          "DetectedTime" timestamp without time zone
-    ) PARTITION BY range("DetectedTime");
+    ) PARTITION BY Range("DetectedTime");
 
 
 第二，手动创建子表和索引

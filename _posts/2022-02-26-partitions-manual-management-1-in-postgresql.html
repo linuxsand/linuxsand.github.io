@@ -104,11 +104,11 @@ CREATE TRIGGER trg_after_insert_to_test AFTER INSERT ON dbo.test
 <li>直接利用 <a href="https://github.com/pgpartman/pg_partman">pg_partman</a> 等工具进行分区创建和丢弃（后续会专门写一篇文章）</li>
 </ol>
 <p>除了新增分区，维护往往也需要删除过时数据。这个很方便：</p>
-<pre><code>-- 直接扔掉某张子表
-drop table dbo.test_2022_01;
-
--- 从父表中移除子表，但保留数据
+<pre><code>-- 从父表中移除子表，但保留数据
 alter table dbo.test_2022_01 NO INHERIT dbo.test;
+
+-- 直接扔掉某张子表
+drop table dbo.test_2022_01;
 </code></pre>
 <h2 id="_4">优点和缺点</h2>
 <p>优点：</p>
