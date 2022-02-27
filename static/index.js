@@ -39,7 +39,12 @@ var main = function() {
             postsCount--;
         }
     }
-    return postsCount;
+
+    document.write(
+        "<div style='text-align: right;'>" + postsCount.toString() +
+        " posts hosted on Github Pages</div>"
+    );
+
 }; // end main
 
 

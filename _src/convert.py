@@ -18,7 +18,7 @@ def join_post_content(title, date, content):
 <h1>{title}</h1>
 <p style="text-align: right;">黄杰, {date}<br />root[a]linuxsand.info</p>"""
     body_end = """</body>\r\n</html>"""
-    
+
     return header.format(title=title, date=date) + \
            markdown.markdown(
                content,
@@ -29,8 +29,8 @@ def join_post_content(title, date, content):
                ) + \
            body_end
 
-           
-           
+
+
 def get_meta_from_src(filename):
     thisfile = open(filename, "r", encoding="utf-8")
     line1 = thisfile.readline().rstrip()
@@ -39,7 +39,7 @@ def get_meta_from_src(filename):
     return line1, line2, content
 
 
-    
+
 def get_title_from_post(html_name):
     if html_name.endswith('2013-06-18-robotics.html'):
         #return '机器人学导论阅读笔记'
@@ -48,9 +48,9 @@ def get_title_from_post(html_name):
         lines = f.readlines()
         title = lines[9][4:-6]#.decode('utf8').encode('gbk', 'ignore') # test in cmd.exe
         return title
-        
-        
-        
+
+
+
 def gen_index():
     header = '''<!DOCTYPE html>
 <html>
@@ -77,16 +77,12 @@ def gen_index():
 <ul>'''
     footer = '''</ul>
 <script type="text/javascript">
-    var postsCount = main();
-    document.write( 
-        "<div style='text-align: right;'>" + postsCount.toString() + 
-        " posts hosted on Github Pages</div>"
-    );
+    main();
 </script>
 </body>
 </html>'''
     line_tpl = '''<li class="blog_title"><a href="{0}">{1}</a></li>'''
-    
+
     posts = []
     PATH_PREFIX = '../_posts'
     for post in os.listdir(PATH_PREFIX):
@@ -97,17 +93,17 @@ def gen_index():
         if title is None: continue
         posts.append( (url, title, date) )
     posts.sort(key=lambda x: x[2], reverse=True) # newest date on the top
-    
+
     lines = []
     for info in posts:
         lines.append( line_tpl.format( info[0], info[1]) )
-        
+
     with open ('../index.html', 'w', encoding='utf-8') as index:
         index.write(header + '\n'.join(lines) + footer)
     print('index generated.\n')
-    
-    
-    
+
+
+
 def gen_new_posts():
     md_files = []
     for _file in os.listdir("."):
@@ -119,14 +115,14 @@ def gen_new_posts():
             f.write(html_content)
         md_files.append(_file)
     print("\nnew posts generated.\n")
-        
-        
-        
-def gen_sitemap():            
+
+
+
+def gen_sitemap():
     pass
-    
-    
-    
+
+
+
 if __name__ == "__main__":
     print('---Start---\n')
     gen_new_posts()
@@ -135,5 +131,5 @@ if __name__ == "__main__":
     print("\n\n--End--")
     # import time
     # time.sleep(3)
-    
-    
+
+
