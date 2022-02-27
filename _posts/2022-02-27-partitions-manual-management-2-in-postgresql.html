@@ -10,7 +10,7 @@
 <h1>手动管理 PostgreSQL 数据库的分区表（二）</h1>
 <p style="text-align: right;">黄杰, 2022-02-27<br />root[a]linuxsand.info</p><p><a href="/partitions-manual-management-1-in-postgresql.html">上一篇文章</a>写了继承式分区表。这一篇记录我对 PostgreSQL 10+ 引入的声明式分区表（原生分区表）的学习所得。</p>
 <h2 id="_1">声明式分区的基本操作</h2>
-<p>第一，用户通过在创建表时需用 <code>PARTITION BY</code> 从句。（依然用它的 <code>DetectedTime</code> 这个栏位作为分区键）</p>
+<p>第一，用户在创建原生分区表时需用 <code>PARTITION BY</code> 从句。（依然用它的 <code>DetectedTime</code> 这个栏位作为分区键）</p>
 <pre><code>create table dbo.test2
 (
     "Id" bigserial,

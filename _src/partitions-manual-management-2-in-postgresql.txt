@@ -6,7 +6,7 @@
 
 ## 声明式分区的基本操作
 
-第一，用户通过在创建表时需用 `PARTITION BY` 从句。（依然用它的 `DetectedTime` 这个栏位作为分区键）
+第一，用户在创建原生分区表时需用 `PARTITION BY` 从句。（依然用它的 `DetectedTime` 这个栏位作为分区键）
 
     create table dbo.test2
     (
