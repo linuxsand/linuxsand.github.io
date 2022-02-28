@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>工业机器人的程序保护 | 黄杰的记事本</title>
 </head>
 <body>
 <h1>工业机器人的程序保护</h1>
-<p style="text-align: right;">黄杰, 2018-04-11<br />root[a]linuxsand.info</p><p>本文针对主流工业机器人。当一家（集成）公司积累了一定的机器人代码后，应当考虑代码保护的问题了。一般机器人代码都是解释执行，用户能从示教器上读出源代码；竞争对手也能拷贝、阅读和修改，省去了正向开发的时间成本，对于公司来说无疑是不利的。</p>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2018-04-11<br />
+root[a]linuxsand.info<br />
+</p><p>本文针对主流工业机器人。当一家（集成）公司积累了一定的机器人代码后，应当考虑代码保护的问题了。一般机器人代码都是解释执行，用户能从示教器上读出源代码；竞争对手也能拷贝、阅读和修改，省去了正向开发的时间成本，对于公司来说无疑是不利的。</p>
 <p>下面介绍 ABB / KUKA / FANUC 机器人的保护方法，其它品牌限于个人经验无法说明。我理解的保护，至少有 2 个层面：</p>
 <ul>
 <li>代码内容的保护</li>

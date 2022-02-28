@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>使用 pg_partman 自动管理 PostgreSQL 数据库的分区表 | 黄杰的记事本</title>
 </head>
 <body>
 <h1>使用 pg_partman 自动管理 PostgreSQL 数据库的分区表</h1>
-<p style="text-align: right;">黄杰, 2022-02-27<br />root[a]linuxsand.info</p><p>前两篇文章（<a href="/partitions-manual-management-1-in-postgresql.html">（一）</a> 和 <a href="/partitions-manual-management-2-in-postgresql.html">（二）</a>）写了手动管理 PostgreSQL 的分区表。</p>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2022-02-27<br />
+root[a]linuxsand.info<br />
+</p><p>前两篇文章（<a href="/partitions-manual-management-1-in-postgresql.html">（一）</a> 和 <a href="/partitions-manual-management-2-in-postgresql.html">（二）</a>）写了手动管理 PostgreSQL 的分区表。</p>
 <p>本文记录了使用 <a href="https://github.com/pgpartman/pg_partman/">pg_partman</a> 这个 PostgreSQL 拓展（extension）进行分区的创建和自动维护。
 pg_partman 支持继承式分区表和声明式（原生）分区表，本文使用原生分区表。</p>
 <h2 id="1-pg_partman">1 安装 pg_partman</h2>

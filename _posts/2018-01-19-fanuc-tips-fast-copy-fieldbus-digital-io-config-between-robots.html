@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>﻿FANUC小贴士：批量复制总线和数字I/O配置到其它控制器 | 黄杰的记事本</title>
 </head>
 <body>
 <h1>﻿FANUC小贴士：批量复制总线和数字I/O配置到其它控制器</h1>
-<p style="text-align: right;">黄杰, 2018-01-19<br />root[a]linuxsand.info</p><p>如果你需要配置几台同样总线（FieldBus）和数字 I/O 的 FANUC 机器人控制器，那么在配置好一台后，可以备份相关文件，再加载到第二台控制器，节约大量时间。</p>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2018-01-19<br />
+root[a]linuxsand.info<br />
+</p><p>如果你需要配置几台同样总线（FieldBus）和数字 I/O 的 FANUC 机器人控制器，那么在配置好一台后，可以备份相关文件，再加载到第二台控制器，节约大量时间。</p>
 <p>由于将要加载的是系统文件，FANUC 控制器必须 Controlled Start 后进行加载操作。</p>
 <p>（罗嗦一句，做好备份再进行操作。）</p>
 <h2 id="_1">两个文件的介绍</h2>

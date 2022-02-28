@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>cmd.exe 的快速编辑模式阻塞了应用程序 | 黄杰的记事本</title>
 </head>
 <body>
 <h1>cmd.exe 的快速编辑模式阻塞了应用程序</h1>
-<p style="text-align: right;">黄杰, 2019-11-21<br />root[a]linuxsand.info</p><p>近期出差发生了一件很有意思的事情。</p>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2019-11-21<br />
+root[a]linuxsand.info<br />
+</p><p>近期出差发生了一件很有意思的事情。</p>
 <h2 id="_1">经过描述</h2>
 <p>工控机上跑着一个命令行程序（该程序具备网络通信功能），它会频繁打印信息到标准输出。由于需要定期查看输出的最新信息，我们习惯按住鼠标左键拖选关键输出（此时进入了 cmd.exe 的快速编辑模式），这样就能高亮显示了，阅读起来轻松些。</p>
 <p>看完输出后，人就走开了（此时仍然维持着快速编辑模式）。</p>

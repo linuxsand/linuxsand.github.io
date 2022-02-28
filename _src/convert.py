@@ -9,14 +9,18 @@ def join_post_content(title, date, content):
     header = """<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>{title} | 黄杰的记事本</title>
 </head>
 <body>
 <h1>{title}</h1>
-<p style="text-align: right;">黄杰, {date}<br />root[a]linuxsand.info</p>"""
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, {date}<br />
+root[a]linuxsand.info<br />
+</p>"""
     body_end = """</body>\r\n</html>"""
 
     return header.format(title=title, date=date) + \

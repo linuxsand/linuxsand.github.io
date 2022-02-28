@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>PLB 中的几个坐标系 | 黄杰的记事本</title>
 </head>
 <body>
 <h1>PLB 中的几个坐标系</h1>
-<p style="text-align: right;">黄杰, 2018-09-26<br />root[a]linuxsand.info</p><p>PLB 是 SICK 的视觉产品，可以理解为一套软硬件结合的系统，全称是 Part Localization in Bins，即箱中工件定位。它用于引导机器人实现 <a href="https://en.wikipedia.org/wiki/Bin_picking">random bin picking</a>。</p>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2018-09-26<br />
+root[a]linuxsand.info<br />
+</p><p>PLB 是 SICK 的视觉产品，可以理解为一套软硬件结合的系统，全称是 Part Localization in Bins，即箱中工件定位。它用于引导机器人实现 <a href="https://en.wikipedia.org/wiki/Bin_picking">random bin picking</a>。</p>
 <p>和 SICK China 合作，我实现了 FANUC（发那科） 和 KAWASAKI（川崎）的通信接口和代码示例，覆盖了 PLB 5.2 的基础功能。</p>
 <hr />
 <p>本文仅涉及 PLB 中的几个坐标系，对初入 3D 视觉的朋友也许会有帮助。内容和截图来源于 PLB 5.2 版本操作手册中的 3.2.4 Reference frames 章节。</p>

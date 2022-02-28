@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" src="static/post.js"></script>
     <link rel="stylesheet" href="static/style.css" />
     <title>手动管理 PostgreSQL 数据库的分区表（二） | 黄杰的记事本</title>
 </head>
 <body>
 <h1>手动管理 PostgreSQL 数据库的分区表（二）</h1>
-<p style="text-align: right;">黄杰, 2022-02-27<br />root[a]linuxsand.info</p><p><a href="/partitions-manual-management-1-in-postgresql.html">上一篇文章</a>写了继承式分区表。这一篇记录我对 PostgreSQL 10+ 引入的声明式分区表（原生分区表）的学习所得。</p>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2022-02-27<br />
+root[a]linuxsand.info<br />
+</p><p><a href="/partitions-manual-management-1-in-postgresql.html">上一篇文章</a>写了继承式分区表。这一篇记录我对 PostgreSQL 10+ 引入的声明式分区表（原生分区表）的学习所得。</p>
 <h2 id="_1">声明式分区的基本操作</h2>
 <p>第一，用户在创建原生分区表时需用 <code>PARTITION BY</code> 从句。（依然用它的 <code>DetectedTime</code> 这个栏位作为分区键）</p>
 <pre><code>create table dbo.test2
