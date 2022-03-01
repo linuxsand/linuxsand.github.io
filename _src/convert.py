@@ -21,7 +21,9 @@ def join_post_content(title, date, content):
 黄杰, {date}<br />
 root[a]linuxsand.info<br />
 </p>"""
-    body_end = """</body>\r\n</html>"""
+    body_end = """<script type="text/javascript">
+    main();
+</script></body>\r\n</html>"""
 
     return header.format(title=title, date=date) + \
            markdown.markdown(
