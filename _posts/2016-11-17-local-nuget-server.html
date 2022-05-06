@@ -3,12 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="static/style.css" />
-    <title>﻿使用本地 Nuget Server | 黄杰的记事本</title>
+    <script type="text/javascript" src="static/post.js"></script><link rel="stylesheet" href="static/style.css" />
+    <title>﻿使用私有 Nuget 源 | 黄杰的记事本</title>
 </head>
 <body>
-<h1>﻿使用本地 Nuget Server</h1>
-<p style="text-align: right;">黄杰, 2016-11-17<br />root[a]linuxsand.info</p><div class="toc">
+<h1>使用私有 Nuget 源</h1>
+<p style="text-align: right;">
+[ <a href="/">博客首页</a> ]<br />
+黄杰, 2016-11-17<br />
+root[a]linuxsand.info</p><div class="toc">
+</p>
+
 <ul>
 <li><a href="#_1">前言</a></li>
 <li><a href="#nuget">NuGet 基本操作</a></li>
@@ -22,10 +27,16 @@
 <li><a href="#_4">参考链接</a></li>
 </ul>
 </div>
+
+<p>本文写于2016年，部分信息或已失效。<br />2022年5月更新：可以使用 
+<a href="https://loic-sharma.github.io/BaGet/">BaGet</a> 或
+<a href="https://docs.microsoft.com/zh-cn/nuget/hosting-packages/nuget-server">NuGet.Server</a> 
+自行搭建基于HTTP的软件源，前者可跨平台部署。</p>
+
 <h2 id="_1">前言</h2>
 <p>与其手工安装管理依赖，不如使用包管理工具。在 .NET 生态里，我们使用 Nuget。</p>
 <p>工具有了，软件源在哪里？就是 <a href="https://nuget.org">https://nuget.org</a> 啦。</p>
-<p>有了公开软件源，为啥我还要搭建私有 Nuget Server 呢？</p>
+<p>有了公开软件源，为啥我还要搭建私有源（private feeds）呢？</p>
 <ol>
 <li>我的开发工作全是在虚拟机里进行，公司规定虚拟机不能联网</li>
 <li>部分包会是自己编写，用于公司业务，不能上传到公共 Server</li>
@@ -95,7 +106,9 @@ Successfully added 'xxxxx 2.0.0' to WpfApplication1.
 <li><a href="http://docs.nuget.org/ndocs/hosting-packages/overview">Hosting Packages Overview</a></li>
 <li><a href="https://docs.nuget.org/ndocs/policies/nuget-faq">NuGet FAQ</a></li>
 </ul>
-<hr />
-<p>使用微信打赏。</p>
-<p><img alt="" src="http://77g3ho.com1.z0.glb.clouddn.com/weixin_barcode5.png" /></p></body>
+
+<script type="text/javascript">
+    main();
+</script>
+</body>
 </html>
