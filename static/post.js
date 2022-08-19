@@ -1,6 +1,16 @@
 // post.js
 
 var main = function() {
+    let h1 = document.getElementsByTagName("h1")[0];
+    document.title = h1.innerHTML + " :: Weblog :: HUANG Jie";
+
+    let p = document.getElementsByTagName("p")[0];
+    p.innerHTML = p.innerHTML
+        .replaceAll("黄杰", "HUANG Jie (@linuxsand)")
+        .replaceAll("root[a]linuxsand.info", "root(at)linuxsand(dot)info")
+        ;
+
+    // 文末，暂时放两个收款二维码
     var div = document.createElement('div');
     div.innerHTML = '<p style="text-align: center;">（本文完）<br/>如果本文内容对你有帮助，欢迎小额赞赏。<br/></p>';
     div.innerHTML += '<div><table style="max-width: 96%;margin-left: auto; margin-right:auto; border-collapse:collapse; border: none;">' +
