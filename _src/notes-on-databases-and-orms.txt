@@ -178,7 +178,3 @@ EF 解放了手写 SQL、手工管理数据库连接的工作，大大提高了�
 - EntityFramework6.Npgsql <https://www.nuget.org/packages/EntityFramework6.Npgsql/>
 
 使用 EF 操作 PG 也不是没有坑，<https://github.com/npgsql/EntityFramework6.Npgsql/issues/62> 描述了一则问题 `42P08: could not determine data type of parameter $1` 和临时解决办法。
-
----
-
-推广：欢迎关注我的微信公号 `NaiStudio`。

@@ -79,7 +79,3 @@ Codesys 作为 Profinet 控制器操作 Beckhoff BK9053
 
 https://v.youku.com/v_show/id_XNDY2MzY4MjAzMg==.html
 <iframe width=520  height=288 src='http://player.youku.com/embed/XNDY2MzY4MjAzMg==' frameborder=0 'allowfullscreen'></iframe>
-
---------
-
-推广：欢迎关注我的微信公号 NaiStudio。
