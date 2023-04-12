@@ -1,0 +1,48 @@
+NaiStudio 数字信号板
+2023-04-12
+
+近来我对电子制作很感兴趣，买了一些单片机开发板和电子元件鼓捣，首先制作了一块数字信号板……
+
+（NaiStudio 是我的微信公号）
+
+目录：
+
+[TOC]
+
+
+## 1 数字信号板 RevA
+
+![NaiStudio 数字信号板 RevA 实物图](http://media.linuxsand.info/image/naistudio/io-board-rev_a.jpg)
+
+<http://media.linuxsand.info/image/naistudio/io-board-rev_a.jpg>
+
+RevA 版本的规格如下：
+
+1. 具备 8 个光耦隔离输入，4 组继电器常开触点输出
+2. 对外提供 USB 口给计算机使用，使用 ModbusRTU 通信协议
+
+使用场景：
+
+1. 教育培训
+2. 工程师的调试工具
+3. ……
+
+RevA 的接线示意图如下：
+
+![NaiStudio 数字信号板 RevA 接线示意图](http://media.linuxsand.info/image/naistudio/io-board-rev_a-wiring_dark.png)
+
+<http://media.linuxsand.info/image/naistudio/io-board-rev_a-wiring_dark.png>
+
+TODO 项：
+
+1. 编写上位机程序库，基于库实现这块板子的上位机调试软件，优先支持 Windows 操作系统
+2. 制作硬件精简版 RevB，I/O 缩减到 4 输入，2 输出
+3. 支持 RS485
+
+## 2 数字信号板 Rev B
+
+（敬请期待）
+
+## 量产发行
+
+（未完待续）
