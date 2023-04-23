@@ -17,7 +17,7 @@ NaiStudio 数字信号板
 RevA 版本的规格如下：
 
 1. 一手掌握的尺寸（长宽高）：90mm * 70mm * 30mm
-2. 具备 8 个光耦隔离输入（5 ~ 24VDC），4 组继电器常开触点输出
+2. 具备 8 个光耦隔离输入（3 ~ 24VDC），4 组继电器常开触点输出
 3. 对外提供 USB 口给计算机使用，使用 ModbusRTU 通信协议
 4. 支持 Windows 操作系统（Win10 可直接使用，Win7 需手工[下载安装驱动](https://www.holtek.com.tw/documents/10179/116667/USBBridgeSetup_CA.zip)）
     - 实际上硬件本身也支持 Linux，但我还未开发配套的 Linux 版上位机软件
@@ -37,14 +37,34 @@ RevA 的接线示意图如下：
 TODO 项：
 
 1. 【搞定】<del>编写上位机程序库，基于库实现这块板子的上位机调试软件，优先支持 Windows 操作系统</del>
-2. 制作硬件精简版 RevB，缩减 I/O 数量
+2. 【搞定】<del>制作硬件精简版 RevB，缩减 I/O 数量</del>
 3. 支持 RS485
 
 ## 2 数字信号板 RevB
 
-（敬请期待）
+
+![NaiStudio 数字信号板 RevB 实物图](http://media.linuxsand.info/image/naistudio/io-board-rev_b.jpg)
+
+如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-rev_b.jpg>
+
+RevB 与 RevA 版本的规格区别：
+
+1. 长宽从 90mm * 70mm 缩小为 80mm * 60mm
+2. 输入输出缩减一半：具备 4 个光耦隔离输入（3 ~ 24VDC），2 组继电器常开触点输出
+3. 增加了输入输出点的状态指示灯
+
+RevB 的接线示意图如下：
+
+![NaiStudio 数字信号板 RevB 接线示意图](http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png)
+
+如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png>
+
 
 ## 上位机软件
+
+![NaiStudio 数字信号板配套的上位机软件](http://media.linuxsand.info/image/naistudio/io-board-software.png)
+
+如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-software.png>
 
 上位机软件分为两个部分，一是“开箱即用”的工具软件，连接信号板后，能够高速刷新信号状态和强制数字信号输出；二为开发包，可以将其集成到自己的软件内，即可连接信号板、读写信号。
 
@@ -56,4 +76,4 @@ TODO 项：
 
 ## 量产发行
 
-（敬请期待）
+将和我的朋友“涛哥工业科技（TaoRobotics）”联合量产，敬请期待。
