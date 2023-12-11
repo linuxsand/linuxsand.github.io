@@ -18,7 +18,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 - BGW（background worker）：`pg_partman_bgw.dll`，这是 C 库，它会在后台定期执行维护例程，我需要它
 - 一堆 Python 脚本（我暂时不需要）
 
-阅读 `Makefile` 可以知道，在 Windows 下没法直接、方便地进行构建（尽管我的 path 内有部分 GNU 工具链）。
+阅读 `Makefile` 可以知道，在 Windows 下没法直接、方便地进行构建。
 
 通过搜索 github issues，找到了[一个应变方法](https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231)；
 我修改了这个 make.sh 文件的 [Shebang](https://bash.cyberciti.biz/guide/Shebang) 、添加了注释如下。
@@ -38,9 +38,16 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     cat sql/tables/*.sql >> "${EXTENSION}--${VERSION}.sql"
     cat sql/functions/*.sql >> "${EXTENSION}--${VERSION}.sql"
 
-直接在 git bash 内执行 `./make.sh`，得到了 `pg_partman.control` 和 `pg_partman--4.6.0.sql` 文件。
+直接在 git bash 内执行 `./make.sh`，得到了 `pg_partman.control` 和 `pg_partman--4.6.0.sql` 文件；接着把它俩拷贝到 `C:\Program Files\PostgreSQL\14\share\extension`。
 
-接着把它俩拷贝到 `C:\Program Files\PostgreSQL\14\share\extension`。然后在 psql 内执行 `create extension pg_paratman` 就完成了安装，验证如下。
+然后在 psql 内执行如下代码安装该拓展：
+
+    -- 切到 postgres 这个 db 下（以下所有示例，均在 postgres 这个数据库下演示）
+    \c postgres;
+    CREATE SCHEMA IF NOT EXISTS partman;
+    create extension IF NOT EXISTS pg_partman SCHEMA partman;
+
+验证如下。
 
     postgres=# select * from pg_available_extensions where name='pg_partman';
         name    | default_version | installed_version |                       comment
@@ -66,7 +73,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     shared_preload_libraries = 'pg_partman_bgw'	# (change requires restart)
 
     # Add settings for extensions here
-    pg_partman_bgw.dbname = 'postgres'
+    pg_partman_bgw.dbname = 'postgres' # 可以使用 , 来分隔多个数据库
     pg_partman_bgw.interval = 3600
 
 重新加载配置：
@@ -97,7 +104,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     -- create index on dbo.test3 ("Id");
 
     -- 'native' 即原生分区表（声明式分区表）
-    select create_parent('dbo.test3', 'DetectedTime', 'native', 'monthly');
+    select partman.create_parent('dbo.test3', 'DetectedTime', 'native', 'monthly');
 
 查看 `create_parent` 创建的子表，我们可以看到一共创建了 10 张表（`p_premake`参数默认为 4 时，1 张当月表，4 张过去的月份表，4 张未来的月份表，1 张默认表）：
 
@@ -146,11 +153,11 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
 可以手动针对 dbo.test3 进行维护：
 
-    select run_maintenance('dbo.test3', false);
+    select partman.run_maintenance('dbo.test3', false);
 
 根据上一节的配置，BGW 会每隔 3600 秒自动调用 `run_maintenance`；自动维护时不能传入表名作为参数，BGW 会自动维护 `part_config` 内的 `automatic_maintenance` 为真的表。
 
-    postgres=# select automatic_maintenance from part_config where parent_table='dbo.test3';
+    postgres=# select automatic_maintenance from partman.part_config where parent_table='dbo.test3';
      automatic_maintenance
     -----------------------
      on
@@ -159,7 +166,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
 如何丢弃分区？`retention` 为 NULL，默认是不丢弃的。
 
-    postgres=# select retention, retention_keep_table from part_config where parent_table='dbo.test3';
+    postgres=# select retention, retention_keep_table from partman.part_config where parent_table='dbo.test3';
      retention | retention_keep_table
     -----------+----------------------
                | t
@@ -168,10 +175,10 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
 对于本文中基于时间（`DetectedTime` 栏位）的分区方式，将 `retention` 设置为某个 interval 即可。而 `retention_keep_table` 为真表示只 detach 或 no inherit 表，并不删除数据。
 
-    postgres=# update part_config set retention=interval '1 year' where parent_table='dbo.test3';
+    postgres=# update partman.part_config set retention=interval '1 year' where parent_table='dbo.test3';
     UPDATE 1
 
-    postgres=# select retention, retention_keep_table from part_config where parent_table='dbo.test3';
+    postgres=# select retention, retention_keep_table from partman.part_config where parent_table='dbo.test3';
      retention | retention_keep_table
     -----------+----------------------
      1 year    | t
