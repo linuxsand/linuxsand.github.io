@@ -24,7 +24,7 @@ root[a]linuxsand.info<br />
 <li><a href="#15-model-h">1.5 数字信号板 Model H</a></li>
 </ul>
 </li>
-<li><a href="#2">2 上位机软件</a></li>
+<li><a href="#2">2 软件</a></li>
 <li><a href="#3">3 量产发行</a></li>
 </ul>
 </div>
@@ -71,18 +71,18 @@ root[a]linuxsand.info<br />
 <p>如图像未加载，请点击 <a href="http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png">http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png</a></p>
 <h3 id="13-model-c">1.3 数字信号板 Model C</h3>
 <p>补充图片 FIXME</p>
-<p>这个版本开始，命名方式使用 <code>Model X</code> 代替 <code>RevX</code>。主要的原因是，<code>Model C</code> 是印刷线路板，而之前的 <code>RevA</code> / <code>RevB</code> 是洞洞板。</p>
+<p>这个版本开始，命名方式使用 <code>Model __</code> 代替 <code>Rev__</code>。主要的原因是，<code>Model C</code> 是印刷线路板，而之前的 <code>RevA</code> / <code>RevB</code> 是洞洞板。</p>
 <p>这个版本是打样迭代版本，主要规格：</p>
 <ol>
 <li>长宽尺寸较大，100mm * 90mm * ___mm FIXME</li>
-<li>8输入、4输出</li>
+<li>8输入、4输出；（输出的）继电器从一组常开触点，改为一组转换触点</li>
 </ol>
 <h3 id="14-model-f">1.4 数字信号板 Model F</h3>
 <p>补充图片 FIXME</p>
 <p><code>Model F</code> 的尺寸和 I/O 数量均缩小：</p>
 <ol>
-<li>尺寸：92mm * 86mm * ___mm FIXME</li>
-<li>4输入、4输出</li>
+<li>尺寸：92mm * 86mm * __mm FIXME</li>
+<li>4输入、4输出；（输出的）继电器依然是一组转换触点</li>
 <li>器件布局有所变化</li>
 <li>带有塑料底板（不含上盖）</li>
 </ol>
@@ -91,10 +91,10 @@ root[a]linuxsand.info<br />
 <p>补充图片 FIXME</p>
 <p><code>Model H</code> 和 <code>Model F</code> 的尺寸一致、I/O数量一致。区别仅在于：</p>
 <ol>
-<li>输出继电器选择了体积更小的，因此可以配备塑料上盖</li>
+<li>输出继电器（继电器依然是一组转换触点）选择了体积更小的，因此可以配备塑料上盖</li>
 <li>线路板中央增加了两组预留接口（电源和 UART），但并未实际使用</li>
 </ol>
-<h2 id="2">2 上位机软件</h2>
+<h2 id="2">2 软件</h2>
 <p><img alt="NaiStudio 数字信号板配套的上位机软件" src="http://media.linuxsand.info/image/naistudio/io-board-software.png" /></p>
 <p>如图像未加载，请点击 <a href="http://media.linuxsand.info/image/naistudio/io-board-software.png">http://media.linuxsand.info/image/naistudio/io-board-software.png</a></p>
 <p>上位机软件支持本页面所有列出的型号；它分为两个部分，一是“开箱即用”的实用工具（Utility），连接信号板后，能够快速刷新信号状态和强制数字信号输出；二为开发包（SDK），目前支持 <code>.NET</code> 和 <code>C++ (MSVC)</code>，可以将其集成到自己的软件内，即可连接信号板、读写信号。</p>
