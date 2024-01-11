@@ -16,13 +16,20 @@ root[a]linuxsand.info<br />
 <p>目录：</p>
 <div class="toc">
 <ul>
-<li><a href="#1-reva">1 数字信号板 RevA</a></li>
-<li><a href="#2-revb">2 数字信号板 RevB</a></li>
-<li><a href="#_1">上位机软件</a></li>
-<li><a href="#_2">量产发行</a></li>
+<li><a href="#1">1 硬件</a><ul>
+<li><a href="#11-reva">1.1 数字信号板 RevA</a></li>
+<li><a href="#12-revb">1.2 数字信号板 RevB</a></li>
+<li><a href="#13-model-c">1.3 数字信号板 Model C</a></li>
+<li><a href="#14-model-f">1.4 数字信号板 Model F</a></li>
+<li><a href="#15-model-h">1.5 数字信号板 Model H</a></li>
+</ul>
+</li>
+<li><a href="#2">2 上位机软件</a></li>
+<li><a href="#3">3 量产发行</a></li>
 </ul>
 </div>
-<h2 id="1-reva">1 数字信号板 RevA</h2>
+<h2 id="1">1 硬件</h2>
+<h3 id="11-reva">1.1 数字信号板 RevA</h3>
 <p><img alt="NaiStudio 数字信号板 RevA 实物图" src="http://media.linuxsand.info/image/naistudio/io-board-rev_a.jpg" /></p>
 <p>如图像未加载，请点击 <a href="http://media.linuxsand.info/image/naistudio/io-board-rev_a.jpg">http://media.linuxsand.info/image/naistudio/io-board-rev_a.jpg</a></p>
 <p>RevA 版本的规格如下：</p>
@@ -50,7 +57,7 @@ root[a]linuxsand.info<br />
 <li>【搞定】<del>制作硬件精简版 RevB，缩减 I/O 数量</del></li>
 <li>支持 RS485</li>
 </ol>
-<h2 id="2-revb">2 数字信号板 RevB</h2>
+<h3 id="12-revb">1.2 数字信号板 RevB</h3>
 <p><img alt="NaiStudio 数字信号板 RevB 实物图" src="http://media.linuxsand.info/image/naistudio/io-board-rev_b.jpg" /></p>
 <p>如图像未加载，请点击 <a href="http://media.linuxsand.info/image/naistudio/io-board-rev_b.jpg">http://media.linuxsand.info/image/naistudio/io-board-rev_b.jpg</a></p>
 <p>RevB 与 RevA 版本的规格区别：</p>
@@ -62,14 +69,37 @@ root[a]linuxsand.info<br />
 <p>RevB 的接线示意图如下：</p>
 <p><img alt="NaiStudio 数字信号板 RevB 接线示意图" src="http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png" /></p>
 <p>如图像未加载，请点击 <a href="http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png">http://media.linuxsand.info/image/naistudio/io-board-rev_b-wiring_dark.png</a></p>
-<h2 id="_1">上位机软件</h2>
+<h3 id="13-model-c">1.3 数字信号板 Model C</h3>
+<p>补充图片 FIXME</p>
+<p>这个版本开始，命名方式使用 <code>Model X</code> 代替 <code>RevX</code>。主要的原因是，<code>Model C</code> 是印刷线路板，而之前的 <code>RevA</code> / <code>RevB</code> 是洞洞板。</p>
+<p>这个版本是打样迭代版本，主要规格：</p>
+<ol>
+<li>长宽尺寸较大，100mm * 90mm * ___mm FIXME</li>
+<li>8输入、4输出</li>
+</ol>
+<h3 id="14-model-f">1.4 数字信号板 Model F</h3>
+<p>补充图片 FIXME</p>
+<p><code>Model F</code> 的尺寸和 I/O 数量均缩小：</p>
+<ol>
+<li>尺寸：92mm * 86mm * ___mm FIXME</li>
+<li>4输入、4输出</li>
+<li>器件布局有所变化</li>
+<li>带有塑料底板（不含上盖）</li>
+</ol>
+<p>（为何直接从 <code>C</code> 跳到了 <code>F</code>？因为想要跳过一些发音、字型相似的符号，例如 <code>D</code> 近 <code>B</code>、<code>E</code> 近 <code>数字1</code> ）</p>
+<h3 id="15-model-h">1.5 数字信号板 Model H</h3>
+<p>补充图片 FIXME</p>
+<p><code>Model H</code> 和 <code>Model F</code> 的尺寸一致、I/O数量一致。区别仅在于：</p>
+<ol>
+<li>输出继电器选择了体积更小的，因此可以配备塑料上盖</li>
+<li>线路板中央增加了两组预留接口（电源和 UART），但并未实际使用</li>
+</ol>
+<h2 id="2">2 上位机软件</h2>
 <p><img alt="NaiStudio 数字信号板配套的上位机软件" src="http://media.linuxsand.info/image/naistudio/io-board-software.png" /></p>
 <p>如图像未加载，请点击 <a href="http://media.linuxsand.info/image/naistudio/io-board-software.png">http://media.linuxsand.info/image/naistudio/io-board-software.png</a></p>
-<p>上位机软件分为两个部分，一是“开箱即用”的工具软件，连接信号板后，能够高速刷新信号状态和强制数字信号输出；二为开发包，可以将其集成到自己的软件内，即可连接信号板、读写信号。</p>
-<p>工具软件请到产品支持页 <a href="http://linuxsand.info/naistudio/">http://linuxsand.info/naistudio/</a> 下载。开发包目前仅支持 .NET Framework 4.7.2 平台，请到 <a href="https://www.nuget.org/packages/Nai.Hardware.IOBoard/">https://www.nuget.org/packages/Nai.Hardware.IOBoard/</a> 下载或者直接在包管理器内安装：</p>
-<pre><code>NuGet\Install-Package Nai.Hardware.IOBoard
-</code></pre>
-<h2 id="_2">量产发行</h2>
+<p>上位机软件支持本页面所有列出的型号；它分为两个部分，一是“开箱即用”的实用工具（Utility），连接信号板后，能够快速刷新信号状态和强制数字信号输出；二为开发包（SDK），目前支持 <code>.NET</code> 和 <code>C++ (MSVC)</code>，可以将其集成到自己的软件内，即可连接信号板、读写信号。</p>
+<p>请到产品支持页 <a href="http://linuxsand.info/naistudio/">http://linuxsand.info/naistudio/</a> 查看和下载。</p>
+<h2 id="3">3 量产发行</h2>
 <p>将和我的朋友“涛哥工业科技（TaoRobotics）”联合量产，敬请期待。</p><script type="text/javascript">
     main();
 </script></body>
