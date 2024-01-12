@@ -76,7 +76,7 @@ RevB 的接线示意图如下：
 
 ### 1.4 数字信号板 Model F
 
-补充图片 FIXME
+![NaiStudio 数字信号板 Model F 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-f.jpg)
 
 `Model F` 的尺寸和 I/O 数量均缩小：
 
@@ -90,7 +90,7 @@ RevB 的接线示意图如下：
 
 ### 1.5 数字信号板 Model H
 
-补充图片 FIXME
+![NaiStudio 数字信号板 Model H 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-h.jpg)
 
 `Model H` 和 `Model F` 的尺寸一致、I/O数量一致。区别仅在于：
 
