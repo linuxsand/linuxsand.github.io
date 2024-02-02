@@ -78,6 +78,8 @@ RevB 的接线示意图如下：
 
 ![NaiStudio 数字信号板 Model F 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-f.jpg)
 
+如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-model-f.jpg>
+
 `Model F` 的尺寸和 I/O 数量均缩小：
 
 1. 尺寸：92mm * 86mm * __mm FIXME
@@ -92,11 +94,20 @@ RevB 的接线示意图如下：
 
 ![NaiStudio 数字信号板 Model H 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-h.jpg)
 
+如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-model-h.jpg>
+
 `Model H` 和 `Model F` 的尺寸一致、I/O数量一致。区别仅在于：
 
 1. 输出继电器（继电器依然是一组转换触点）选择了体积更小的，因此可以配备塑料上盖
-2. 线路板中央增加了两组预留接口（电源和 UART），但并未实际使用
+2. 线路板中央增加了两组预留接口，但并未实际使用
 
+### 1.6 数字信号板 Model K
+
+![NaiStudio 数字信号板 Model K 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-k.jpg)
+
+如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-model-k.jpg>
+
+`Model K` 扩大了 I/O 数量，**拥有8输入、8输出**，尺寸没有变化；移除了 `Model H` 引出的两组预留接口，重新引出了 IIC 和 UART。
 
 
 ## 2 软件
@@ -107,7 +118,7 @@ RevB 的接线示意图如下：
 
 上位机软件支持本页面所有列出的型号；它分为两个部分，一是“开箱即用”的实用工具（Utility），连接信号板后，能够快速刷新信号状态和强制数字信号输出；二为开发包（SDK），目前支持 `.NET` 和 `C++ (MSVC)`，可以将其集成到自己的软件内，即可连接信号板、读写信号。
 
-请到产品支持页 <http://linuxsand.info/naistudio/> 查看和下载。
+请到产品支持页 <//linuxsand.info/naistudio/> 查看和下载。
 
 
 
