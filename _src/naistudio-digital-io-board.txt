@@ -9,7 +9,7 @@ NaiStudio 数字信号板
 
 ## 1 硬件
 
-### 1.1 数字信号板 RevA
+### 1.1 数字信号板 RevA（试制、退役）
 
 ![NaiStudio 数字信号板 RevA 实物图](http://media.linuxsand.info/image/naistudio/io-board-rev_a.jpg)
 
@@ -41,7 +41,7 @@ TODO 项：
 2. 【搞定】<del>制作硬件精简版 RevB，缩减 I/O 数量</del>
 3. 支持 RS485
 
-### 1.2 数字信号板 RevB
+### 1.2 数字信号板 RevB（试制、退役）
 
 
 ![NaiStudio 数字信号板 RevB 实物图](http://media.linuxsand.info/image/naistudio/io-board-rev_b.jpg)
@@ -62,19 +62,18 @@ RevB 的接线示意图如下：
 
 
 
-### 1.3 数字信号板 Model C
+### 1.3 数字信号板 Model C（试制、退役）
 
-补充图片 FIXME
 
 这个版本开始，命名方式使用 `Model __` 代替 `Rev__`。主要的原因是，`Model C` 是印刷线路板，而之前的 `RevA` / `RevB` 是洞洞板。
 
 这个版本是打样迭代版本，主要规格：
 
-1. 长宽尺寸较大，100mm * 90mm * ___mm FIXME
+1. 长宽尺寸较大，100mm * 90mm * 29mm
 2. 8输入、4输出；（输出的）继电器从一组常开触点，改为一组转换触点
 
 
-### 1.4 数字信号板 Model F
+### 1.4 数字信号板 Model F（试制、退役）
 
 ![NaiStudio 数字信号板 Model F 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-f.jpg)
 
@@ -82,7 +81,7 @@ RevB 的接线示意图如下：
 
 `Model F` 的尺寸和 I/O 数量均缩小：
 
-1. 尺寸：92mm * 86mm * __mm FIXME
+1. 尺寸：92mm * 86mm * 28mm（含塑料底板）
 2. 4输入、4输出；（输出的）继电器依然是一组转换触点
 3. 器件布局有所变化
 4. 带有塑料底板（不含上盖）
@@ -90,7 +89,7 @@ RevB 的接线示意图如下：
 （为何直接从 `C` 跳到了 `F`？因为想要跳过一些发音、字型相似的符号，例如 `D` 近 `B`、`E` 近 `数字1` ）
 
 
-### 1.5 数字信号板 Model H
+### 1.5 数字信号板 Model H（试制、退役）
 
 ![NaiStudio 数字信号板 Model H 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-h.jpg)
 
@@ -101,13 +100,16 @@ RevB 的接线示意图如下：
 1. 输出继电器（继电器依然是一组转换触点）选择了体积更小的，因此可以配备塑料上盖
 2. 线路板中央增加了两组预留接口，但并未实际使用
 
-### 1.6 数字信号板 Model K
+
+### 1.6 数字信号板 Model K（量产候选）
 
 ![NaiStudio 数字信号板 Model K 实物图](http://media.linuxsand.info/image/naistudio/io-board-model-k.jpg)
 
 如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-model-k.jpg>
 
-`Model K` 扩大了 I/O 数量，**拥有8输入、8输出**，尺寸没有变化；移除了 `Model H` 引出的两组预留接口，重新引出了 IIC 和 UART。
+1. `Model K` 扩大了 I/O 数量，**拥有8输入、8输出**
+2. 长宽尺寸没有变化（92mm * 86mm * 28mm）
+3. 移除了 `Model H` 引出的两组预留接口，重新引出了 IIC 和 UART
 
 
 ## 2 软件
@@ -116,7 +118,8 @@ RevB 的接线示意图如下：
 
 如图像未加载，请点击 <http://media.linuxsand.info/image/naistudio/io-board-software.png>
 
-上位机软件支持本页面所有列出的型号；它分为两个部分，一是“开箱即用”的实用工具（Utility），连接信号板后，能够快速刷新信号状态和强制数字信号输出；二为开发包（SDK），目前支持 `.NET` 和 `C++ (MSVC)`，可以将其集成到自己的软件内，即可连接信号板、读写信号。
+上位机软件支持本页面所有列出的型号；它分为两个部分，一是“开箱即用”的实用工具（Utility），连接信号板后，能够快速刷新信号状态和强制数字信号输出（可批量连续测试输出通道）；
+二为开发包（SDK），目前支持 `.NET` 和 `C++ (MSVC)`，可以将其集成到自己的软件内，即可连接信号板、读写信号。
 
 请到产品支持页 <http://linuxsand.info/naistudio/> 查看和下载。
 
