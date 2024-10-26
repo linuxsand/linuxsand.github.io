@@ -114,7 +114,7 @@ run_maintenance_proc(p_wait int DEFAULT 0, p_analyze boolean DEFAULT NULL,
 <p>可以手动针对 dbo.test3 进行维护：</p>
 <pre><code>select partman.run_maintenance('dbo.test3', false);
 </code></pre>
-<h2 id="33-windows">3.3 自动维护分区表（Windows 计划任务）</h2>
+<h3 id="33-windows">3.3 自动维护分区表（Windows 计划任务）</h3>
 <p>上面是我们在某个数据库下，手动指定某一张表，因此传入了表名作为参数；自动维护时，我们可以调用使用默认参数（<code>NULL</code>, <code>NULL</code>, <code>true</code>）的例程 <code>select partman.run_maintenance();</code> 就能自动维护 <code>part_config</code> 内的 <code>automatic_maintenance</code> 为真的表。</p>
 <pre><code>postgres=# select automatic_maintenance from partman.part_config where parent_table='dbo.test3';
  automatic_maintenance
@@ -122,7 +122,7 @@ run_maintenance_proc(p_wait int DEFAULT 0, p_analyze boolean DEFAULT NULL,
  on
 (1 row)
 </code></pre>
-<p>我们只需编写一个小程序，在连接字符串内拼接好指定的数据库名字，调用即可；大概如下。</p>
+<p>我们只需编写一个可执行程序，在连接字符串内拼接好指定的数据库名字，调用维护例程即可；主体源码大概如下。</p>
 <pre><code>string connString = "Server=127.0.0.1;Port=5432;User Id=postgres;Password=XXX;Database=";
 foreach (string dbname in new string[] { "db1", "db2", "db3" })
 {
@@ -142,6 +142,7 @@ foreach (string dbname in new string[] { "db1", "db2", "db3" })
     } // end using
 }  // end foreach
 </code></pre>
+<p>最后利用 <code>schtasks /create /?</code> 添加到 Windows 计划任务内。</p>
 <h2 id="34">3.4 丢弃分区</h2>
 <p>维护分区，不但包含新建分区，也包含丢弃分区。</p>
 <p>如何丢弃分区？<code>retention</code> 为 NULL，默认是不丢弃的。</p>
