@@ -8,17 +8,17 @@
 pg_partman 支持继承式分区表和声明式（原生）分区表，本文使用原生分区表。
 
 
-## 1 安装 pg_partman
+## 1 构建 pg_partman
 
-对于 Windows 用户来说，pg_partman 的安装可比配置和使用麻烦多了：需要自己克隆代码（`git clone https://github.com/pgpartman/pg_partman/`）并构建（`make install`）出 pg_partman。
+对于 Windows 用户，需要自己克隆代码（`git clone https://github.com/pgpartman/pg_partman/`）并构建（`make install`）出 pg_partman。
 
 构建后，预期得到的文件有：
 
-- .control 和 .sql 文件：`pg_partman.control` 和 `pg_partman--4.6.0.sql`，这是必须的文件
-- BGW（background worker）：`pg_partman_bgw.dll`，这是 C 库，它会在后台定期执行维护例程，我需要它
-- 一堆 Python 脚本（我暂时不需要）
+- .control 和 .sql 文件：`pg_partman.control` 和 `pg_partman--4.6.0.sql`，这是必须的文件；
+- BGW（background worker）：`pg_partman_bgw.dll`，这是在后台定期执行维护例程的 C 库（需要加载和配置）；暂时不需要它，我将使用 Windows 的计划任务来定期执行维护例程；
+- 一堆 Python 脚本，暂时不需要它们；
 
-阅读 `Makefile` 可以知道，在 Windows 下没法直接、方便地进行构建。
+但是阅读 `Makefile` 可以知道，在 Windows 下没法直接、方便地进行构建。
 
 通过搜索 github issues，找到了[一个应变方法](https://github.com/pgpartman/pg_partman/issues/111#issuecomment-218576231)；
 我修改了这个 make.sh 文件的 [Shebang](https://bash.cyberciti.biz/guide/Shebang) 、添加了注释如下。
@@ -38,9 +38,14 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     cat sql/tables/*.sql >> "${EXTENSION}--${VERSION}.sql"
     cat sql/functions/*.sql >> "${EXTENSION}--${VERSION}.sql"
 
-直接在 git bash 内执行 `./make.sh`，得到了 `pg_partman.control` 和 `pg_partman--4.6.0.sql` 文件；接着把它俩拷贝到 `C:\Program Files\PostgreSQL\14\share\extension`。
+直接在 git bash 内执行 `./make.sh`，得到了 `pg_partman.control` 和 `pg_partman--4.6.0.sql` 文件；
 
-然后在 psql 内执行如下代码安装该拓展：
+
+
+
+## 2 安装 pg_partman
+
+把上一步得到的 `pg_partman.control` 和 `pg_partman--4.6.0.sql` 拷贝到 `C:\Program Files\PostgreSQL\14\share\extension`。然后在 psql 内执行如下代码安装该拓展：
 
     -- 切到 postgres 这个 db 下（以下所有示例，均在 postgres 这个数据库下演示）
     \c postgres;
@@ -56,34 +61,6 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     (1 row)
 
 
-尽管现在可以进入配置和使用环节，但不如等 BGW 安装完毕后一起操作。
-
-关于 BGW 在 Windows 上的构建方法，我参考了[这篇文章](https://www.highgo.ca/2020/05/15/build-postgresql-and-extension-on-windows/)。
-用 Visual Studio 2019 创建空白 C++ 项目，（略），复制了 pg_partman_bgw.c 内的代码（`src/pg_partman_bgw.c`），（略），构建得到了 pg_partman_bgw.dll。
-将 pg_partman_bgw.dll 复制到 `C:\Program Files\PostgreSQL\14\lib` 内，并且通过 `services.msc` 重启 postgresql 服务。
-
-附上我构建完毕的 pg_partman 压缩包（64bit）。<http://media.linuxsand.info/misc/pg_partman_windows_linuxsand.info.7z>
-
-
-## 2 配置 pg_partman
-
-参照文档，修改 postgresql.conf。
-
-    # - Shared Library Preloading -
-    shared_preload_libraries = 'pg_partman_bgw'	# (change requires restart)
-
-    # Add settings for extensions here
-    pg_partman_bgw.dbname = 'postgres' # 可以使用 , 来分隔多个数据库
-    pg_partman_bgw.interval = 3600
-
-重新加载配置：
-
-    postgres=# select pg_reload_conf();
-     pg_reload_conf
-    ----------------
-     t
-    (1 row)
-
 
 
 ## 3 使用 pg_partman
@@ -96,7 +73,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     (
         "Id" bigserial,
         -- ...other columns
-         "DetectedTime" timestamp without time zone
+        "DetectedTime" timestamp without time zone
     ) PARTITION BY Range("DetectedTime");
 
     -- 略过创建索引
@@ -140,7 +117,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
           RETURNS boolean
 
 
-### 3.2 自动维护分区表
+### 3.2 手动维护分区表
 
 使用 `run_maintenance` 或 `run_maintenance_proc` 进行分区维护，两者的签名如下。
 
@@ -155,7 +132,10 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
     select partman.run_maintenance('dbo.test3', false);
 
-根据上一节的配置，BGW 会每隔 3600 秒自动调用 `run_maintenance`；自动维护时不能传入表名作为参数，BGW 会自动维护 `part_config` 内的 `automatic_maintenance` 为真的表。
+
+## 3.3 自动维护分区表（Windows 计划任务）
+
+上面是我们在某个数据库下，手动指定某一张表，因此传入了表名作为参数；自动维护时，我们可以调用使用默认参数（`NULL`, `NULL`, `true`）的例程 `select partman.run_maintenance();` 就能自动维护 `part_config` 内的 `automatic_maintenance` 为真的表。
 
     postgres=# select automatic_maintenance from partman.part_config where parent_table='dbo.test3';
      automatic_maintenance
@@ -163,6 +143,31 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
      on
     (1 row)
 
+我们只需编写一个小程序，在连接字符串内拼接好指定的数据库名字，调用即可；大概如下。
+
+    string connString = "Server=127.0.0.1;Port=5432;User Id=postgres;Password=XXX;Database=";
+    foreach (string dbname in new string[] { "db1", "db2", "db3" })
+    {
+        using (var conn = new NpgsqlConnection(connString + dbname))
+        {
+            try
+            {
+                conn.Open();
+                conn.Execute("select partman.run_maintenance();");
+                conn.Close();
+                logger.LogInfo($"maintain {s}: success");
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"maintain {s}: failed -- {e}");
+            }
+        } // end using
+    }  // end foreach
+
+
+## 3.4 丢弃分区
+
+维护分区，不但包含新建分区，也包含丢弃分区。
 
 如何丢弃分区？`retention` 为 NULL，默认是不丢弃的。
 
@@ -188,5 +193,12 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
 ## 4 小结
 
-本文介绍了 pg_partman 这个工具的安装、配置和使用。
+本文介绍了 pg_partman 这个工具的构建、安装和使用。
 
+
+
+
+## 5 扩展阅读
+
+- <https://github.com/pgpartman/pg_partman/blob/master/doc/pg_partman.md#partition_data_time>
+- <https://github.com/pgpartman/pg_partman/blob/master/CHANGELOG-pre-5.0.0.txt>
