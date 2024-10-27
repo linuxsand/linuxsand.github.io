@@ -117,6 +117,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
           RETURNS boolean
 
 
+
 ### 3.2 手动维护分区表
 
 使用 `run_maintenance` 或 `run_maintenance_proc` 进行分区维护，两者的签名如下。
@@ -133,6 +134,8 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
     select partman.run_maintenance('dbo.test3', false);
 
 
+
+
 ### 3.3 自动维护分区表（Windows 计划任务）
 
 上面是我们在某个数据库下，手动指定某一张表，因此传入了表名作为参数；自动维护时，我们可以调用使用默认参数（`NULL`, `NULL`, `true`）的例程 `select partman.run_maintenance();` 就能自动维护 `part_config` 内的 `automatic_maintenance` 为真的表。
@@ -143,7 +146,7 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
      on
     (1 row)
 
-我们只需编写一个可执行程序，在连接字符串内拼接好指定的数据库名字，调用维护例程即可；主体源码大概如下。
+我们只需编写一个可执行程序，在连接字符串内拼接好指定的数据库名字（数据库名字可以从配置文件读取），调用维护例程即可；主体源码大概如下。
 
     string connString = "Server=127.0.0.1;Port=5432;User Id=postgres;Password=XXX;Database=";
     foreach (string dbname in new string[] { "db1", "db2", "db3" })
@@ -167,7 +170,9 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 最后利用 `schtasks /create /?` 添加到 Windows 计划任务内。
 
 
-## 3.4 丢弃分区
+
+
+### 3.4 丢弃分区表
 
 维护分区，不但包含新建分区，也包含丢弃分区。
 
@@ -202,5 +207,6 @@ pg_partman 支持继承式分区表和声明式（原生）分区表，本文使
 
 ## 5 扩展阅读
 
+- <https://www.postgresql.org/docs/14/ddl-partitioning.html>
 - <https://github.com/pgpartman/pg_partman/blob/master/doc/pg_partman.md#partition_data_time>
 - <https://github.com/pgpartman/pg_partman/blob/master/CHANGELOG-pre-5.0.0.txt>

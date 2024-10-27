@@ -122,7 +122,7 @@ run_maintenance_proc(p_wait int DEFAULT 0, p_analyze boolean DEFAULT NULL,
  on
 (1 row)
 </code></pre>
-<p>我们只需编写一个可执行程序，在连接字符串内拼接好指定的数据库名字，调用维护例程即可；主体源码大概如下。</p>
+<p>我们只需编写一个可执行程序，在连接字符串内拼接好指定的数据库名字（数据库名字可以从配置文件读取），调用维护例程即可；主体源码大概如下。</p>
 <pre><code>string connString = "Server=127.0.0.1;Port=5432;User Id=postgres;Password=XXX;Database=";
 foreach (string dbname in new string[] { "db1", "db2", "db3" })
 {
@@ -143,7 +143,7 @@ foreach (string dbname in new string[] { "db1", "db2", "db3" })
 }  // end foreach
 </code></pre>
 <p>最后利用 <code>schtasks /create /?</code> 添加到 Windows 计划任务内。</p>
-<h2 id="34">3.4 丢弃分区</h2>
+<h3 id="34">3.4 丢弃分区表</h3>
 <p>维护分区，不但包含新建分区，也包含丢弃分区。</p>
 <p>如何丢弃分区？<code>retention</code> 为 NULL，默认是不丢弃的。</p>
 <pre><code>postgres=# select retention, retention_keep_table from partman.part_config where parent_table='dbo.test3';
@@ -166,6 +166,7 @@ postgres=# select retention, retention_keep_table from partman.part_config where
 <p>本文介绍了 pg_partman 这个工具的构建、安装和使用。</p>
 <h2 id="5">5 扩展阅读</h2>
 <ul>
+<li><a href="https://www.postgresql.org/docs/14/ddl-partitioning.html">https://www.postgresql.org/docs/14/ddl-partitioning.html</a></li>
 <li><a href="https://github.com/pgpartman/pg_partman/blob/master/doc/pg_partman.md#partition_data_time">https://github.com/pgpartman/pg_partman/blob/master/doc/pg_partman.md#partition_data_time</a></li>
 <li><a href="https://github.com/pgpartman/pg_partman/blob/master/CHANGELOG-pre-5.0.0.txt">https://github.com/pgpartman/pg_partman/blob/master/CHANGELOG-pre-5.0.0.txt</a></li>
 </ul><script type="text/javascript">
